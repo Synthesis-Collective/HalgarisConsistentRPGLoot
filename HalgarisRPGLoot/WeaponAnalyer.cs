@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Mutagen.Bethesda;
+using Mutagen.Bethesda.FormKeys.SkyrimSE;
 using Mutagen.Bethesda.Skyrim;
 using Mutagen.Bethesda.Synthesis;
 
@@ -63,7 +65,12 @@ namespace HalgarisRPGLoot
                                                                  };
                                                              }).Where(r => r != default)
                                                              ?? new ResolvedListItem<IWeapon, IWeaponGetter>[0])
-                .Where(e => !(e.Resolved.Keywords ?? new IFormLink<IKeywordGetter>[0]).Contains(Mutagen.Bethesda.FormKeys.SkyrimSE.Skyrim.Keyword.WeapTypeStaff))
+                .Where(e =>
+                {
+                    var kws = (e.Resolved.Keywords ?? new IFormLink<IKeywordGetter>[0]);
+                    return (!kws.Contains(Skyrim.Keyword.WeapTypeStaff))
+                           && (!kws.Contains(Skyrim.Keyword.MagicDisallowEnchanting));
+                })
                 .ToArray();
             
             AllUnenchantedItems = AllListItems.Where(e => e.Resolved.ObjectEffect.IsNull).ToArray();
@@ -191,16 +198,51 @@ namespace HalgarisRPGLoot
             nrec.Effects.AddRange(effects.SelectMany(e => e.Enchantment.Effects).Select(e => e.DeepCopy()));
             nrec.WornRestrictions = effects.First().Enchantment.WornRestrictions;
 
+            string itemName = "";
+            if (!(item.Resolved?.Name?.TryLookup(Language.English, out itemName) ?? false))
+            {
+                itemName = MakeName(item.Resolved.EditorID);
+            }
+            
             var nitm = State.PatchMod.Weapons.AddNewLocking(State.PatchMod.GetNextFormKey());
             nitm.DeepCopyIn(item.Resolved);
             nitm.EditorID = "HAL_WEAPON_" + nitm.EditorID;
             nitm.ObjectEffect = nrec.FormKey;
             nitm.EnchantmentAmount = (ushort)effects.Where(e => e.Amount.HasValue).Sum(e => e.Amount.Value);
-            nitm.Name = rarityName + " " + item.Resolved.Name + " of " + effects.First().Enchantment.Name;
+            nitm.Name = rarityName + " " + itemName + " of " + effects.First().Enchantment.Name;
             
 
 
             return nitm.FormKey;
+        }
+        
+        private static char[] Numbers = "123456890".ToCharArray();
+        private static Regex Splitter = new Regex("(?<=[A-Z])(?=[A-Z][a-z])|(?<=[^A-Z])(?=[A-Z])|(?<=[A-Za-z])(?=[^A-Za-z])");
+        private Dictionary<string, string> KnownMapping = new Dictionary<string, string>();
+        private string MakeName(string? resolvedEditorId)
+        {
+            string returning;
+            if (resolvedEditorId == null)
+            {
+                returning = "Weapon";
+            }
+            else
+            {
+                if (KnownMapping.TryGetValue(resolvedEditorId, out var cached))
+                    return cached;
+                
+                var parts = Splitter.Split(resolvedEditorId)
+                    .Where(e => e.Length > 1)
+                    .Where(e => e != "DLC" && e != "Weapon" && e != "Variant")
+                    .Where(e => !int.TryParse(e, out var _))
+                    .ToArray();
+
+                returning = string.Join(" ", parts);
+                KnownMapping[resolvedEditorId] = returning;
+            }
+            Console.WriteLine($"Missing weapon name for {resolvedEditorId ?? "<null>"} using {returning}");
+
+            return returning;
         }
     }
 }
