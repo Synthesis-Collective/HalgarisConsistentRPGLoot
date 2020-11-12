@@ -28,15 +28,15 @@ namespace HalgarisRPGLoot
         public ResolvedListItem<IArmor, IArmorGetter>[] AllUnenchantedItems { get; set; }
         
         public Dictionary<int, ResolvedEnchantment[]> ByLevelIndexed { get; set; }
+        
+        public Dictionary<FormKey, IObjectEffectGetter> AllObjectEffects { get; set; }
+
 
         public ResolvedEnchantment[] AllEnchantments { get; set; }
         public HashSet<short> AllLevels { get; set; }
         
         public (short Key, ResolvedEnchantment[])[] ByLevel { get; set; }
         
-        public Dictionary<FormKey, FormKey> Replacements { get; set; } = new Dictionary<FormKey, FormKey>(); 
-
-
         
         public ArmorAnalyzer(SynthesisState<ISkyrimMod, ISkyrimModGetter> state)
         {
@@ -46,31 +46,37 @@ namespace HalgarisRPGLoot
         public void Analyze()
         {
             AllLeveledLists = State.LoadOrder.PriorityOrder.WinningOverrides<ILeveledItemGetter>().ToArray();
+
             AllListItems = AllLeveledLists.SelectMany(lst => lst.Entries?.Select(entry =>
-                {
-                    if (entry?.Data?.Reference.FormKey == default) return default;
+                                                             {
+                                                                 if (entry?.Data?.Reference.FormKey == default) return default;
                     
-                    if (!State.LinkCache.TryLookup<IArmorGetter>(entry.Data.Reference.FormKey,
-                        out var resolved))
-                        return default;
-                    return new ResolvedListItem<IArmor, IArmorGetter>
-                    {
-                        List = lst,
-                        Entry = entry,
-                        Resolved = resolved
-                    };
-                }).Where(r => r != default)
-                ?? new ResolvedListItem<IArmor, IArmorGetter>[0])
+                                                                 if (!State.LinkCache.TryLookup<IArmorGetter>(entry.Data.Reference.FormKey,
+                                                                     out var resolved))
+                                                                     return default;
+                                                                 return new ResolvedListItem<IArmor, IArmorGetter>
+                                                                 {
+                                                                     List = lst,
+                                                                     Entry = entry,
+                                                                     Resolved = resolved
+                                                                 };
+                                                             }).Where(r => r != default)
+                                                             ?? new ResolvedListItem<IArmor, IArmorGetter>[0])
                 .ToArray();
+            
             AllUnenchantedItems = AllListItems.Where(e => e.Resolved.ObjectEffect.IsNull).ToArray();
+            
             AllEnchantedItems = AllListItems.Where(e => !e.Resolved.ObjectEffect.IsNull).ToArray();
+
+            AllObjectEffects = State.LoadOrder.PriorityOrder.ObjectEffect().WinningOverrides()
+                .ToDictionary(k => k.FormKey);
 
             AllEnchantments = AllEnchantedItems
                 .Select(e => (e.Entry.Data.Level, e.Resolved.EnchantmentAmount, e.Resolved.ObjectEffect.FormKey!.Value))
                 .Distinct()
                 .Select(e =>
                 {
-                    if (!State.LinkCache.TryLookup<IObjectEffectGetter>(e.Value, out var ench))
+                    if (!AllObjectEffects.TryGetValue(e.Value, out var ench))
                         return default;
                     return new ResolvedEnchantment
                     {
@@ -81,11 +87,15 @@ namespace HalgarisRPGLoot
                 })
                 .Where(e => e != default)
                 .ToArray();
+
             AllLevels = AllEnchantments.Select(e => e.Level).Distinct().ToHashSet();
+            
+            
             ByLevel = AllEnchantments.GroupBy(e => e.Level)
                 .OrderBy(e => e.Key)
                 .Select(e => (e.Key, e.ToArray()))
                 .ToArray();
+            
             ByLevelIndexed = Enumerable.Range(0, 100)
                 .Select(lvl => (lvl, ByLevel.Where(bl => bl.Key <= lvl).SelectMany(e => e.Item2).ToArray()))
                 .ToDictionary(kv => kv.lvl, kv => kv.Item2);

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Skyrim;
 using Mutagen.Bethesda.Synthesis;
@@ -25,14 +26,20 @@ namespace HalgarisRPGLoot
         private static void RunPatch(SynthesisState<ISkyrimMod, ISkyrimModGetter> state)
         {
             var armor  = new ArmorAnalyzer(state);
-            Console.WriteLine("Analyzing armor");
-            armor.Analyze();
+            var weapon = new WeaponAnalyzer(state);
+            
+            Console.WriteLine("Analyzing mod list");
+            var th1 = new Thread(() => armor.Analyze());
+            var th2 = new Thread(() => weapon.Analyze());
+            
+            th1.Start();
+            th2.Start();
+            th1.Join();
+            th2.Join();
+            
             Console.WriteLine("Generating armor enchantments");
             armor.Generate();
             
-            var weapon = new WeaponAnalyzer(state);
-            Console.WriteLine("Analyzing weapons");
-            weapon.Analyze();
             Console.WriteLine("Generating weapon enchantments");
             weapon.Generate();
             
