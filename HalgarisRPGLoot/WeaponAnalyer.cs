@@ -131,7 +131,9 @@ namespace HalgarisRPGLoot
                 lst.DeepCopyIn(ench.List);
                 lst.EditorID = "HAL_TOP_LList" + ench.Resolved.EditorID;
                 lst.Entries!.Clear();
+                lst.Flags &= ~LeveledItem.Flag.UseAll;
 
+                
                 foreach (var e in Rarities)
                 {
 
@@ -139,6 +141,8 @@ namespace HalgarisRPGLoot
                     nlst.DeepCopyIn(ench.List);
                     nlst.EditorID = "HAL_LList_" + e.Name + "_" + ench.Resolved.EditorID;
                     nlst.Entries!.Clear();
+                    nlst.Flags &= ~LeveledItem.Flag.UseAll;
+
 
                     var numEntries = e.LLEntries * enchantmentsPer / rarityWeight;
                     
