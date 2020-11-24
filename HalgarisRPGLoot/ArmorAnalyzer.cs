@@ -26,9 +26,9 @@ namespace HalgarisRPGLoot
         
         public SynthesisState<ISkyrimMod, ISkyrimModGetter> State { get; set; }
         public ILeveledItemGetter[] AllLeveledLists { get; set; }
-        public ResolvedListItem<IArmor, IArmorGetter>[] AllListItems { get; set; }
-        public ResolvedListItem<IArmor, IArmorGetter>[] AllEnchantedItems { get; set; }
-        public ResolvedListItem<IArmor, IArmorGetter>[] AllUnenchantedItems { get; set; }
+        public ResolvedListItem<IArmorGetter>[] AllListItems { get; set; }
+        public ResolvedListItem<IArmorGetter>[] AllEnchantedItems { get; set; }
+        public ResolvedListItem<IArmorGetter>[] AllUnenchantedItems { get; set; }
         
         public Dictionary<int, ResolvedEnchantment[]> ByLevelIndexed { get; set; }
         
@@ -57,14 +57,14 @@ namespace HalgarisRPGLoot
                                                                  if (!State.LinkCache.TryLookup<IArmorGetter>(entry.Data.Reference.FormKey,
                                                                      out var resolved))
                                                                      return default;
-                                                                 return new ResolvedListItem<IArmor, IArmorGetter>
+                                                                 return new ResolvedListItem<IArmorGetter>
                                                                  {
                                                                      List = lst,
                                                                      Entry = entry,
                                                                      Resolved = resolved
                                                                  };
                                                              }).Where(r => r != default)
-                                                             ?? new ResolvedListItem<IArmor, IArmorGetter>[0])
+                                                             ?? new ResolvedListItem<IArmorGetter>[0])
                 .Where(e =>
                 {
                     var kws = (e.Resolved.Keywords ?? new IFormLink<IKeywordGetter>[0]);
@@ -177,7 +177,7 @@ namespace HalgarisRPGLoot
             }
         }
         private FormKey GenerateEnchantment(
-            ResolvedListItem<IArmor, IArmorGetter> item,
+            ResolvedListItem<IArmorGetter> item,
             string rarityName, int rarityEnchCount)
         {
             var level = item.Entry.Data.Level;
