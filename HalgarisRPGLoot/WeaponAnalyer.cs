@@ -184,8 +184,6 @@ namespace HalgarisRPGLoot
             var oddsRare = Rarities.ElementAt(1).LLEntries;
             var oddsEpic = Rarities.ElementAt(2).LLEntries;
 
-            // Roll EnchantmentsPer times
-            // use value to assign which Rarities we create
             var counts = new int[4] { 0, 0, 0, 0 };
             for (int i = 0; i < ENCHANTED_VARIETY_COUNT_PER_ITEM; i++)
             {
