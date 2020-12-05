@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using Newtonsoft.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Mutagen.Bethesda;
@@ -13,15 +15,7 @@ namespace HalgarisRPGLoot
 {
     public class ArmorAnalyzer
     {
-        public const int ENCHANTED_VARIETY_COUNT_PER_ITEM = 8;
-
-        public static IEnumerable<(string Name, int EnchCount, int LLEntries)> Rarities = new (string Name, int EnchCount, int LLEntries)[]
-        {
-            ("Magical", 1, 80),
-            ("Rare", 2, 13),
-            ("Epic", 3, 5),
-            ("Legendary", 4, 2)
-        };
+        private Settings Settings = new Settings();
 
         public SynthesisState<ISkyrimMod, ISkyrimModGetter> State { get; set; }
         public ILeveledItemGetter[] AllLeveledLists { get; set; }
@@ -43,6 +37,34 @@ namespace HalgarisRPGLoot
         public ArmorAnalyzer(SynthesisState<ISkyrimMod, ISkyrimModGetter> state)
         {
             State = state;
+            LoadSettings();
+        }
+
+        private void LoadSettings()
+        {
+            const string path = "Data/ArmorSettings.json";
+            if (!File.Exists(path))
+            {
+                // Ensure the default settings are saved
+                SaveSettings();
+                return;
+            }
+            using (var file = File.OpenText(path))
+            {
+                var serializer = new JsonSerializer();
+                Settings = (Settings)serializer.Deserialize(file, typeof(Settings));
+            }
+        }
+
+        private void SaveSettings()
+        {
+            const string path = "Data/ArmorSettings.json";
+            Directory.CreateDirectory(Path.GetDirectoryName(path));
+            using (var file = File.CreateText(path))
+            {
+                var serializer = new JsonSerializer();
+                serializer.Serialize(file, Settings);
+            }
         }
 
         public void Analyze()
@@ -134,19 +156,19 @@ namespace HalgarisRPGLoot
                 // use value to assign which Rarities we create
                 var rarityCounts = GenerateRarityEntryCounts(rand);
 
-                for (int i = 0; i < Rarities.Count(); i++)
+                for (int i = 0; i < Settings.Rarities.Count(); i++)
                 {
-                    var e = Rarities.ElementAt(i);
+                    var e = Settings.Rarities[i];
                     var numEntries = rarityCounts[i];
                     var nlst = State.PatchMod.LeveledItems.AddNew(State.PatchMod.GetNextFormKey());
                     nlst.DeepCopyIn(ench.List);
-                    nlst.EditorID = "HAL_LList_" + e.Name + "_" + ench.Resolved.EditorID;
+                    nlst.EditorID = "HAL_LList_" + e.Label + "_" + ench.Resolved.EditorID;
                     nlst.Entries!.Clear();
                     nlst.Flags &= ~LeveledItem.Flag.UseAll;
 
                     for (var j = 0; j < numEntries; j++)
                     {
-                        var itm = GenerateEnchantment(ench, e.Name, e.EnchCount);
+                        var itm = GenerateEnchantment(ench, e.Label, e.NumEnchantments);
                         var entry = ench.Entry.DeepCopy();
                         entry.Data!.Reference = itm;
                         nlst.Entries.Add(entry);
@@ -160,7 +182,7 @@ namespace HalgarisRPGLoot
                     }
                 }
 
-                var remain = 240 - Rarities.Sum(e => e.LLEntries);
+                var remain = 240 - Settings.Rarities.Sum(e => e.LLEntries);
                 for (var i = 0; i < remain; i++)
                 {
                     var lentry = ench.Entry.DeepCopy();
@@ -177,32 +199,40 @@ namespace HalgarisRPGLoot
             }
         }
 
-        private static int[] GenerateRarityEntryCounts(Random rand)
+        private int[] GenerateRarityEntryCounts(Random rand)
         {
-            var rarityWeight = Rarities.Sum(r => r.LLEntries);
-            var oddsMagical = Rarities.ElementAt(0).LLEntries;
-            var oddsRare = Rarities.ElementAt(1).LLEntries;
-            var oddsEpic = Rarities.ElementAt(2).LLEntries;
+            var rarityWeight = Settings.Rarities.Sum(r => r.LLEntries);
+            var spawnChances = Settings.Rarities.Select(r => r.LLEntries).ToList();
 
-            var counts = new int[4] { 0, 0, 0, 0 };
-            for (int i = 0; i < ENCHANTED_VARIETY_COUNT_PER_ITEM; i++)
+            var counts = new int[spawnChances.Count()];
+            if (Settings.UseRNGRarities)
             {
-                var v = rand.Next() % rarityWeight;
-                if (v <= oddsMagical)
+                // Precalculate the maximum number in our rolls for each range
+                for (int i = 0; i < spawnChances.Count(); i++)
                 {
-                    counts[0]++;
+                    for (int j = 0; j < i; j++)
+                    {
+                        spawnChances[i] += spawnChances[j];
+                    }
                 }
-                else if (v <= oddsMagical + oddsRare)
+                for (int i = 0; i < Settings.VarietyCountPerItem; i++)
                 {
-                    counts[1]++;
+                    var v = rand.Next() % rarityWeight;
+                    for (int j = spawnChances.Count() - 1; j >= 0; j--)
+                    {
+                        if (v <= spawnChances[j] && (j == 0 || v > spawnChances[j-1]))
+                        {
+                            counts[j]++;
+                            break;
+                        }
+                    }
                 }
-                else if (v <= oddsMagical + oddsRare + oddsEpic)
+            }
+            else
+            {
+                for (int j = spawnChances.Count() - 1; j >= 0; j--)
                 {
-                    counts[2]++;
-                }
-                else
-                {
-                    counts[3]++;
+                    counts[j] = (spawnChances[j] / rarityWeight) * Settings.VarietyCountPerItem;
                 }
             }
 
