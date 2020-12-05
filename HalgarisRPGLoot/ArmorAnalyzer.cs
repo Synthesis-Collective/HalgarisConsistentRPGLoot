@@ -46,6 +46,7 @@ namespace HalgarisRPGLoot
             if (!File.Exists(path))
             {
                 // Ensure the default settings are saved
+                Settings.InitializeDefault();
                 SaveSettings();
                 return;
             }
@@ -154,12 +155,17 @@ namespace HalgarisRPGLoot
 
                 // Roll EnchantmentsPer times
                 // use value to assign which Rarities we create
-                var rarityCounts = GenerateRarityEntryCounts(rand);
+                var numEntriesPerRarity = GenerateRarityEntryCounts(rand);
 
                 for (int i = 0; i < Settings.Rarities.Count(); i++)
                 {
+                    if (numEntriesPerRarity[i] == 0)
+                    {
+                        // Skip empty rarities...otherwise they will strip our citizens.
+                        continue;
+                    }
                     var e = Settings.Rarities[i];
-                    var numEntries = rarityCounts[i];
+                    var numEntries = numEntriesPerRarity[i];
                     var nlst = State.PatchMod.LeveledItems.AddNew(State.PatchMod.GetNextFormKey());
                     nlst.DeepCopyIn(ench.List);
                     nlst.EditorID = "HAL_LList_" + e.Label + "_" + ench.Resolved.EditorID;
@@ -201,8 +207,13 @@ namespace HalgarisRPGLoot
 
         private int[] GenerateRarityEntryCounts(Random rand)
         {
-            var rarityWeight = Settings.Rarities.Sum(r => r.LLEntries);
-            var spawnChances = Settings.Rarities.Select(r => r.LLEntries).ToList();
+            var rarityWeight = (float)Settings.Rarities.Sum(r => r.LLEntries);
+            foreach(var rarity in Settings.Rarities)
+            {
+                Console.WriteLine($"{rarity.Label}: Entries - {rarity.LLEntries} Enchantments - {rarity.NumEnchantments}");
+            }
+            Console.WriteLine($"RarityWeight: {rarityWeight}");
+            var spawnChances = Settings.Rarities.Select(r => (float)r.LLEntries).ToList();
 
             var counts = new int[spawnChances.Count()];
             if (Settings.UseRNGRarities)
@@ -232,7 +243,7 @@ namespace HalgarisRPGLoot
             {
                 for (int j = spawnChances.Count() - 1; j >= 0; j--)
                 {
-                    counts[j] = (spawnChances[j] / rarityWeight) * Settings.VarietyCountPerItem;
+                    counts[j] = (int)((spawnChances[j] / rarityWeight) * Settings.VarietyCountPerItem);
                 }
             }
 
