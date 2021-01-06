@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using System.Threading.Tasks;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Skyrim;
 using Mutagen.Bethesda.Synthesis;
@@ -8,22 +9,21 @@ namespace HalgarisRPGLoot
 {
     class Program
     {
-        static int Main(string[] args)
+        static async Task<int> Main(string[] args)
         {
-            return SynthesisPipeline.Instance.Patch<ISkyrimMod, ISkyrimModGetter>(
-                args: args,
-                patcher: RunPatch,
-                new UserPreferences
+            return await SynthesisPipeline.Instance
+                .AddPatch<ISkyrimMod, ISkyrimModGetter>(RunPatch)
+                .Run(args, new RunPreferences()
                 {
-                    ActionsForEmptyArgs = new RunDefaultPatcher
+                    ActionsForEmptyArgs = new RunDefaultPatcher()
                     {
-                        IdentifyingModKey = "ENBLightPatcher.esp",
-                        TargetRelease = GameRelease.SkyrimSE
+                        IdentifyingModKey = "HalgariRpgLoot.esp",
+                        TargetRelease = GameRelease.SkyrimSE,
                     }
                 });
         }
 
-        private static void RunPatch(SynthesisState<ISkyrimMod, ISkyrimModGetter> state)
+        private static void RunPatch(IPatcherState<ISkyrimMod, ISkyrimModGetter> state)
         {
             var armor  = new ArmorAnalyzer(state);
             var weapon = new WeaponAnalyzer(state);

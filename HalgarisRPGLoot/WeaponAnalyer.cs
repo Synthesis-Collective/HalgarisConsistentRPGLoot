@@ -23,7 +23,7 @@ namespace HalgarisRPGLoot
             ("Legenedary", 4, 2)
         };
         
-        public SynthesisState<ISkyrimMod, ISkyrimModGetter> State { get; set; }
+        public IPatcherState<ISkyrimMod, ISkyrimModGetter> State { get; set; }
         public ILeveledItemGetter[] AllLeveledLists { get; set; }
         public ResolvedListItem<IWeaponGetter>[] AllListItems { get; set; }
         public ResolvedListItem<IWeaponGetter>[] AllEnchantedItems { get; set; }
@@ -41,7 +41,7 @@ namespace HalgarisRPGLoot
 
 
         
-        public WeaponAnalyzer(SynthesisState<ISkyrimMod, ISkyrimModGetter> state)
+        public WeaponAnalyzer(IPatcherState<ISkyrimMod, ISkyrimModGetter> state)
         {
             State = state;
         }
@@ -54,7 +54,7 @@ namespace HalgarisRPGLoot
                                                              {
                                                                  if (entry?.Data?.Reference.FormKey == default) return default;
                     
-                                                                 if (!State.LinkCache.TryLookup<IWeaponGetter>(entry.Data.Reference.FormKey,
+                                                                 if (!State.LinkCache.TryResolve<IWeaponGetter>(entry.Data.Reference.FormKey,
                                                                      out var resolved))
                                                                      return default;
                                                                  return new ResolvedListItem<IWeaponGetter>
@@ -81,11 +81,11 @@ namespace HalgarisRPGLoot
                 .ToDictionary(k => k.FormKey);
 
             AllEnchantments = AllEnchantedItems
-                .Select(e => (e.Entry.Data.Level, e.Resolved.EnchantmentAmount, e.Resolved.ObjectEffect.FormKey!.Value))
+                .Select(e => (e.Entry.Data.Level, e.Resolved.EnchantmentAmount, e.Resolved.ObjectEffect.FormKey))
                 .Distinct()
                 .Select(e =>
                 {
-                    if (!AllObjectEffects.TryGetValue(e.Value, out var ench))
+                    if (!AllObjectEffects.TryGetValue(e.FormKey, out var ench))
                         return default;
                     return new ResolvedEnchantment
                     {
