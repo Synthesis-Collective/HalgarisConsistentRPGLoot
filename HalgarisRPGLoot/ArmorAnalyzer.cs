@@ -254,38 +254,45 @@ namespace HalgarisRPGLoot
             ResolvedListItem<IArmor, IArmorGetter> item,
             string rarityName, int rarityEnchCount)
         {
-            var level = item.Entry.Data.Level;
-            var forLevel = ByLevelIndexed[level];
-            var effects = Extensions.Repeatedly(() => forLevel.RandomItem())
-                .Distinct()
-                .Take(rarityEnchCount)
-                .Shuffle();
+                var level = item.Entry.Data.Level;
+                var forLevel = ByLevelIndexed[level];
+                var effects = Extensions.Repeatedly(() => forLevel.RandomItem())
+                    .Distinct()
+                    .Take(rarityEnchCount)
+                    .Shuffle();
 
-            var oldench = effects.First().Enchantment;
-            var key = State.PatchMod.GetNextFormKey();
-            var nrec = State.PatchMod.ObjectEffects.AddNew(key);
-            nrec.DeepCopyIn(effects.First().Enchantment);
-            nrec.EditorID = "HAL_ARMOR_ENCH_" + oldench.EditorID;
-            nrec.Name = rarityName + " " + oldench.Name;
-            nrec.Effects.Clear();
-            nrec.Effects.AddRange(effects.SelectMany(e => e.Enchantment.Effects).Select(e => e.DeepCopy()));
-            nrec.WornRestrictions = effects.First().Enchantment.WornRestrictions;
+                var oldench = effects.First().Enchantment;
+                var key = State.PatchMod.GetNextFormKey();
+                var nrec = State.PatchMod.ObjectEffects.AddNew(key);
+                nrec.DeepCopyIn(effects.First().Enchantment);
+                nrec.EditorID = "HAL_ARMOR_ENCH_" + oldench.EditorID;
+                nrec.Name = rarityName + " " + oldench.Name;
+                nrec.Effects.Clear();
+                nrec.Effects.AddRange(effects.SelectMany(e => e.Enchantment.Effects).Select(e => e.DeepCopy()));
+                nrec.WornRestrictions = effects.First().Enchantment.WornRestrictions;
 
-            string itemName = "";
-            if (!(item.Resolved?.Name?.TryLookup(Language.English, out itemName) ?? false))
-            {
-                itemName = MakeName(item.Resolved.EditorID);
+                string itemName = "";
+                if (!(item.Resolved?.Name?.TryLookup(Language.English, out itemName) ?? false))
+                {
+                    itemName = MakeName(item.Resolved.EditorID);
 
             }
-            var nitm = State.PatchMod.Armors.AddNewLocking(State.PatchMod.GetNextFormKey());
-            nitm.DeepCopyIn(item.Resolved);
-            nitm.EditorID = "HAL_ARMOR_" + nitm.EditorID;
-            nitm.ObjectEffect = nrec.FormKey;
-            nitm.Name = rarityName + " " + itemName + " of " + effects.First().Enchantment.Name;
+            try
+            {
+                var nitm = State.PatchMod.Armors.AddNewLocking(State.PatchMod.GetNextFormKey());
+                nitm.DeepCopyIn(item.Resolved);
+                nitm.EditorID = "HAL_ARMOR_" + nitm.EditorID;
+                nitm.ObjectEffect = nrec.FormKey;
+                nitm.Name = rarityName + " " + itemName + " of " + effects.First().Enchantment.Name;
 
 
 
-            return nitm.FormKey;
+                return nitm.FormKey;
+            }
+            catch (Exception ex)
+            {
+                throw RecordException.Factory(ex, item.Resolved);
+            }
         }
 
         private static char[] Numbers = "123456890".ToCharArray();
