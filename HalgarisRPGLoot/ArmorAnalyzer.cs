@@ -148,14 +148,14 @@ namespace HalgarisRPGLoot
                     {
                         var itm = GenerateEnchantment(ench, e.Name, e.EnchCount);
                         var entry = ench.Entry.DeepCopy();
-                        entry.Data!.Reference = itm;
+                        entry.Data!.Reference.SetTo(itm);
                         nlst.Entries.Add(entry);
                     }
 
                     for (var i = 0; i < e.LLEntries; i++)
                     {
                         var lentry = ench.Entry.DeepCopy();
-                        lentry.Data!.Reference = nlst;
+                        lentry.Data!.Reference.SetTo(nlst);
                         lst.Entries.Add(lentry);
                     }
                 }
@@ -164,7 +164,7 @@ namespace HalgarisRPGLoot
                 for (var i = 0; i < remain; i++)
                 {
                     var lentry = ench.Entry.DeepCopy();
-                    lentry.Data!.Reference = ench.Resolved.FormKey;
+                    lentry.Data!.Reference.SetTo(ench.Resolved);
                     lst.Entries.Add(lentry);
                 }
 
@@ -172,7 +172,7 @@ namespace HalgarisRPGLoot
                 foreach (var entry in olst.Entries!.Where(entry =>
                     entry.Data!.Reference.FormKey == ench.Resolved.FormKey))
                 {
-                    entry.Data!.Reference = lst.FormKey;
+                    entry.Data!.Reference.SetTo(lst);
                 }
             }
         }
@@ -195,7 +195,7 @@ namespace HalgarisRPGLoot
             nrec.Name = rarityName + " " + oldench.Name;
             nrec.Effects.Clear();
             nrec.Effects.AddRange(effects.SelectMany(e => e.Enchantment.Effects).Select(e => e.DeepCopy()));
-            nrec.WornRestrictions = effects.First().Enchantment.WornRestrictions;
+            nrec.WornRestrictions.SetTo(effects.First().Enchantment.WornRestrictions);
 
             string itemName = "";
             if (!(item.Resolved?.Name?.TryLookup(Language.English, out itemName) ?? false))
@@ -206,7 +206,7 @@ namespace HalgarisRPGLoot
             var nitm = State.PatchMod.Armors.AddNewLocking(State.PatchMod.GetNextFormKey());
             nitm.DeepCopyIn(item.Resolved);
             nitm.EditorID = "HAL_ARMOR_" + nitm.EditorID;
-            nitm.ObjectEffect = nrec.FormKey;
+            nitm.ObjectEffect.SetTo(nrec);
             nitm.Name = rarityName + " " + itemName + " of " + effects.First().Enchantment.Name;
 
 
