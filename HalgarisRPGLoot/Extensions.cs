@@ -8,7 +8,7 @@ namespace HalgarisRPGLoot
 {
     public static class Extensions
     {
-        public static Random Random { get; set; } = new Random();
+        public static Random Random { get; set; } = new Random(42);
 
         public static T RandomItem<T>(this T[] itms)
         {
