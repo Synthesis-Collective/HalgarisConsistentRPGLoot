@@ -287,12 +287,9 @@ namespace HalgarisRPGLoot
             nitm.Name = rarityName + " " + itemName + " of " + effects.First().Enchantment.Name;
 
 
-                return nitm.FormKey;
-            }
-            catch (Exception ex)
-            {
-                throw RecordException.Factory(ex, item.Resolved);
-            }
+            return nitm.FormKey;
+            
+
         }
 
         private static char[] Numbers = "123456890".ToCharArray();
