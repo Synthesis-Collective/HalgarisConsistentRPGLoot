@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using Newtonsoft.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Mutagen.Bethesda;
@@ -13,37 +15,59 @@ namespace HalgarisRPGLoot
 {
     public class ArmorAnalyzer
     {
+        private Settings Settings = new Settings();
 
-        public const int MAX_GENERATED_ENCHANTMENTS = 100_000; 
-        
-        public static IEnumerable<(string Name, int EnchCount, int LLEntries)> Rarities = new (string Name, int EnchCount, int LLEntries)[]
-        {
-            ("Magical", 1, 150),
-            ("Rare", 2, 40),
-            ("Epic", 3, 15),
-            ("Legenedary", 4, 2)
-        };
-        
         public IPatcherState<ISkyrimMod, ISkyrimModGetter> State { get; set; }
         public ILeveledItemGetter[] AllLeveledLists { get; set; }
         public ResolvedListItem<IArmorGetter>[] AllListItems { get; set; }
         public ResolvedListItem<IArmorGetter>[] AllEnchantedItems { get; set; }
         public ResolvedListItem<IArmorGetter>[] AllUnenchantedItems { get; set; }
-        
+
+
         public Dictionary<int, ResolvedEnchantment[]> ByLevelIndexed { get; set; }
-        
+
         public Dictionary<FormKey, IObjectEffectGetter> AllObjectEffects { get; set; }
 
 
         public ResolvedEnchantment[] AllEnchantments { get; set; }
         public HashSet<short> AllLevels { get; set; }
-        
+
         public (short Key, ResolvedEnchantment[])[] ByLevel { get; set; }
-        
+      
         
         public ArmorAnalyzer(IPatcherState<ISkyrimMod, ISkyrimModGetter> state)
+
         {
             State = state;
+            LoadSettings();
+        }
+
+        private void LoadSettings()
+        {
+            const string path = "Data/ArmorSettings.json";
+            if (!File.Exists(path))
+            {
+                // Ensure the default settings are saved
+                Settings.InitializeDefault();
+                SaveSettings();
+                return;
+            }
+            using (var file = File.OpenText(path))
+            {
+                var serializer = new JsonSerializer();
+                Settings = (Settings)serializer.Deserialize(file, typeof(Settings));
+            }
+        }
+
+        private void SaveSettings()
+        {
+            const string path = "Data/ArmorSettings.json";
+            Directory.CreateDirectory(Path.GetDirectoryName(path));
+            using (var file = File.CreateText(path))
+            {
+                var serializer = new JsonSerializer();
+                serializer.Serialize(file, Settings);
+            }
         }
 
         public void Analyze()
@@ -55,6 +79,7 @@ namespace HalgarisRPGLoot
                                                                  if (entry?.Data?.Reference.FormKey == default) return default;
                     
                                                                  if (!State.LinkCache.TryResolve<IArmorGetter>(entry.Data.Reference.FormKey,
+
                                                                      out var resolved))
                                                                      return default;
                                                                  return new ResolvedListItem<IArmorGetter>
@@ -71,9 +96,9 @@ namespace HalgarisRPGLoot
                     return !kws.Contains(Skyrim.Keyword.MagicDisallowEnchanting);
                 })
                 .ToArray();
-            
+
             AllUnenchantedItems = AllListItems.Where(e => e.Resolved.ObjectEffect.IsNull).ToArray();
-            
+
             AllEnchantedItems = AllListItems.Where(e => !e.Resolved.ObjectEffect.IsNull).ToArray();
 
             AllObjectEffects = State.LoadOrder.PriorityOrder.ObjectEffect().WinningOverrides()
@@ -97,13 +122,13 @@ namespace HalgarisRPGLoot
                 .ToArray();
 
             AllLevels = AllEnchantments.Select(e => e.Level).Distinct().ToHashSet();
-            
-            
+
+
             ByLevel = AllEnchantments.GroupBy(e => e.Level)
                 .OrderBy(e => e.Key)
                 .Select(e => (e.Key, e.ToArray()))
                 .ToArray();
-            
+
             ByLevelIndexed = Enumerable.Range(0, 100)
                 .Select(lvl => (lvl, ByLevel.Where(bl => bl.Key <= lvl).SelectMany(e => e.Item2).ToArray()))
                 .ToDictionary(kv => kv.lvl, kv => kv.Item2);
@@ -120,10 +145,9 @@ namespace HalgarisRPGLoot
         }
 
         public void Generate()
-        {            
-            var enchantmentsPer = MAX_GENERATED_ENCHANTMENTS / AllUnenchantedItems.Length;
-            var rarityWeight = Rarities.Sum(r => r.LLEntries);
-            
+        {
+            var rand = new Random(Guid.NewGuid().GetHashCode());
+
             foreach (var ench in AllUnenchantedItems)
             {
                 var lst = State.PatchMod.LeveledItems.AddNew(State.PatchMod.GetNextFormKey());
@@ -132,27 +156,34 @@ namespace HalgarisRPGLoot
                 lst.Entries!.Clear();
                 lst.Flags &= ~LeveledItem.Flag.UseAll;
 
-                foreach (var e in Rarities)
-                {
+                // Roll EnchantmentsPer times
+                // use value to assign which Rarities we create
+                var numEntriesPerRarity = GenerateRarityEntryCounts(rand);
 
+                for (int i = 0; i < Settings.Rarities.Count(); i++)
+                {
+                    if (numEntriesPerRarity[i] == 0)
+                    {
+                        // Skip empty rarities...otherwise they will strip our citizens.
+                        continue;
+                    }
+                    var e = Settings.Rarities[i];
+                    var numEntries = numEntriesPerRarity[i];
                     var nlst = State.PatchMod.LeveledItems.AddNew(State.PatchMod.GetNextFormKey());
                     nlst.DeepCopyIn(ench.List);
-                    nlst.EditorID = "HAL_LList_" + e.Name + "_" + ench.Resolved.EditorID;
+                    nlst.EditorID = "HAL_LList_" + e.Label + "_" + ench.Resolved.EditorID;
                     nlst.Entries!.Clear();
                     nlst.Flags &= ~LeveledItem.Flag.UseAll;
 
-                    var numEntries = e.LLEntries * enchantmentsPer / rarityWeight;
-
-
-                    for (var i = 0; i < numEntries; i++)
+                    for (var j = 0; j < numEntries; j++)
                     {
-                        var itm = GenerateEnchantment(ench, e.Name, e.EnchCount);
+                        var itm = GenerateEnchantment(ench, e.Label, e.NumEnchantments);
                         var entry = ench.Entry.DeepCopy();
                         entry.Data!.Reference.SetTo(itm);
                         nlst.Entries.Add(entry);
                     }
 
-                    for (var i = 0; i < e.LLEntries; i++)
+                    for (var j = 0; j < e.LLEntries; j++)
                     {
                         var lentry = ench.Entry.DeepCopy();
                         lentry.Data!.Reference.SetTo(nlst);
@@ -160,7 +191,7 @@ namespace HalgarisRPGLoot
                     }
                 }
 
-                var remain = 240 - Rarities.Sum(e => e.LLEntries);
+                var remain = 240 - Settings.Rarities.Sum(e => e.LLEntries);
                 for (var i = 0; i < remain; i++)
                 {
                     var lentry = ench.Entry.DeepCopy();
@@ -176,6 +207,52 @@ namespace HalgarisRPGLoot
                 }
             }
         }
+
+        private int[] GenerateRarityEntryCounts(Random rand)
+        {
+            var rarityWeight = (float)Settings.Rarities.Sum(r => r.LLEntries);
+            foreach(var rarity in Settings.Rarities)
+            {
+                Console.WriteLine($"{rarity.Label}: Entries - {rarity.LLEntries} Enchantments - {rarity.NumEnchantments}");
+            }
+            Console.WriteLine($"RarityWeight: {rarityWeight}");
+            var spawnChances = Settings.Rarities.Select(r => (float)r.LLEntries).ToList();
+
+            var counts = new int[spawnChances.Count()];
+            if (Settings.UseRNGRarities)
+            {
+                // Precalculate the maximum number in our rolls for each range
+                for (int i = 0; i < spawnChances.Count(); i++)
+                {
+                    for (int j = 0; j < i; j++)
+                    {
+                        spawnChances[i] += spawnChances[j];
+                    }
+                }
+                for (int i = 0; i < Settings.VarietyCountPerItem; i++)
+                {
+                    var v = rand.Next() % rarityWeight;
+                    for (int j = spawnChances.Count() - 1; j >= 0; j--)
+                    {
+                        if (v <= spawnChances[j] && (j == 0 || v > spawnChances[j-1]))
+                        {
+                            counts[j]++;
+                            break;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                for (int j = spawnChances.Count() - 1; j >= 0; j--)
+                {
+                    counts[j] = (int)((spawnChances[j] / rarityWeight) * Settings.VarietyCountPerItem);
+                }
+            }
+
+            return counts;
+        }
+
         private FormKey GenerateEnchantment(
             ResolvedListItem<IArmorGetter> item,
             string rarityName, int rarityEnchCount)
@@ -210,8 +287,12 @@ namespace HalgarisRPGLoot
             nitm.Name = rarityName + " " + itemName + " of " + effects.First().Enchantment.Name;
 
 
-
-            return nitm.FormKey;
+                return nitm.FormKey;
+            }
+            catch (Exception ex)
+            {
+                throw RecordException.Factory(ex, item.Resolved);
+            }
         }
 
         private static char[] Numbers = "123456890".ToCharArray();
@@ -228,7 +309,7 @@ namespace HalgarisRPGLoot
             {
                 if (KnownMapping.TryGetValue(resolvedEditorId, out var cached))
                     return cached;
-                
+
                 var parts = Splitter.Split(resolvedEditorId)
                     .Where(e => e.Length > 1)
                     .Where(e => e != "DLC" && e != "Armor" && e != "Variant")
