@@ -13,15 +13,9 @@ namespace HalgarisRPGLoot
         static async Task<int> Main(string[] args)
         {
             return await SynthesisPipeline.Instance
+                .SetTypicalOpen(GameRelease.SkyrimSE, "HalgariRpgLoot.esp")
                 .AddPatch<ISkyrimMod, ISkyrimModGetter>(RunPatch)
-                .Run(args, new RunPreferences()
-                {
-                    ActionsForEmptyArgs = new RunDefaultPatcher()
-                    {
-                        IdentifyingModKey = "HalgariRpgLoot.esp",
-                        TargetRelease = GameRelease.SkyrimSE,
-                    }
-                });
+                .Run(args);
         }
 
         private static void RunPatch(IPatcherState<ISkyrimMod, ISkyrimModGetter> state)
