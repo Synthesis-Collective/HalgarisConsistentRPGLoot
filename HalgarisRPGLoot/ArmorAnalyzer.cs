@@ -15,7 +15,7 @@ namespace HalgarisRPGLoot
 {
     public class ArmorAnalyzer
     {
-        private Settings Settings = Program.Settings;
+        private ArmorSettings Settings = Program.Settings.ArmorSettings;
 
         public IPatcherState<ISkyrimMod, ISkyrimModGetter> State { get; set; }
         public ILeveledItemGetter[] AllLeveledLists { get; set; }
