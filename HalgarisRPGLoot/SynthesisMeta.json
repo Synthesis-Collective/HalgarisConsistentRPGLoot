@@ -3,7 +3,7 @@
     "Nickname": "HalgarisConsistentRPGLoot",
     "Visibility": "Visible",
     "OneLineDescription": "RPG Loot without reshuffle while patching.",
-    "LongDescription": "This version also generates a settings file you can use to tweak its options to your likings. \n\nFor now If you keep the same settings you will get the same outcome on every patch run (no more missing equipment when loading a save made with an old patch), as this version is using a hardcoded seed now (42). I might add an options menu for inside Synthesis down the line that allows tweaking the options and setting a custom seed. \n\n - Luca|EzioTheDeadPoet",
+    "LongDescription": "This version of RPG loot uses a settings menu to be customized to your liking. It also wil generate consitently as long as you dont alter any of the settings or add armors/clothing/yewelry/weapons to your setup. \n\n - Luca|EzioTheDeadPoet",
     "PreferredAutoVersioning": "Default",
     "RequiredMods": []
 }
