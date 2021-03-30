@@ -15,7 +15,7 @@ namespace HalgarisRPGLoot
 {
     public class ArmorAnalyzer
     {
-        private Settings Settings = new Settings();
+        private ArmorSettings Settings = Program.Settings.ArmorSettings;
 
         public IPatcherState<ISkyrimMod, ISkyrimModGetter> State { get; set; }
         public ILeveledItemGetter[] AllLeveledLists { get; set; }
@@ -39,35 +39,6 @@ namespace HalgarisRPGLoot
 
         {
             State = state;
-            LoadSettings();
-        }
-
-        private void LoadSettings()
-        {
-            const string path = "Data/ArmorSettings.json";
-            if (!File.Exists(path))
-            {
-                // Ensure the default settings are saved
-                Settings.InitializeDefault();
-                SaveSettings();
-                return;
-            }
-            using (var file = File.OpenText(path))
-            {
-                var serializer = new JsonSerializer();
-                Settings = (Settings)serializer.Deserialize(file, typeof(Settings));
-            }
-        }
-
-        private void SaveSettings()
-        {
-            const string path = "Data/ArmorSettings.json";
-            Directory.CreateDirectory(Path.GetDirectoryName(path));
-            using (var file = File.CreateText(path))
-            {
-                var serializer = new JsonSerializer();
-                serializer.Serialize(file, Settings);
-            }
         }
 
         public void Analyze()
