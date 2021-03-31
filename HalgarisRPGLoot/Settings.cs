@@ -20,7 +20,7 @@ namespace HalgarisRPGLoot
         [SynthesisSettingName("Number of variations per Item")]
         [SynthesisTooltip("This determines how many different versions\n" +
                           "of the same Armor you can find.")]
-        public int VarietyCountPerItem = 50;
+        public int VarietyCountPerItem = 8;
         [SynthesisSettingName("Rarity Levels")]
         [SynthesisTooltip("Custom defineable rarity levels")]
         public List<Rarity> Rarities = new List<Rarity>() {
@@ -40,7 +40,7 @@ namespace HalgarisRPGLoot
         [SynthesisSettingName("Number of variations per Item")]
         [SynthesisTooltip("This determines how many different versions\n" +
                           "of the same Weapon you can find.")]
-        public int VarietyCountPerItem = 50;
+        public int VarietyCountPerItem = 8;
         [SynthesisSettingName("Rarity Levels")]
         [SynthesisTooltip("Custom defineable rarity levels")]
         public List<Rarity> Rarities = new List<Rarity>() {
