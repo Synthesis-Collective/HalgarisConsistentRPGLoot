@@ -26,5 +26,3 @@ Settigns:
       - Formula: (LLEntries / AllEntriesForAllItems)* VarietyCountPerItem
 
 - UseRNGRarities: Should the number of varieties per item be randomly selected, or the same for all items? (it is possible to get none of some rarities or all of others, even an even spread)
-
-```
