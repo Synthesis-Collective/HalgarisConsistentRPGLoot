@@ -9,9 +9,9 @@ X.Y.Z:
 - Y - Internal changes that 100% will alter the consistency of the outputs between versions **NEEDS NEW SAVE**.
 - Z - Typos, Minor Bug Fixes or Changes to default settings for NEW users.
 
-## Settings (slightly outdated)
+## Settings
 
-You can use these to customize what it will do when you run Synthesis.
+You can use these to customize how strong the presence of enchanted items is in your game.
 
 Settigns:
 
