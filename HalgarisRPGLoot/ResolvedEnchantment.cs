@@ -1,5 +1,4 @@
-﻿using Mutagen.Bethesda;
-using Mutagen.Bethesda.Skyrim;
+﻿using Mutagen.Bethesda.Skyrim;
 
 namespace HalgarisRPGLoot
 {
