@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using Newtonsoft.Json;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.FormKeys.SkyrimSE;
 using Mutagen.Bethesda.Skyrim;
 using Mutagen.Bethesda.Synthesis;
 using Noggog;
+using Mutagen.Bethesda.Plugins;
+using Mutagen.Bethesda.Plugins.Records;
+using Mutagen.Bethesda.Strings;
+
 
 namespace HalgarisRPGLoot
 {
