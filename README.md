@@ -2,7 +2,7 @@
 
 ## Versioning
 
-Use the `Tag` Versioning in Synthesis to not accidentally break your saves (rolling back *should* work).
+Use the `Tag` Versioning in Synthesis to not accidentally break your saves (rolling back *should* work for fixing it).
 
 `X.Y.Z`:
 - X - Big rework or bigger changes (new settings etc) or a milestone (like me feeling it is finished enough to be called a 1.0 :sweat_smile: ) might **NEED NEW SAVE** (the changes on the releases tab will mention it).
