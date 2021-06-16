@@ -1,5 +1,10 @@
 # HalgarisConsistentRPGLoot 
 
+## What does this Patcher do ?
+
+It adds a lot of enchanted weapons with varying numbers of rarities and effectiveness.
+It is fully customizable. 
+
 ## Versioning
 
 Use the `Tag` Versioning in Synthesis to not accidentally break your saves (rolling back *should* work for fixing it).
