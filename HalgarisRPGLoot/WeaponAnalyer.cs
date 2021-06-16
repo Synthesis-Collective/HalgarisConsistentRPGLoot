@@ -95,12 +95,14 @@ namespace HalgarisRPGLoot
 
             AllLevels = AllEnchantments.Select(e => e.Level).Distinct().ToHashSet();
 
+            short maxLvl = AllListItems.Select(i => i.Entry.Data.Level).Distinct().ToHashSet().Max();
+
             ByLevel = AllEnchantments.GroupBy(e => e.Level)
                 .OrderBy(e => e.Key)
                 .Select(e => (e.Key, e.ToArray()))
                 .ToArray();
 
-            ByLevelIndexed = Enumerable.Range(0, 100)
+            ByLevelIndexed = Enumerable.Range(0, maxLvl+1)
                 .Select(lvl => (lvl, ByLevel.Where(bl => bl.Key <= lvl).SelectMany(e => e.Item2).ToArray()))
                 .ToDictionary(kv => kv.lvl, kv => kv.Item2);
         }
