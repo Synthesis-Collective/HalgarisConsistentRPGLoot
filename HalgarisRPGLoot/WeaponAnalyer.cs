@@ -74,7 +74,7 @@ namespace HalgarisRPGLoot
             AllEnchantedItems = AllListItems.Where(e => !e.Resolved.ObjectEffect.IsNull).ToArray();
 
             AllObjectEffects = State.LoadOrder.PriorityOrder.ObjectEffect().WinningOverrides()
-                .Where(k => !k.Name.ToString().EndsWith("FX")) // Excluding Bound Weapon FX Object Effects as they don't do a thing on non bound weapons. 
+                .Where(x => x.Name != null).Where(k => !k.Name.ToString().EndsWith("FX")) // Excluding Bound Weapon FX Object Effects as they don't do a thing on non bound weapons. 
                 .ToDictionary(k => k.FormKey);
 
             AllEnchantments = AllEnchantedItems
@@ -233,9 +233,10 @@ namespace HalgarisRPGLoot
         {
             var level = item.Entry.Data.Level;
             var forLevel = ByLevelIndexed[level];
+            var takeMin = Math.Min(rarityEnchCount, forLevel.Length);
             var effects = Extensions.Repeatedly(() => forLevel.RandomItem())
                 .Distinct()
-                .Take(rarityEnchCount)
+                .Take(takeMin)
                 .Shuffle();
 
             var oldench = effects.First().Enchantment;
