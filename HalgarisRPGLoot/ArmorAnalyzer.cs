@@ -232,9 +232,10 @@ namespace HalgarisRPGLoot
         {
             var level = item.Entry.Data.Level;
             var forLevel = ByLevelIndexed[level];
+            var takeMin = Math.Min(rarityEnchCount, forLevel.Length);
             var effects = Extensions.Repeatedly(() => forLevel.RandomItem())
                 .Distinct()
-                .Take(rarityEnchCount)
+                .Take(takeMin)
                 .Shuffle();
 
             var oldench = effects.First().Enchantment;
