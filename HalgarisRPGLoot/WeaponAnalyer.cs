@@ -74,6 +74,7 @@ namespace HalgarisRPGLoot
             AllEnchantedItems = AllListItems.Where(e => !e.Resolved.ObjectEffect.IsNull).ToArray();
 
             AllObjectEffects = State.LoadOrder.PriorityOrder.ObjectEffect().WinningOverrides()
+                .Where(k => !k.Name.ToString().EndsWith("FX")) // Excluding Bound Weapon FX Object Effects as they don't do a thing on non bound weapons. 
                 .ToDictionary(k => k.FormKey);
 
             AllEnchantments = AllEnchantedItems
