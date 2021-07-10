@@ -236,7 +236,8 @@ namespace HalgarisRPGLoot
             var effects = Extensions.Repeatedly(() => forLevel.RandomItem())
                 .Distinct()
                 .Take(takeMin)
-                .Shuffle();
+                .Shuffle()
+                .ToArray();
 
             var oldench = effects.First().Enchantment;
             var key = State.PatchMod.GetNextFormKey();
