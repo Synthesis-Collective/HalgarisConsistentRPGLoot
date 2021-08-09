@@ -9,6 +9,8 @@ namespace HalgarisRPGLoot
 {
     public static class Extensions
     {
+        private static EnchantmentLevelSettings LevelSettings = Program.Settings.EnchantmentLevelSettings;
+
         public static Random Random { get; set; } = new Random(Program.Settings.RandomSeed);
 
         public static T RandomItem<T>(this T[] itms)
@@ -43,6 +45,82 @@ namespace HalgarisRPGLoot
             lock (itms)
             {
                 return itms.AddNew(val);
+            }
+        }
+
+        public static Exception IncompatibleLoadOrderException
+        {
+            get
+            {
+                return IncompatibleLoadOrderException;
+            }
+        }
+
+        public static ResolvedEnchantment[] GetEffects(Dictionary<int, ResolvedEnchantment[]> ByLevelIndexed, int rarityEnchCount, int level)
+        {
+
+            {
+                switch (LevelSettings.PreferredLevel)
+                {
+                    case PreferredLevel.Lower:
+                        //while (effectFound.Equals(false))
+                        for (int i = 0; ByLevelIndexed.Count.Equals(i); i++)
+                        {
+                            var forLevel = ByLevelIndexed[level - i];
+                            if (forLevel.Length > 0)
+                            {
+                                //effectFound = true;
+                                var takeMin = Math.Min(rarityEnchCount, forLevel.Length);
+                                return Extensions.Repeatedly(() => forLevel.RandomItem())
+                                    .Distinct()
+                                    .Take(takeMin)
+                                    .Shuffle()
+                                    .ToArray();
+                            }
+                            forLevel = ByLevelIndexed[level + i];
+                            if (forLevel.Length > 0)
+                            {
+                                //effectFound = true;
+                                var takeMin = Math.Min(rarityEnchCount, forLevel.Length);
+                                return Extensions.Repeatedly(() => forLevel.RandomItem())
+                                    .Distinct()
+                                    .Take(takeMin)
+                                    .Shuffle()
+                                    .ToArray();
+                            }
+
+                        }
+                        throw IncompatibleLoadOrderException;
+                    case PreferredLevel.Higher:
+                        //while (effectFound.Equals(false))
+                        for (int i = 0; ByLevelIndexed.Count.Equals(i); i++)
+                        {
+                            var forLevel = ByLevelIndexed[level + i];
+                            if (forLevel.Length > 0)
+                            {
+                                //effectFound = true;
+                                var takeMin  = Math.Min(rarityEnchCount, forLevel.Length);
+                                return Extensions.Repeatedly(() => forLevel.RandomItem())
+                                    .Distinct()
+                                    .Take(takeMin)
+                                    .Shuffle()
+                                    .ToArray();
+                            }
+                            forLevel = ByLevelIndexed[level - i];
+                            if (forLevel.Length > 0)
+                            {
+                                //effectFound = true;
+                                var takeMin  = Math.Min(rarityEnchCount, forLevel.Length);
+                                return Extensions.Repeatedly(() => forLevel.RandomItem())
+                                    .Distinct()
+                                    .Take(takeMin)
+                                    .Shuffle()
+                                    .ToArray();
+                            }
+                        }
+                        throw IncompatibleLoadOrderException;
+                }
+                throw IncompatibleLoadOrderException;
             }
         }
     }

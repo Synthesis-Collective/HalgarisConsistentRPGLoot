@@ -233,84 +233,8 @@ namespace HalgarisRPGLoot
             string rarityName, int rarityEnchCount)
         {
             var level = item.Entry.Data.Level;
-            var forLevel = ByLevelIndexed[level];
-            var takeMin = Math.Min(rarityEnchCount, forLevel.Length);
-            var effects = Extensions.Repeatedly(() => forLevel.RandomItem())
-                .Distinct()
-                .Take(takeMin)
-                .Shuffle()
-                .ToArray();
 
-            //bool effectFound = false;
-            //int i = 0;
-            if (effects.Length == 0)
-            {
-                switch (LevelSettings.PreferredLevel)
-                {
-                    case PreferredLevel.Lower:
-                        //while (effectFound.Equals(false))
-                        for (int i = 0; ByLevelIndexed.Count.Equals(i); i++)
-                        {
-                            forLevel = ByLevelIndexed[level - i];
-                            if (forLevel.Length > 0)
-                            {
-                                //effectFound = true;
-                                takeMin = Math.Min(rarityEnchCount, forLevel.Length);
-                                effects = Extensions.Repeatedly(() => forLevel.RandomItem())
-                                    .Distinct()
-                                    .Take(takeMin)
-                                    .Shuffle()
-                                    .ToArray();
-                                break;
-                            }
-                            forLevel = ByLevelIndexed[level + i];
-                            if (forLevel.Length > 0)
-                            {
-                                //effectFound = true;
-                                takeMin = Math.Min(rarityEnchCount, forLevel.Length);
-                                effects = Extensions.Repeatedly(() => forLevel.RandomItem())
-                                    .Distinct()
-                                    .Take(takeMin)
-                                    .Shuffle()
-                                    .ToArray();
-                                break;
-                            }
-
-                        }
-                        break;
-                    case PreferredLevel.Higher:
-                        //while (effectFound.Equals(false))
-                        for (int i = 0; ByLevelIndexed.Count.Equals(i); i++)
-                        {
-                            forLevel = ByLevelIndexed[level + i];
-                            if (forLevel.Length > 0)
-                            {
-                                //effectFound = true;
-                                takeMin = Math.Min(rarityEnchCount, forLevel.Length);
-                                effects = Extensions.Repeatedly(() => forLevel.RandomItem())
-                                    .Distinct()
-                                    .Take(takeMin)
-                                    .Shuffle()
-                                    .ToArray();
-                                break;
-                            }
-                            forLevel = ByLevelIndexed[level - i];
-                            if (forLevel.Length > 0)
-                            {
-                                //effectFound = true;
-                                takeMin = Math.Min(rarityEnchCount, forLevel.Length);
-                                effects = Extensions.Repeatedly(() => forLevel.RandomItem())
-                                    .Distinct()
-                                    .Take(takeMin)
-                                    .Shuffle()
-                                    .ToArray();
-                                break;
-                            }
-
-                        }
-                        break;
-                }
-            }
+            ResolvedEnchantment[] effects = Extensions.GetEffects(ByLevelIndexed,rarityEnchCount,level);
 
             var oldench = effects.First().Enchantment;
             var key = State.PatchMod.GetNextFormKey();
