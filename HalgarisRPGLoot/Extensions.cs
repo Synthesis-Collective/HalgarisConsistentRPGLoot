@@ -9,8 +9,6 @@ namespace HalgarisRPGLoot
 {
     public static class Extensions
     {
-        private static EnchantmentLevelSettings LevelSettings = Program.Settings.EnchantmentLevelSettings;
-
         public static Random Random { get; set; } = new Random(Program.Settings.RandomSeed);
 
         public static T RandomItem<T>(this T[] itms)

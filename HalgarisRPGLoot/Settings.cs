@@ -7,27 +7,9 @@ namespace HalgarisRPGLoot
     {
         public int RandomSeed = 42;
 
-        [SynthesisSettingName("Leveled Enchantment Settings")]
-        [SynthesisTooltip("If the Patcher encounters an weapon in a Leveled List Level\n" +
-            "that has no enchantments attached, then the patcher needs to\n" +
-            "find the enchantment with the closest level,\n" +
-            "these settings allow to control the rules applied it the search.")]
-        public EnchantmentLevelSettings EnchantmentLevelSettings = new EnchantmentLevelSettings();
         public ArmorSettings ArmorSettings = new ArmorSettings();
         public WeaponSettings WeaponSettings = new WeaponSettings();
 
-    }
-
-    public class EnchantmentLevelSettings
-    {
-        //[SynthesisSettingName("SearchMode")]
-        //[SynthesisTooltip("Closest Level: Searches for the closest level enchantment in higher and lower levels." +
-        //    "\nOnlyHigherLevel: Only searches in the higher levels for enchantments." +
-        //    "\nOnlyLowerLevel: Only searches in the lower levels for enchantments.")]
-        //public SearchMode SearchMode{ get; set; } = SearchMode.ClosestLevel;
-        [SynthesisSettingName("Preferred Level")]
-        [SynthesisTooltip("If you prefer the higher or lower leveled enchantment, if both are equally close.")]
-        public PreferredLevel PreferredLevel { get; set; } = PreferredLevel.Higher;
     }
 
     public class ArmorSettings

@@ -17,7 +17,6 @@ namespace HalgarisRPGLoot
     public class WeaponAnalyzer
     {
         private WeaponSettings Settings = Program.Settings.WeaponSettings;
-        private EnchantmentLevelSettings LevelSettings = Program.Settings.EnchantmentLevelSettings;
 
         public IPatcherState<ISkyrimMod, ISkyrimModGetter> State { get; set; }
         public ILeveledItemGetter[] AllLeveledLists { get; set; }
