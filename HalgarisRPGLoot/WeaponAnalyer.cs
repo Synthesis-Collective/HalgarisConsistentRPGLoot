@@ -17,6 +17,7 @@ namespace HalgarisRPGLoot
     public class WeaponAnalyzer
     {
         private WeaponSettings Settings = Program.Settings.WeaponSettings;
+        private EnchantmentLevelSettings LevelSettings = Program.Settings.EnchantmentLevelSettings;
 
         public IPatcherState<ISkyrimMod, ISkyrimModGetter> State { get; set; }
         public ILeveledItemGetter[] AllLeveledLists { get; set; }
@@ -239,6 +240,71 @@ namespace HalgarisRPGLoot
                 .Take(takeMin)
                 .Shuffle()
                 .ToArray();
+
+            bool effectFound = false;
+            int i = 0;
+            if (effects.Length == 0)
+            {
+                switch (LevelSettings.PreferredLevel)
+                {
+                    case PreferredLevel.Higher:
+                        while (effectFound == false)
+                        {
+                            forLevel = ByLevelIndexed[level - i];
+                            if (forLevel.Length > 0)
+                            {
+                                effectFound = true;
+                                takeMin = Math.Min(rarityEnchCount, forLevel.Length);
+                                effects = Extensions.Repeatedly(() => forLevel.RandomItem())
+                                    .Distinct()
+                                    .Take(takeMin)
+                                    .Shuffle()
+                                    .ToArray();
+                            }
+                            forLevel = ByLevelIndexed[level + i];
+                            if (forLevel.Length > 0)
+                            {
+                                effectFound = true;
+                                takeMin = Math.Min(rarityEnchCount, forLevel.Length);
+                                effects = Extensions.Repeatedly(() => forLevel.RandomItem())
+                                    .Distinct()
+                                    .Take(takeMin)
+                                    .Shuffle()
+                                    .ToArray();
+                            }
+
+                        }
+                        break;
+                    case PreferredLevel.Lower:
+                        while (effectFound == false)
+                        {
+                            forLevel = ByLevelIndexed[level + i];
+                            if (forLevel.Length > 0)
+                            {
+                                effectFound = true;
+                                takeMin = Math.Min(rarityEnchCount, forLevel.Length);
+                                effects = Extensions.Repeatedly(() => forLevel.RandomItem())
+                                    .Distinct()
+                                    .Take(takeMin)
+                                    .Shuffle()
+                                    .ToArray();
+                            }
+                            forLevel = ByLevelIndexed[level - i];
+                            if (forLevel.Length > 0)
+                            {
+                                effectFound = true;
+                                takeMin = Math.Min(rarityEnchCount, forLevel.Length);
+                                effects = Extensions.Repeatedly(() => forLevel.RandomItem())
+                                    .Distinct()
+                                    .Take(takeMin)
+                                    .Shuffle()
+                                    .ToArray();
+                            }
+
+                        }
+                        break;
+                }
+            }
 
             var oldench = effects.First().Enchantment;
             var key = State.PatchMod.GetNextFormKey();
