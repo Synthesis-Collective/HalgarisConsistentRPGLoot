@@ -240,64 +240,70 @@ namespace HalgarisRPGLoot
                 .Shuffle()
                 .ToArray();
 
-            bool effectFound = false;
-            int i = 0;
+            //bool effectFound = false;
+            //int i = 0;
             if (effects.Length == 0)
             {
                 switch (LevelSettings.PreferredLevel)
                 {
-                    case PreferredLevel.Higher:
-                        while (effectFound == false)
+                    case PreferredLevel.Lower:
+                        //while (effectFound.Equals(false))
+                        for (int i = 0; ByLevelIndexed.Count.Equals(i); i++)
                         {
                             forLevel = ByLevelIndexed[level - i];
                             if (forLevel.Length > 0)
                             {
-                                effectFound = true;
+                                //effectFound = true;
                                 takeMin = Math.Min(rarityEnchCount, forLevel.Length);
                                 effects = Extensions.Repeatedly(() => forLevel.RandomItem())
                                     .Distinct()
                                     .Take(takeMin)
                                     .Shuffle()
                                     .ToArray();
+                                break;
                             }
                             forLevel = ByLevelIndexed[level + i];
                             if (forLevel.Length > 0)
                             {
-                                effectFound = true;
+                                //effectFound = true;
                                 takeMin = Math.Min(rarityEnchCount, forLevel.Length);
                                 effects = Extensions.Repeatedly(() => forLevel.RandomItem())
                                     .Distinct()
                                     .Take(takeMin)
                                     .Shuffle()
                                     .ToArray();
+                                break;
                             }
 
                         }
                         break;
-                    case PreferredLevel.Lower:
-                        while (effectFound == false)
+                    case PreferredLevel.Higher:
+                        //while (effectFound.Equals(false))
+                        for (int i = 0; ByLevelIndexed.Count.Equals(i); i++)
                         {
                             forLevel = ByLevelIndexed[level + i];
                             if (forLevel.Length > 0)
                             {
-                                effectFound = true;
+                                //effectFound = true;
                                 takeMin = Math.Min(rarityEnchCount, forLevel.Length);
                                 effects = Extensions.Repeatedly(() => forLevel.RandomItem())
                                     .Distinct()
                                     .Take(takeMin)
                                     .Shuffle()
                                     .ToArray();
+                                break;
                             }
                             forLevel = ByLevelIndexed[level - i];
                             if (forLevel.Length > 0)
                             {
-                                effectFound = true;
+                                //effectFound = true;
                                 takeMin = Math.Min(rarityEnchCount, forLevel.Length);
                                 effects = Extensions.Repeatedly(() => forLevel.RandomItem())
                                     .Distinct()
                                     .Take(takeMin)
                                     .Shuffle()
                                     .ToArray();
+                                break;
                             }
 
                         }
