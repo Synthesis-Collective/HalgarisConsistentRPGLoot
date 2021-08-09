@@ -7,7 +7,7 @@ namespace HalgarisRPGLoot
     {
         public int RandomSeed = 42;
 
-        [SynthesisSettingName("Enchantment Level Settings")]
+        [SynthesisSettingName("Leveled Enchantment Settings")]
         [SynthesisTooltip("If the Patcher encounters an weapon in a Leveled List Level\n" +
             "that has no enchantments attached, then the patcher needs to\n" +
             "find the enchantment with the closest level,\n" +
