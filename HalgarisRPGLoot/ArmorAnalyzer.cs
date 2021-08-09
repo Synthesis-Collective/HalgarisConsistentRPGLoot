@@ -233,7 +233,79 @@ namespace HalgarisRPGLoot
         {
             var level = item.Entry.Data.Level;
 
-            ResolvedEnchantment[] effects = Extensions.GetEffects(ByLevelIndexed, rarityEnchCount, level);
+            var forLevel = ByLevelIndexed[level];
+            var takeMin = Math.Min(rarityEnchCount, forLevel.Length);
+            var effects = Extensions.Repeatedly(() => forLevel.RandomItem())
+                .Distinct()
+                .Take(takeMin)
+                .Shuffle()
+                .ToArray();
+
+            bool effectFound = false;
+            int i = 0;
+
+            if (effects.Length == 0)
+            {
+                switch (LevelSettings.PreferredLevel)
+                {
+                    case PreferredLevel.Higher:
+                        while (effectFound == false)
+                        {
+                            forLevel = ByLevelIndexed[level - i];
+                            if (forLevel.Length > 0)
+                            {
+                                effectFound = true;
+                                takeMin = Math.Min(rarityEnchCount, forLevel.Length);
+                                effects = Extensions.Repeatedly(() => forLevel.RandomItem())
+                                    .Distinct()
+                                    .Take(takeMin)
+                                    .Shuffle()
+                                    .ToArray();
+                            }
+                            forLevel = ByLevelIndexed[level + i];
+                            if (forLevel.Length > 0)
+                            {
+                                effectFound = true;
+                                takeMin = Math.Min(rarityEnchCount, forLevel.Length);
+                                effects = Extensions.Repeatedly(() => forLevel.RandomItem())
+                                    .Distinct()
+                                    .Take(takeMin)
+                                    .Shuffle()
+                                    .ToArray();
+                            }
+
+                        }
+                        break;
+                    case PreferredLevel.Lower:
+                        while (effectFound == false)
+                        {
+                            forLevel = ByLevelIndexed[level + i];
+                            if (forLevel.Length > 0)
+                            {
+                                effectFound = true;
+                                takeMin = Math.Min(rarityEnchCount, forLevel.Length);
+                                effects = Extensions.Repeatedly(() => forLevel.RandomItem())
+                                    .Distinct()
+                                    .Take(takeMin)
+                                    .Shuffle()
+                                    .ToArray();
+                            }
+                            forLevel = ByLevelIndexed[level - i];
+                            if (forLevel.Length > 0)
+                            {
+                                effectFound = true;
+                                takeMin = Math.Min(rarityEnchCount, forLevel.Length);
+                                effects = Extensions.Repeatedly(() => forLevel.RandomItem())
+                                    .Distinct()
+                                    .Take(takeMin)
+                                    .Shuffle()
+                                    .ToArray();
+                            }
+
+                        }
+                        break;
+                }
+            }
 
             var oldench = effects.First().Enchantment;
             var key = State.PatchMod.GetNextFormKey();
