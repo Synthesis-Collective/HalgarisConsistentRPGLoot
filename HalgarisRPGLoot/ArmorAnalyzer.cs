@@ -150,6 +150,10 @@ namespace HalgarisRPGLoot
 
                     for (var j = 0; j < numEntries; j++)
                     {
+                        var level = ench.Entry.Data.Level;
+                        var forLevel = ByLevelIndexed[level];
+                        if (forLevel.Length.Equals(0))continue;
+
                         var itm = GenerateEnchantment(ench, e.Label, e.NumEnchantments);
                         var entry = ench.Entry.DeepCopy();
                         entry.Data!.Reference.SetTo(itm);
@@ -194,7 +198,7 @@ namespace HalgarisRPGLoot
             var counts = new int[spawnChances.Count()];
             if (Settings.UseRNGRarities)
             {
-                // Precalculate the maximum number in our rolls for each range
+                // Calculate the maximum number in our rolls for each range
                 for (int i = 0; i < spawnChances.Count(); i++)
                 {
                     for (int j = 0; j < i; j++)
@@ -231,6 +235,7 @@ namespace HalgarisRPGLoot
             string rarityName, int rarityEnchCount)
         {
             var level = item.Entry.Data.Level;
+
             var forLevel = ByLevelIndexed[level];
             var takeMin = Math.Min(rarityEnchCount, forLevel.Length);
             var effects = Extensions.Repeatedly(() => forLevel.RandomItem())

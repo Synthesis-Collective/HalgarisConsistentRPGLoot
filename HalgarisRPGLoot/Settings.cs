@@ -11,11 +11,12 @@ namespace HalgarisRPGLoot
         public WeaponSettings WeaponSettings = new WeaponSettings();
 
     }
+
     public class ArmorSettings
     {
         [SynthesisSettingName("Number of variations per Item")]
         [SynthesisTooltip("This determines how many different versions\n" +
-                          "of the same Armor you can find.")]
+            "of the same Armor you can find.")]
         public int VarietyCountPerItem = 8;
         [SynthesisSettingName("Rarity Levels")]
         [SynthesisTooltip("Custom defineable rarity levels")]
@@ -35,7 +36,7 @@ namespace HalgarisRPGLoot
     {
         [SynthesisSettingName("Number of variations per Item")]
         [SynthesisTooltip("This determines how many different versions\n" +
-                          "of the same Weapon you can find.")]
+            "of the same Weapon you can find.")]
         public int VarietyCountPerItem = 8;
         [SynthesisSettingName("Rarity Levels")]
         [SynthesisTooltip("Custom defineable rarity levels")]
@@ -47,7 +48,7 @@ namespace HalgarisRPGLoot
                 };
         [SynthesisSettingName("Use RNGRarity")]
         [SynthesisTooltip("With this set to true the number of variations\n" +
-                          "per item will be randomised.")]
+            "per item will be randomised.")]
         public bool UseRNGRarities = true;
     }
 
@@ -61,4 +62,19 @@ namespace HalgarisRPGLoot
         [SynthesisTooltip("The higher the number the more common it is.")]
         public int LLEntries;
     }
+
+    public enum SearchMode
+    {
+        ClosestLevel,
+        OnlyHigherLevel,
+        OnlyLowerLevel
+        
+    }
+
+    public enum PreferredLevel
+    {
+        Higher,
+        Lower
+    }
+
 }

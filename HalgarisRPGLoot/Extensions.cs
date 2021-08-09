@@ -45,5 +45,13 @@ namespace HalgarisRPGLoot
                 return itms.AddNew(val);
             }
         }
+
+        public static Exception IncompatibleLoadOrderException
+        {
+            get
+            {
+                return IncompatibleLoadOrderException;
+            }
+        }
     }
 }
