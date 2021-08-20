@@ -18,6 +18,8 @@ namespace HalgarisRPGLoot
     {
         private WeaponSettings Settings = Program.Settings.WeaponSettings;
 
+        private static Random r = new Random(Program.Settings.RandomSeed);
+
         public IPatcherState<ISkyrimMod, ISkyrimModGetter> State { get; set; }
         public ILeveledItemGetter[] AllLeveledLists { get; set; }
         public ResolvedListItem<IWeaponGetter>[] AllListItems { get; set; }
@@ -34,13 +36,26 @@ namespace HalgarisRPGLoot
         public Dictionary<FormKey, IObjectEffectGetter> AllObjectEffects { get; set; }
 
 
+        public SortedList<String, ResolvedEnchantment[]>[] AllRPGEnchants { get; set; }
+        public Dictionary<String, FormKey>[] ChosenRPGEnchants { get; set; }
 
 
         public WeaponAnalyzer(IPatcherState<ISkyrimMod, ISkyrimModGetter> state)
 
         {
             State = state;
+            AllRPGEnchants = new SortedList<String, ResolvedEnchantment[]>[Settings.Rarities.Count()];
+            for (int i = 0; i < AllRPGEnchants.Length; i++)
+            {
+                AllRPGEnchants[i] = new SortedList<String, ResolvedEnchantment[]>();
+            }
+            ChosenRPGEnchants = new Dictionary<String, FormKey>[Settings.Rarities.Count()];
+            for (int i = 0; i < ChosenRPGEnchants.Length; i++)
+            {
+                ChosenRPGEnchants[i] = new Dictionary<String, FormKey>();
+            }
         }
+
 
         public void Analyze()
         {
@@ -106,14 +121,157 @@ namespace HalgarisRPGLoot
             ByLevelIndexed = Enumerable.Range(0, maxLvl+1)
                 .Select(lvl => (lvl, ByLevel.Where(bl => bl.Key <= lvl).SelectMany(e => e.Item2).ToArray()))
                 .ToDictionary(kv => kv.lvl, kv => kv.Item2);
+
+            //Random r = new Random(Program.Settings.RandomSeed);
+
+            for (int coreEnchant = 0; coreEnchant < AllEnchantments.Length; coreEnchant++)
+            {
+                for (int i = 0; i < AllRPGEnchants.Length; i++)
+                {
+
+                    //var level = item.Entry.Data.Level;
+
+                    var forLevel = AllEnchantments;
+                    var takeMin = Math.Min(Settings.Rarities[i].NumEnchantments, forLevel.Length);
+                    var enchs = new ResolvedEnchantment[takeMin];
+                    enchs[0] = AllEnchantments[coreEnchant];
+
+                    int[] result = new int[takeMin];
+                    for (int j = 0; i < takeMin; ++i)
+                        result[i] = i;
+
+                    for (int t = takeMin; t < AllEnchantments.Length; ++t)
+                    {
+                        int m = r.Next(0, t + 1);
+                        if (m < takeMin)
+                        {
+                            result[m] = t;
+                            if(t == coreEnchant)
+                            {
+                                result[m] = result[0];
+                                result[0] = t;
+                            }
+                        }
+                    }
+                    if(result[0] != coreEnchant)
+                    {
+                        result[0] = coreEnchant;
+                    }
+                    for(int len = 0; len < takeMin; len++)
+                    {
+                        enchs[len] = AllEnchantments[result[len]];
+                    }
+                    /*
+                    ExtendedList<Effect> effects = new ExtendedList<Effect>();
+                    effects.Clear();
+                    effects.AddRange(enchs.SelectMany(e => e.Enchantment.Effects).Select(e => e.DeepCopy()));*/
+
+                    var oldench = enchs.First().Enchantment;
+                    /*var key = State.PatchMod.GetNextFormKey();
+                    var nrec = State.PatchMod.ObjectEffects.AddNewLocking(key);
+                    nrec.DeepCopyIn(enchs.First().Enchantment);
+                    nrec.EditorID = "HAL_WEAPON_ENCH_" + oldench.EditorID;
+                    nrec.Name = Settings.Rarities[i].Label + " " + oldench.Name;
+                    nrec.Effects.Clear();
+                    nrec.Effects.AddRange(effects.SelectMany(e => e.Enchantment.Effects).Select(e => e.DeepCopy()));
+                    nrec.WornRestrictions.SetTo(effects.First().Enchantment.WornRestrictions);*/
+                    if (!AllRPGEnchants[i].ContainsKey(Settings.Rarities[i].Label + " " + oldench.Name))
+                    {
+                        AllRPGEnchants[i].Add(Settings.Rarities[i].Label + " " + oldench.Name, enchs);
+                    }
+                }
+            }
+
         }
 
-        public void Report()
+        private FormKey newGenerateEnchantment(
+            ResolvedListItem<IWeaponGetter> item,
+            int rarity)
         {
-            Console.WriteLine($"Found: {AllLeveledLists.Length} leveled lists");
-            Console.WriteLine($"Found: {AllListItems.Length} items");
-            Console.WriteLine($"Found: {AllUnenchantedItems.Length} un-enchanted items");
-            Console.WriteLine($"Found: {AllEnchantedItems.Length} enchanted items");
+            int rarityEnchCount = Settings.Rarities[rarity].NumEnchantments;
+            
+            var level = item.Entry.Data.Level;
+
+            var forLevel = ByLevelIndexed[level];
+            var takeMin = Math.Min(rarityEnchCount, forLevel.Length);
+            var array = AllRPGEnchants[rarity].ToArray();
+            var effects = array.ElementAt(r.Next(0, AllRPGEnchants.Length)).Value;
+
+            var oldench = effects.First().Enchantment;
+
+            if (ChosenRPGEnchants[rarity].ContainsKey(Settings.Rarities[rarity].Label + " " + oldench.Name))
+            {
+                return ChosenRPGEnchants[rarity].GetValueOrDefault(Settings.Rarities[rarity].Label + " " + oldench.Name);
+            }
+
+            var key = State.PatchMod.GetNextFormKey();
+            var nrec = State.PatchMod.ObjectEffects.AddNewLocking(key);
+            nrec.DeepCopyIn(effects.First().Enchantment);
+            nrec.EditorID = "HAL_WEAPON_ENCH_" + oldench.EditorID;
+            nrec.Name = Settings.Rarities[rarity].Label + " " + oldench.Name;
+            nrec.Effects.Clear();
+            nrec.Effects.AddRange(effects.SelectMany(e => e.Enchantment.Effects).Select(e => e.DeepCopy()));
+            nrec.WornRestrictions.SetTo(effects.First().Enchantment.WornRestrictions);
+
+            ChosenRPGEnchants[rarity].Add(Settings.Rarities[rarity].Label + " " + oldench.Name, nrec.FormKey);
+
+            string itemName = "";
+            if (!(item.Resolved?.Name?.TryLookup(Language.English, out itemName) ?? false))
+            {
+                itemName = MakeName(item.Resolved.EditorID);
+            }
+
+            var nitm = State.PatchMod.Weapons.AddNewLocking(State.PatchMod.GetNextFormKey());
+            nitm.DeepCopyIn(item.Resolved);
+            nitm.EditorID = "HAL_WEAPON_" + nitm.EditorID;
+            nitm.ObjectEffect.SetTo(nrec);
+            nitm.EnchantmentAmount = (ushort)effects.Where(e => e.Amount.HasValue).Sum(e => e.Amount.Value);
+            nitm.Name = Settings.Rarities[rarity].Label + " " + itemName + " of " + effects.First().Enchantment.Name;
+
+
+
+            return nitm.FormKey;
+        }
+
+        public void newGenerate()
+        {
+            foreach (var ench in AllUnenchantedItems)
+            {
+                var lst = State.PatchMod.LeveledItems.AddNewLocking(State.PatchMod.GetNextFormKey());
+                lst.DeepCopyIn(ench.List);
+                lst.EditorID = "HAL_TOP_LList" + ench.Resolved.EditorID;
+                lst.Entries!.Clear();
+                lst.Flags &= ~LeveledItem.Flag.UseAll;
+                for(int i = 0; i < Settings.VarietyCountPerItem; i++)
+                {
+                    var level = ench.Entry.Data.Level;
+                    var forLevel = ByLevelIndexed[level];
+                    if (forLevel.Length.Equals(0)) continue;
+
+                    var itm = newGenerateEnchantment(ench, randomRarity());
+                    var entry = ench.Entry.DeepCopy();
+                    entry.Data!.Reference.SetTo(itm);
+                    lst.Entries.Add(entry);
+                }
+
+            }
+        }
+
+        public int randomRarity()
+        {
+            int rar = 0;
+            int total = 0;
+            for(int i = 0; i < Settings.Rarities.Count; i++)
+            {
+                total += Settings.Rarities[i].LLEntries;
+            }
+            int roll = r.Next(0, total);
+            while(roll > Settings.Rarities[rar].LLEntries && rar < Settings.Rarities.Count)
+            {
+                roll -= Settings.Rarities[rar].LLEntries;
+                rar++;
+            }
+            return rar;
         }
 
         public void Generate()
@@ -151,7 +309,7 @@ namespace HalgarisRPGLoot
                         var forLevel = ByLevelIndexed[level];
                         if (forLevel.Length.Equals(0)) continue;
 
-                        var itm = GenerateEnchantment(ench, e.Label, e.NumEnchantments);
+                        var itm = newGenerateEnchantment(ench, i);
                         var entry = ench.Entry.DeepCopy();
                         entry.Data!.Reference.SetTo(itm);
                         nlst.Entries.Add(entry);
@@ -190,6 +348,7 @@ namespace HalgarisRPGLoot
         private int[] GenerateRarityEntryCounts(Random rand)
         {
             var rarityWeight = (float)Settings.Rarities.Sum(r => r.LLEntries);
+            Console.WriteLine($"Weapon Rarities: {Settings.Rarities.Count()}");
             foreach (var rarity in Settings.Rarities)
             {
                 Console.WriteLine($"{rarity.Label}: Entries - {rarity.LLEntries} Enchantments - {rarity.NumEnchantments}");

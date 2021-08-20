@@ -44,7 +44,7 @@ namespace HalgarisRPGLoot
             armor.Generate();
             
             Console.WriteLine("Generating weapon enchantments");
-            weapon.Generate();
+            weapon.newGenerate();
             
         }
     }
