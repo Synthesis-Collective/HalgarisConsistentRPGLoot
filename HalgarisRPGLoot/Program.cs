@@ -28,20 +28,20 @@ namespace HalgarisRPGLoot
 
         private static void RunPatch(IPatcherState<ISkyrimMod, ISkyrimModGetter> state)
         {
-            var armor  = new ArmorAnalyzer(state);
+            //var armor  = new ArmorAnalyzer(state);
             var weapon = new WeaponAnalyzer(state);
             
             Console.WriteLine("Analyzing mod list");
-            var th1 = new Thread(() => armor.Analyze());
+            //var th1 = new Thread(() => armor.Analyze());
             var th2 = new Thread(() => weapon.Analyze());
             
-            th1.Start();
+            //th1.Start();
             th2.Start();
-            th1.Join();
+            //th1.Join();
             th2.Join();
             
             Console.WriteLine("Generating armor enchantments");
-            armor.Generate();
+            //armor.Generate();
             
             Console.WriteLine("Generating weapon enchantments");
             weapon.newGenerate();
