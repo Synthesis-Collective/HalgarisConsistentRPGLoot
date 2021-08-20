@@ -1,8 +1,8 @@
   
 {
-    "Nickname": "HalgarisConsistentRPGLoot",
+    "Nickname": "HalgarisConsistentUniqueRPGLoot",
     "Visibility": "Visible",
-    "OneLineDescription": "RPG Loot without reshuffle while patching.",
+    "OneLineDescription": "RPG Loot without reshuffle while patching and without duplicate enchantments.",
     "LongDescription": "This version of RPG loot uses a settings menu to be customized to your liking. It also wil generate consitently as long as you dont alter any of the settings or add armors/clothing/yewelry/weapons to your setup. \n\n - Luca|EzioTheDeadPoet",
     "PreferredAutoVersioning": "Default",
     "RequiredMods": []
