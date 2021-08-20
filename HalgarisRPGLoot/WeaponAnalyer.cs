@@ -180,7 +180,7 @@ namespace HalgarisRPGLoot
 
         }
 
-        private FormKey newGenerateEnchantment( int rarity)
+        private FormKey GenerateEnchantment( int rarity)
         {
             int rarityEnchCount = Settings.Rarities[rarity].NumEnchantments;
             var takeMin = Math.Min(rarityEnchCount, AllRPGEnchants[rarity].Count);
@@ -220,10 +220,10 @@ namespace HalgarisRPGLoot
             }
 
             var nitm = State.PatchMod.Weapons.AddNewLocking(State.PatchMod.GetNextFormKey());
-            var nrec = newGenerateEnchantment(rarity);
+            var nrec = GenerateEnchantment(rarity);
             var effects = ChosenRPGEnchantEffects[rarity].GetValueOrDefault(nrec);
             nitm.DeepCopyIn(item.Resolved);
-            nitm.EditorID = "HAL_WEAPON_" + Settings.Rarities[rarity].Label.ToUpper() + "_" + nitm.EditorID;
+            nitm.EditorID = "HAL_WEAPON_" + Settings.Rarities[rarity].Label.ToUpper() + "_" + nitm.EditorID + "_"+ nrec.IDString();
             nitm.ObjectEffect.SetTo(nrec);
             nitm.EnchantmentAmount = (ushort)effects.Where(e => e.Amount.HasValue).Sum(e => e.Amount.Value);
             nitm.Name = Settings.Rarities[rarity].Label + " " + itemName + " of " + effects.First().Enchantment.Name;
@@ -233,7 +233,7 @@ namespace HalgarisRPGLoot
             return nitm.FormKey;
         }
 
-            public void newGenerate()
+            public void Generate()
         {
             foreach (var ench in AllUnenchantedItems)
             {
@@ -248,7 +248,7 @@ namespace HalgarisRPGLoot
                     var forLevel = ByLevelIndexed[level];
                     if (forLevel.Length.Equals(0)) continue;
 
-                    var itm = enchantItem(ench, randomRarity());
+                    var itm = enchantItem(ench, RandomRarity());
                     var entry = ench.Entry.DeepCopy();
                     entry.Data!.Reference.SetTo(itm);
                     lst.Entries.Add(entry);
@@ -257,7 +257,7 @@ namespace HalgarisRPGLoot
             }
         }
 
-        public int randomRarity()
+        public int RandomRarity()
         {
             int rar = 0;
             int total = 0;

@@ -173,7 +173,7 @@ namespace HalgarisRPGLoot
                 }
             }
         }
-        public void newGenerate()
+        public void Generate()
         {
             foreach (var ench in AllUnenchantedItems)
             {
@@ -188,7 +188,7 @@ namespace HalgarisRPGLoot
                     var forLevel = ByLevelIndexed[level];
                     if (forLevel.Length.Equals(0)) continue;
 
-                    var itm = enchantItem(ench, randomRarity());
+                    var itm = enchantItem(ench, RandomRarity());
                     var entry = ench.Entry.DeepCopy();
                     entry.Data!.Reference.SetTo(itm);
                     lst.Entries.Add(entry);
@@ -208,7 +208,7 @@ namespace HalgarisRPGLoot
             }
 
             var nitm = State.PatchMod.Weapons.AddNewLocking(State.PatchMod.GetNextFormKey());
-            var nrec = newGenerateEnchantment(rarity);
+            var nrec = GenerateEnchantment(rarity);
             var effects = ChosenRPGEnchantEffects[rarity].GetValueOrDefault(nrec);
             nitm.DeepCopyIn(item.Resolved);
             nitm.EditorID = "HAL_ARMOR_" + Settings.Rarities[rarity].Label.ToUpper() + "_" + nitm.EditorID + "_"+ nrec.IDString();
@@ -220,7 +220,7 @@ namespace HalgarisRPGLoot
 
             return nitm.FormKey;
         }
-        private FormKey newGenerateEnchantment(int rarity)
+        private FormKey GenerateEnchantment(int rarity)
         {
             int rarityEnchCount = Settings.Rarities[rarity].NumEnchantments;
             var takeMin = Math.Min(rarityEnchCount, AllRPGEnchants[rarity].Count);
@@ -248,7 +248,7 @@ namespace HalgarisRPGLoot
             ChosenRPGEnchantEffects[rarity].Add(nrec.FormKey, effects);
             return nrec.FormKey;
         }
-        public int randomRarity()
+        public int RandomRarity()
         {
             int rar = 0;
             int total = 0;
