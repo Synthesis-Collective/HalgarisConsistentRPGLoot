@@ -196,7 +196,7 @@ namespace HalgarisRPGLoot
             var key = State.PatchMod.GetNextFormKey();
             var nrec = State.PatchMod.ObjectEffects.AddNewLocking(key);
             nrec.DeepCopyIn(effects.First().Enchantment);
-            nrec.EditorID = "HAL_WEAPON_ENCH_" + oldench.EditorID;
+            nrec.EditorID = "HAL_WEAPON_ENCH_" +Settings.Rarities[rarity].Label.ToUpper() + "_" + oldench.EditorID;
             nrec.Name = Settings.Rarities[rarity].Label + " " + oldench.Name;
             nrec.Effects.Clear();
             nrec.Effects.AddRange(effects.SelectMany(e => e.Enchantment.Effects).Select(e => e.DeepCopy()));
