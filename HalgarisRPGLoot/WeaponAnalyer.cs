@@ -183,7 +183,7 @@ namespace HalgarisRPGLoot
             int rarityEnchCount = Settings.Rarities[rarity].NumEnchantments;
             var takeMin = Math.Min(rarityEnchCount, AllRPGEnchants[rarity].Count);
             var array = AllRPGEnchants[rarity].ToArray();
-            var effects = array.ElementAt(r.Next(0, AllRPGEnchants.Length)).Value;
+            var effects = array.ElementAt(r.Next(0, AllRPGEnchants[rarity].Count)).Value;
 
             var oldench = effects.First().Enchantment;
 
