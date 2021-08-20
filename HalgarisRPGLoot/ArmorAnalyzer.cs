@@ -211,7 +211,7 @@ namespace HalgarisRPGLoot
             var nrec = GenerateEnchantment(rarity);
             var effects = ChosenRPGEnchantEffects[rarity].GetValueOrDefault(nrec);
             nitm.DeepCopyIn(item.Resolved);
-            nitm.EditorID = "HAL_ARMOR_" + Settings.Rarities[rarity].Label.ToUpper() + "_" + nitm.EditorID + "_"+ nrec.IDString();
+            nitm.EditorID = "HAL_ARMOR_" + Settings.Rarities[rarity].Label.ToUpper() + "_" + nitm.EditorID +"_of_"+ effects.First().Enchantment.Name;
             nitm.ObjectEffect.SetTo(nrec);
             nitm.EnchantmentAmount = (ushort)effects.Where(e => e.Amount.HasValue).Sum(e => e.Amount.Value);
             nitm.Name = Settings.Rarities[rarity].Label + " " + itemName + " of " + effects.First().Enchantment.Name;
