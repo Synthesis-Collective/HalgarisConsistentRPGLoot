@@ -129,16 +129,14 @@ namespace HalgarisRPGLoot
                 for (int i = 0; i < AllRPGEnchants.Length; i++)
                 {
 
-                    //var level = item.Entry.Data.Level;
-
                     var forLevel = AllEnchantments;
                     var takeMin = Math.Min(Settings.Rarities[i].NumEnchantments, forLevel.Length);
                     var enchs = new ResolvedEnchantment[takeMin];
                     enchs[0] = AllEnchantments[coreEnchant];
 
                     int[] result = new int[takeMin];
-                    for (int j = 0; i < takeMin; ++i)
-                        result[i] = i;
+                    for (int j = 0; j < takeMin; ++j)
+                        result[j] = j;
 
                     for (int t = takeMin; t < AllEnchantments.Length; ++t)
                     {
@@ -161,23 +159,12 @@ namespace HalgarisRPGLoot
                     {
                         enchs[len] = AllEnchantments[result[len]];
                     }
-                    /*
-                    ExtendedList<Effect> effects = new ExtendedList<Effect>();
-                    effects.Clear();
-                    effects.AddRange(enchs.SelectMany(e => e.Enchantment.Effects).Select(e => e.DeepCopy()));*/
 
                     var oldench = enchs.First().Enchantment;
-                    /*var key = State.PatchMod.GetNextFormKey();
-                    var nrec = State.PatchMod.ObjectEffects.AddNewLocking(key);
-                    nrec.DeepCopyIn(enchs.First().Enchantment);
-                    nrec.EditorID = "HAL_WEAPON_ENCH_" + oldench.EditorID;
-                    nrec.Name = Settings.Rarities[i].Label + " " + oldench.Name;
-                    nrec.Effects.Clear();
-                    nrec.Effects.AddRange(effects.SelectMany(e => e.Enchantment.Effects).Select(e => e.DeepCopy()));
-                    nrec.WornRestrictions.SetTo(effects.First().Enchantment.WornRestrictions);*/
-                    if (!AllRPGEnchants[i].ContainsKey(Settings.Rarities[i].Label + " " + oldench.Name))
+                    SortedList<String, ResolvedEnchantment[]> enchants = AllRPGEnchants[i];
+                    if (!enchants.ContainsKey(Settings.Rarities[i].Label + " " + oldench.Name))
                     {
-                        AllRPGEnchants[i].Add(Settings.Rarities[i].Label + " " + oldench.Name, enchs);
+                        enchants.Add(Settings.Rarities[i].Label + " " + oldench.Name, enchs);
                     }
                 }
             }
