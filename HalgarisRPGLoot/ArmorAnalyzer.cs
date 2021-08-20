@@ -206,7 +206,7 @@ namespace HalgarisRPGLoot
             {
                 itemName = MakeName(item.Resolved.EditorID);
             }
-
+            Console.WriteLine("Generating Enchanted version of " + itemName);
             var nitm = State.PatchMod.Weapons.AddNewLocking(State.PatchMod.GetNextFormKey());
             var nrec = GenerateEnchantment(rarity);
             var effects = ChosenRPGEnchantEffects[rarity].GetValueOrDefault(nrec);
@@ -217,7 +217,7 @@ namespace HalgarisRPGLoot
             nitm.Name = Settings.Rarities[rarity].Label + " " + itemName + " of " + effects.First().Enchantment.Name;
 
 
-
+            Console.WriteLine("Generated " + Settings.Rarities[rarity].Label + " " + itemName + " of " + effects.First().Enchantment.Name);
             return nitm.FormKey;
         }
         private FormKey GenerateEnchantment(int rarity)
@@ -229,7 +229,7 @@ namespace HalgarisRPGLoot
 
             var oldench = effects.First().Enchantment;
 
-            Console.WriteLine("Generated " + Settings.Rarities[rarity].Label + " armor enchantment of " + oldench.Name);
+            Console.WriteLine("Generating " + Settings.Rarities[rarity].Label + " armor enchantment of " + oldench.Name);
             if (ChosenRPGEnchants[rarity].ContainsKey(Settings.Rarities[rarity].Label + " " + oldench.Name))
             {
                 return ChosenRPGEnchants[rarity].GetValueOrDefault(Settings.Rarities[rarity].Label + " " + oldench.Name);
@@ -246,6 +246,7 @@ namespace HalgarisRPGLoot
 
             ChosenRPGEnchants[rarity].Add(Settings.Rarities[rarity].Label + " " + oldench.Name, nrec.FormKey);
             ChosenRPGEnchantEffects[rarity].Add(nrec.FormKey, effects);
+            Console.WriteLine("Enchantment Generated");
             return nrec.FormKey;
         }
         public int RandomRarity()
