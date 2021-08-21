@@ -207,7 +207,7 @@ namespace HalgarisRPGLoot
                 itemName = MakeName(item.Resolved.EditorID);
             }
             Console.WriteLine("Generating Enchanted version of " + itemName);
-            var nitm = State.PatchMod.Weapons.AddNewLocking(State.PatchMod.GetNextFormKey());
+            var nitm = State.PatchMod.Armors.AddNewLocking(State.PatchMod.GetNextFormKey());
             var nrec = GenerateEnchantment(rarity);
             var effects = ChosenRPGEnchantEffects[rarity].GetValueOrDefault(nrec);
             nitm.DeepCopyIn(item.Resolved);
