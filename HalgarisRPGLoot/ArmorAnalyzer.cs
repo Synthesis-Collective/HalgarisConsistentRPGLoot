@@ -193,7 +193,12 @@ namespace HalgarisRPGLoot
                     entry.Data!.Reference.SetTo(itm);
                     lst.Entries.Add(entry);
                 }
-
+                var olst = State.PatchMod.LeveledItems.GetOrAddAsOverride(ench.List);
+                foreach (var entry in olst.Entries!.Where(entry =>
+                    entry.Data!.Reference.FormKey == ench.Resolved.FormKey))
+                {
+                    entry.Data!.Reference.SetTo(lst);
+                }
             }
         }
 
