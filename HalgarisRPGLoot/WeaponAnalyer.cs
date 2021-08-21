@@ -268,7 +268,7 @@ namespace HalgarisRPGLoot
                 total += Settings.Rarities[i].LLEntries;
             }
             int roll = r.Next(0, total);
-            while(roll > Settings.Rarities[rar].LLEntries && rar < Settings.Rarities.Count)
+            while(roll >= Settings.Rarities[rar].LLEntries && rar < Settings.Rarities.Count)
             {
                 roll -= Settings.Rarities[rar].LLEntries;
                 rar++;
