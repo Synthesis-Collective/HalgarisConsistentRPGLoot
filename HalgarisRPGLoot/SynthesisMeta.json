@@ -1,9 +1,8 @@
-  
 {
-    "Nickname": "HalgarisConsistentRPGLoot",
-    "Visibility": "Visible",
-    "OneLineDescription": "RPG Loot without reshuffle while patching.",
-    "LongDescription": "This version of RPG loot uses a settings menu to be customized to your liking. It also wil generate consitently as long as you dont alter any of the settings or add armors/clothing/yewelry/weapons to your setup. \n\n - Luca|EzioTheDeadPoet",
-    "PreferredAutoVersioning": "Default",
-    "RequiredMods": []
+  "Nickname": HalgarisConsistentUniqueRPGLoot
+  "Visibility": "Visible",
+  "OneLineDescription": ""RPG Loot without reshuffle while patching and without duplicate enchantments.",
+  "LongDescription": "This version of RPG loot uses a settings menu to be customized to your liking. It also wil generate consitently as long as you dont alter any of the settings or add armors/clothing/jewelry/weapons/enchantments to your setup. Furthermore it will not create redundant enchantments wasting formIDs, allowing it to cover a greater variety of settings \n\n - Luca|EzioTheDeadPoet \n\n Unquiness added by Darkon47|Shou|",
+  "PreferredAutoVersioning": "Default",
+  "RequiredMods": []
 }
