@@ -1,4 +1,4 @@
-# HalgarisConsistentRPGLoot 
+# HalgarisConsistentUniqueRPGLoot
 
 ## What does this Patcher do ?
 
