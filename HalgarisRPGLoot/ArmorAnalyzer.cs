@@ -134,6 +134,7 @@ namespace HalgarisRPGLoot
 
                     var forLevel = AllEnchantments;
                     var takeMin = Math.Min(Settings.Rarities[i].NumEnchantments, forLevel.Length);
+                    if (takeMin == 0) continue;
                     var enchs = new ResolvedEnchantment[takeMin];
                     enchs[0] = AllEnchantments[coreEnchant];
 
