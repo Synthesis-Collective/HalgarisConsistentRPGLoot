@@ -216,18 +216,40 @@ namespace HalgarisRPGLoot
                 itemName = MakeName(item.Resolved.EditorID);
             }
             Console.WriteLine("Generating Enchanted version of " + itemName);
-            var nitm = State.PatchMod.Armors.AddNewLocking(State.PatchMod.GetNextFormKey());
-            var nrec = GenerateEnchantment(rarity);
-            var effects = ChosenRPGEnchantEffects[rarity].GetValueOrDefault(nrec);
-            nitm.DeepCopyIn(item.Resolved);
-            nitm.EditorID = "HAL_ARMOR_" + nitm.EditorID;
-            nitm.ObjectEffect.SetTo(nrec);
-            nitm.EnchantmentAmount = (ushort)effects.Where(e => e.Amount.HasValue).Sum(e => e.Amount.Value);
-            nitm.Name = Settings.Rarities[rarity].Label + " " + itemName + " of " + effects.First().Enchantment.Name;
+            if (Settings.Rarities[rarity].NumEnchantments != 0)
+            {
+                var nitm = State.PatchMod.Armors.AddNewLocking(State.PatchMod.GetNextFormKey());
+                var nrec = GenerateEnchantment(rarity);
+                var effects = ChosenRPGEnchantEffects[rarity].GetValueOrDefault(nrec);
+                nitm.DeepCopyIn(item.Resolved);
+                nitm.EditorID = "HAL_ARMOR_" + Settings.Rarities[rarity].Label.ToUpper() + "_" + nitm.EditorID + "_of_" + effects.First().Enchantment.Name;
+                nitm.ObjectEffect.SetTo(nrec);
+                nitm.EnchantmentAmount = (ushort)effects.Where(e => e.Amount.HasValue).Sum(e => e.Amount.Value);
+                nitm.Name = Settings.Rarities[rarity].Label + " " + itemName + " of " + effects.First().Enchantment.Name;
 
 
-            Console.WriteLine("Generated " + Settings.Rarities[rarity].Label + " " + itemName + " of " + effects.First().Enchantment.Name);
-            return nitm.FormKey;
+                Console.WriteLine("Generated " + Settings.Rarities[rarity].Label + " " + itemName + " of " + effects.First().Enchantment.Name);
+                return nitm.FormKey;
+            } 
+            else
+            {
+                var nitm = State.PatchMod.Armors.AddNewLocking(State.PatchMod.GetNextFormKey());
+                nitm.DeepCopyIn(item.Resolved);
+                nitm.EditorID = "HAL_ARMOR_" + nitm.EditorID;
+                if (Settings.Rarities[rarity].Label.Equals("") || Settings.Rarities[rarity].Label.Equals(null))
+                {
+                    nitm.Name = itemName;
+                    Console.WriteLine("Generated " + itemName);
+                }
+                else 
+                { 
+                    nitm.Name = Settings.Rarities[rarity].Label + " " + itemName;
+                    Console.WriteLine("Generated " + Settings.Rarities[rarity].Label + " " + itemName);
+                }
+                return nitm.FormKey;
+            }
+
+            
         }
         private FormKey GenerateEnchantment(int rarity)
         {
