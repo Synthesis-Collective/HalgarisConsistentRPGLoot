@@ -139,45 +139,48 @@ namespace HalgarisRPGLoot
 
                     var forLevel = AllEnchantments;
                     var takeMin = Math.Min(Settings.Rarities[i].NumEnchantments, forLevel.Length);
-                    var enchs = new ResolvedEnchantment[takeMin];
-                    enchs[0] = AllEnchantments[coreEnchant];
-
-                    int[] result = new int[takeMin];
-                    for (int j = 0; j < takeMin; ++j)
-                        result[j] = j;
-
-                    for (int t = takeMin; t < AllEnchantments.Length; ++t)
+                    if (takeMin > 0)
                     {
-                        int m = r.Next(0, t + 1);
-                        if (m < takeMin)
+
+                        var enchs = new ResolvedEnchantment[takeMin];
+                        enchs[0] = AllEnchantments[coreEnchant];
+
+                        int[] result = new int[takeMin];
+                        for (int j = 0; j < takeMin; ++j)
+                            result[j] = j;
+
+                        for (int t = takeMin; t < AllEnchantments.Length; ++t)
                         {
-                            result[m] = t;
-                            if(t == coreEnchant)
+                            int m = r.Next(0, t + 1);
+                            if (m < takeMin)
                             {
-                                result[m] = result[0];
-                                result[0] = t;
+                                result[m] = t;
+                                if(t == coreEnchant)
+                                {
+                                    result[m] = result[0];
+                                    result[0] = t;
+                                }
                             }
                         }
-                    }
-                    if(result[0] != coreEnchant)
-                    {
-                        result[0] = coreEnchant;
-                    }
-                    for(int len = 0; len < takeMin; len++)
-                    {
-                        enchs[len] = AllEnchantments[result[len]];
-                    }
+                        if(result[0] != coreEnchant)
+                        {
+                            result[0] = coreEnchant;
+                        }
+                        for(int len = 0; len < takeMin; len++)
+                        {
+                            enchs[len] = AllEnchantments[result[len]];
+                        }
 
-                    var oldench = enchs.First().Enchantment;
-                    SortedList<String, ResolvedEnchantment[]> enchants = AllRPGEnchants[i];
-                    Console.WriteLine("Generated raw " + Settings.Rarities[i].Label + " weapon enchantment of " + oldench.Name);
-                    if (!enchants.ContainsKey(Settings.Rarities[i].Label + " " + oldench.Name))
-                    {
-                        enchants.Add(Settings.Rarities[i].Label + " " + oldench.Name, enchs);
+                        var oldench = enchs.First().Enchantment;
+                        SortedList<String, ResolvedEnchantment[]> enchants = AllRPGEnchants[i];
+                        Console.WriteLine("Generated raw " + Settings.Rarities[i].Label + " weapon enchantment of " + oldench.Name);
+                        if (!enchants.ContainsKey(Settings.Rarities[i].Label + " " + oldench.Name))
+                        {
+                            enchants.Add(Settings.Rarities[i].Label + " " + oldench.Name, enchs);
+                        }
                     }
                 }
             }
-
         }
 
 
@@ -192,18 +195,38 @@ namespace HalgarisRPGLoot
             }
 
             Console.WriteLine("Generating Enchanted version of " + itemName);
-            var nitm = State.PatchMod.Weapons.AddNewLocking(State.PatchMod.GetNextFormKey());
-            var nrec = GenerateEnchantment(rarity);
-            var effects = ChosenRPGEnchantEffects[rarity].GetValueOrDefault(nrec);
-            nitm.DeepCopyIn(item.Resolved);
-            nitm.EditorID = "HAL_WEAPON_" + Settings.Rarities[rarity].Label.ToUpper() + "_" + nitm.EditorID + "_of_" + effects.First().Enchantment.Name;
-            nitm.ObjectEffect.SetTo(nrec);
-            nitm.EnchantmentAmount = (ushort)effects.Where(e => e.Amount.HasValue).Sum(e => e.Amount.Value);
-            nitm.Name = Settings.Rarities[rarity].Label + " " + itemName + " of " + effects.First().Enchantment.Name;
+            if (Settings.Rarities[rarity].NumEnchantments != 0)
+            {
+                var nitm = State.PatchMod.Weapons.AddNewLocking(State.PatchMod.GetNextFormKey());
+                var nrec = GenerateEnchantment(rarity);
+                var effects = ChosenRPGEnchantEffects[rarity].GetValueOrDefault(nrec);
+                nitm.DeepCopyIn(item.Resolved);
+                nitm.EditorID = "HAL_WEAPON_" + Settings.Rarities[rarity].Label.ToUpper() + "_" + nitm.EditorID + "_of_" + effects.First().Enchantment.Name;
+                nitm.ObjectEffect.SetTo(nrec);
+                nitm.EnchantmentAmount = (ushort)effects.Where(e => e.Amount.HasValue).Sum(e => e.Amount.Value);
+                nitm.Name = Settings.Rarities[rarity].Label + " " + itemName + " of " + effects.First().Enchantment.Name;
 
 
-            Console.WriteLine("Generated " + Settings.Rarities[rarity].Label + " " + itemName + " of " + effects.First().Enchantment.Name);
-            return nitm.FormKey;
+                Console.WriteLine("Generated " + Settings.Rarities[rarity].Label + " " + itemName + " of " + effects.First().Enchantment.Name);
+                return nitm.FormKey;
+            }
+            else 
+            {
+                var nitm = State.PatchMod.Weapons.AddNewLocking(State.PatchMod.GetNextFormKey());
+                nitm.DeepCopyIn(item.Resolved);
+                nitm.EditorID = "HAL_WEAPON_" + nitm.EditorID;
+                if (Settings.Rarities[rarity].Label.Equals("") || Settings.Rarities[rarity].Label.Equals(null))
+                {
+                    nitm.Name = itemName;
+                    Console.WriteLine("Generated " + itemName);
+                }
+                else 
+                { 
+                    nitm.Name = Settings.Rarities[rarity].Label + " " + itemName;
+                    Console.WriteLine("Generated " + Settings.Rarities[rarity].Label + " " + itemName);
+                }
+                return nitm.FormKey;
+            }
         }
 
         private FormKey GenerateEnchantment(int rarity)
