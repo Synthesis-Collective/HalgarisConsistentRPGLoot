@@ -134,46 +134,49 @@ namespace HalgarisRPGLoot
 
                     var forLevel = AllEnchantments;
                     var takeMin = Math.Min(Settings.Rarities[i].NumEnchantments, forLevel.Length);
-                    if (takeMin == 0) continue;
-                    var enchs = new ResolvedEnchantment[takeMin];
-                    enchs[0] = AllEnchantments[coreEnchant];
+                    if (takeMin > 0) 
+                    { 
+                        var enchs = new ResolvedEnchantment[takeMin];
+                        enchs[0] = AllEnchantments[coreEnchant];
 
-                    int[] result = new int[takeMin];
-                    for (int j = 0; j < takeMin; ++j)
-                        result[j] = j;
+                        int[] result = new int[takeMin];
+                        for (int j = 0; j < takeMin; ++j)
+                            result[j] = j;
 
-                    for (int t = takeMin; t < AllEnchantments.Length; ++t)
-                    {
-                        int m = r.Next(0, t + 1);
-                        if (m < takeMin)
+                        for (int t = takeMin; t < AllEnchantments.Length; ++t)
                         {
-                            result[m] = t;
-                            if (t == coreEnchant)
+                            int m = r.Next(0, t + 1);
+                            if (m < takeMin)
                             {
-                                result[m] = result[0];
-                                result[0] = t;
+                                result[m] = t;
+                                if (t == coreEnchant)
+                                {
+                                    result[m] = result[0];
+                                    result[0] = t;
+                                }
                             }
                         }
-                    }
-                    if (result[0] != coreEnchant)
-                    {
-                        result[0] = coreEnchant;
-                    }
-                    for (int len = 0; len < takeMin; len++)
-                    {
-                        enchs[len] = AllEnchantments[result[len]];
-                    }
+                        if (result[0] != coreEnchant)
+                        {
+                            result[0] = coreEnchant;
+                        }
+                        for (int len = 0; len < takeMin; len++)
+                        {
+                            enchs[len] = AllEnchantments[result[len]];
+                        }
 
-                    var oldench = enchs.First().Enchantment;
-                    SortedList<String, ResolvedEnchantment[]> enchants = AllRPGEnchants[i];
-                    Console.WriteLine("Generated raw " + Settings.Rarities[i].Label + " armor enchantment of " + oldench.Name);
-                    if (!enchants.ContainsKey(Settings.Rarities[i].Label + " " + oldench.Name))
-                    {
-                        enchants.Add(Settings.Rarities[i].Label + " " + oldench.Name, enchs);
+                        var oldench = enchs.First().Enchantment;
+                        SortedList<String, ResolvedEnchantment[]> enchants = AllRPGEnchants[i];
+                        Console.WriteLine("Generated raw " + Settings.Rarities[i].Label + " armor enchantment of " + oldench.Name);
+                        if (!enchants.ContainsKey(Settings.Rarities[i].Label + " " + oldench.Name))
+                        {
+                            enchants.Add(Settings.Rarities[i].Label + " " + oldench.Name, enchs);
+                        }
                     }
                 }
             }
         }
+
         public void Generate()
         {
             foreach (var ench in AllUnenchantedItems)
