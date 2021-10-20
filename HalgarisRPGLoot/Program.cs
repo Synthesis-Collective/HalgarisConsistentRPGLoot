@@ -14,7 +14,7 @@ namespace HalgarisRPGLoot
         static Lazy<Settings> _LazySettings = null!;
         public static Settings Settings => _LazySettings.Value;
 
-        static async Task<int> Main(string[] args)
+        private static async Task<int> Main(string[] args)
         {
             return await SynthesisPipeline.Instance
                 .AddPatch<ISkyrimMod, ISkyrimModGetter>(RunPatch)
