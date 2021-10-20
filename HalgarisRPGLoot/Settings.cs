@@ -26,10 +26,12 @@ namespace HalgarisRPGLoot
                 new Rarity() { Label= "Epic", NumEnchantments=3, LLEntries=5 },
                 new Rarity() { Label= "Legendary", NumEnchantments=4, LLEntries=2 },
                 };
+        /*
         [SynthesisSettingName("Use RNGRarity")]
         [SynthesisTooltip("With this set to true the number of variations\n" +
                           "per item will be randomised.")]
         public bool UseRNGRarities = true;
+        */
     }
 
     public class WeaponSettings
@@ -46,10 +48,12 @@ namespace HalgarisRPGLoot
                 new Rarity() { Label= "Epic", NumEnchantments=3, LLEntries=5 },
                 new Rarity() { Label= "Legendary", NumEnchantments=4, LLEntries=2 },
                 };
+        /*
         [SynthesisSettingName("Use RNGRarity")]
         [SynthesisTooltip("With this set to true the number of variations\n" +
             "per item will be randomised.")]
         public bool UseRNGRarities = true;
+        */
     }
 
     public class Rarity
@@ -58,11 +62,12 @@ namespace HalgarisRPGLoot
         public string Label;
         [SynthesisSettingName("Number of Enchantments")]
         public int NumEnchantments;
-        [SynthesisSettingName("Number of LevedList Entries")]
+        [SynthesisSettingName("Number of LeveledList Entries")]
         [SynthesisTooltip("The higher the number the more common it is.")]
         public int LLEntries;
     }
 
+    /*
     public enum SearchMode
     {
         ClosestLevel,
@@ -76,5 +81,6 @@ namespace HalgarisRPGLoot
         Higher,
         Lower
     }
+    */
 
 }

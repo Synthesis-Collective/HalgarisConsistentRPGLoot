@@ -57,7 +57,7 @@ namespace HalgarisRPGLoot
             {
                 ChosenRPGEnchants[i] = new Dictionary<String, FormKey>();
             }
-            ChosenRPGEnchantEffects = new Dictionary<FormKey, ResolvedEnchantment[]>[Settings.Rarities.Count()];
+            ChosenRPGEnchantEffects = new Dictionary<FormKey, ResolvedEnchantment[]>[Settings.Rarities.Count];
             for (int i = 0; i < ChosenRPGEnchantEffects.Length; i++)
             {
                 ChosenRPGEnchantEffects[i] = new Dictionary<FormKey, ResolvedEnchantment[]>();
@@ -83,10 +83,10 @@ namespace HalgarisRPGLoot
                                                                      Resolved = resolved
                                                                  };
                                                              }).Where(r => r != default)
-                                                             ?? new ResolvedListItem<IWeaponGetter>[0])
+                                                             ?? Array.Empty<ResolvedListItem<IWeaponGetter>>())
                 .Where(e =>
                 {
-                    var kws = (e.Resolved.Keywords ?? new IFormLink<IKeywordGetter>[0]);
+                    var kws = (e.Resolved.Keywords ?? Array.Empty<IFormLink<IKeywordGetter>>());
                     return (!kws.Contains(Skyrim.Keyword.WeapTypeStaff))
                            && (!kws.Contains(Skyrim.Keyword.MagicDisallowEnchanting));
                 })
@@ -139,45 +139,39 @@ namespace HalgarisRPGLoot
 
                     var forLevel = AllEnchantments;
                     var takeMin = Math.Min(Settings.Rarities[i].NumEnchantments, forLevel.Length);
-                    if (takeMin > 0)
+                    if (takeMin <= 0) continue;
+                    var enchs = new ResolvedEnchantment[takeMin];
+                    enchs[0] = AllEnchantments[coreEnchant];
+
+                    int[] result = new int[takeMin];
+                    for (int j = 0; j < takeMin; ++j)
+                        result[j] = j;
+
+                    for (int t = takeMin; t < AllEnchantments.Length; ++t)
                     {
-
-                        var enchs = new ResolvedEnchantment[takeMin];
-                        enchs[0] = AllEnchantments[coreEnchant];
-
-                        int[] result = new int[takeMin];
-                        for (int j = 0; j < takeMin; ++j)
-                            result[j] = j;
-
-                        for (int t = takeMin; t < AllEnchantments.Length; ++t)
+                        int m = r.Next(0, t + 1);
+                        if (m >= takeMin) continue;
+                        result[m] = t;
+                        if(t == coreEnchant)
                         {
-                            int m = r.Next(0, t + 1);
-                            if (m < takeMin)
-                            {
-                                result[m] = t;
-                                if(t == coreEnchant)
-                                {
-                                    result[m] = result[0];
-                                    result[0] = t;
-                                }
-                            }
+                            result[m] = result[0];
+                            result[0] = t;
                         }
-                        if(result[0] != coreEnchant)
-                        {
-                            result[0] = coreEnchant;
-                        }
-                        for(int len = 0; len < takeMin; len++)
-                        {
-                            enchs[len] = AllEnchantments[result[len]];
-                        }
+                    }
+                    
+                    result[0] = coreEnchant;
+                    
+                    for(int len = 0; len < takeMin; len++)
+                    {
+                        enchs[len] = AllEnchantments[result[len]];
+                    }
 
-                        var oldench = enchs.First().Enchantment;
-                        SortedList<String, ResolvedEnchantment[]> enchants = AllRPGEnchants[i];
-                        Console.WriteLine("Generated raw " + Settings.Rarities[i].Label + " weapon enchantment of " + oldench.Name);
-                        if (!enchants.ContainsKey(Settings.Rarities[i].Label + " " + oldench.Name))
-                        {
-                            enchants.Add(Settings.Rarities[i].Label + " " + oldench.Name, enchs);
-                        }
+                    var oldench = enchs.First().Enchantment;
+                    SortedList<String, ResolvedEnchantment[]> enchants = AllRPGEnchants[i];
+                    Console.WriteLine("Generated raw " + Settings.Rarities[i].Label + " weapon enchantment of " + oldench.Name);
+                    if (!enchants.ContainsKey(Settings.Rarities[i].Label + " " + oldench.Name))
+                    {
+                        enchants.Add(Settings.Rarities[i].Label + " " + oldench.Name, enchs);
                     }
                 }
             }
@@ -215,7 +209,7 @@ namespace HalgarisRPGLoot
                 var nitm = State.PatchMod.Weapons.AddNewLocking(State.PatchMod.GetNextFormKey());
                 nitm.DeepCopyIn(item.Resolved);
                 nitm.EditorID = "HAL_WEAPON_" + nitm.EditorID;
-                if (Settings.Rarities[rarity].Label.Equals("") || Settings.Rarities[rarity].Label.Equals(null))
+                if (Settings.Rarities[rarity].Label.Equals(""))
                 {
                     nitm.Name = itemName;
                     Console.WriteLine("Generated " + itemName);
@@ -291,9 +285,9 @@ namespace HalgarisRPGLoot
         {
             int rar = 0;
             int total = 0;
-            for(int i = 0; i < Settings.Rarities.Count; i++)
+            foreach (var t in Settings.Rarities)
             {
-                total += Settings.Rarities[i].LLEntries;
+                total += t.LLEntries;
             }
             int roll = r.Next(0, total);
             while(roll >= Settings.Rarities[rar].LLEntries && rar < Settings.Rarities.Count)
@@ -307,7 +301,7 @@ namespace HalgarisRPGLoot
         private static char[] Numbers = "123456890".ToCharArray();
         private static Regex Splitter = new Regex("(?<=[A-Z])(?=[A-Z][a-z])|(?<=[^A-Z])(?=[A-Z])|(?<=[A-Za-z])(?=[^A-Za-z])");
         private Dictionary<string, string> KnownMapping = new Dictionary<string, string>();
-        private string MakeName(string? resolvedEditorId)
+        private string MakeName(string resolvedEditorId)
         {
             string returning;
             if (resolvedEditorId == null)
