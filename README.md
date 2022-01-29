@@ -26,7 +26,7 @@ Settigns:
   - Label: Added to each generated item's name
   - Num Enchantments: The number of enchantments used to define a rarity...i.e. 1 enchantment is fairly balanced...4 probably not so much
   - LLEntries: This works as the odds that a specific rarity will be created.
-    - When UseRNGRarities = true, this will be randomized, and work as a chance value.
+    - When UseRNGRarities = true, this will be randomized, and work as a chance value. (unbalanced chaos)
     - When UseRNGRarities = false, this will define how many varieties of this rarity will be created
       - Formula: (LLEntries / AllEntriesForAllItems)* VarietyCountPerItem
 
