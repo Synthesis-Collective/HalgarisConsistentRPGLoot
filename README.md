@@ -20,8 +20,8 @@ You can use these to customize how strong the presence of enchanted items is in 
 
 Settigns:
 
+- RandomSeed: Imagine a seed for minecraft world generation.
 - VarietyCountPerItem: Number of varieties per base item, this will be constant and split among the varieties described.
-
 - Rarities:
   - Label: Added to each generated item's name
   - Num Enchantments: The number of enchantments used to define a rarity...i.e. 1 enchantment is fairly balanced...4 probably not so much
