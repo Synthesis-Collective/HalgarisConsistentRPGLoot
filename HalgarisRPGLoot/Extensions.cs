@@ -37,7 +37,7 @@ namespace HalgarisRPGLoot
             return itms;
         }
         
-        public static TC AddNewLocking<TC>(this Group<TC> itms, FormKey val)
+        public static TC AddNewLocking<TC>(this SkyrimGroup<TC> itms, FormKey val)
         where TC : class, ISkyrimMajorRecordInternal
         {
             lock (itms)
