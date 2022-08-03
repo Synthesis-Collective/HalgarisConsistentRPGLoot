@@ -1,14 +1,47 @@
 ﻿using System.Collections.Generic;
 using Mutagen.Bethesda.Synthesis.Settings;
+using HalgarisRPGLoot.DataModels;
+using Mutagen.Bethesda.Plugins;
+using Mutagen.Bethesda.Skyrim;
+using Mutagen.Bethesda.WPF.Reflection.Attributes;
 
 namespace HalgarisRPGLoot
 {
     public class Settings
     {
+        [MaintainOrder]
         public int RandomSeed = 42;
+        
+        [MaintainOrder]
+        public EnchantmentManager EnchantmentManager = new EnchantmentManager();
 
+        [MaintainOrder]
         public ArmorSettings ArmorSettings = new ArmorSettings();
+        [MaintainOrder]
         public WeaponSettings WeaponSettings = new WeaponSettings();
+
+    }
+
+    public class EnchantmentManager
+    {
+        [MaintainOrder]
+        [SynthesisSettingName("List Type")]
+        [SynthesisDescription(
+            "Blacklist: Selected Enchantments wont be distributed.\nWhitelist: Only the selected Enchantments get Distributed.")]
+        [SynthesisTooltip(
+            "Blacklist: Selected Enchantments wont be distributed.\nWhitelist: Only the selected Enchantments get Distributed.")]
+        public ListType ListType = ListType.Blacklist;
+
+        [MaintainOrder]
+        [SynthesisSettingName("Exclude Weapon Exclusive Locked Enchantments")]
+        [SynthesisDescription("This makes it so unique weapon specific enchantments of lore relevant items can't appear on some random bandit equipment.")]
+        [SynthesisTooltip("This makes it so unique weapon specific enchantments of lore relevant items can't appear on some random bandit equipment.")]
+        public bool ExcludeLockedEnchantments = true;
+        
+        [MaintainOrder]
+        [SynthesisSettingName("Enchantment List")]
+        [SynthesisDescription("List of Enchantments")]
+        public HashSet<IFormLinkGetter<IObjectEffect>> EnchantmentList;
 
     }
 
@@ -18,20 +51,14 @@ namespace HalgarisRPGLoot
         [SynthesisTooltip("This determines how many different versions\n" +
             "of the same Armor you can find.")]
         public int VarietyCountPerItem = 8;
-        [SynthesisSettingName("Rarity Levels")]
-        [SynthesisTooltip("Custom defineable rarity levels")]
-        public List<Rarity> Rarities = new List<Rarity>() {
-                new Rarity() { Label= "Magical", NumEnchantments=1, LLEntries=80 },
-                new Rarity() { Label= "Rare", NumEnchantments=2, LLEntries=13 },
-                new Rarity() { Label= "Epic", NumEnchantments=3, LLEntries=5 },
-                new Rarity() { Label= "Legendary", NumEnchantments=4, LLEntries=2 },
+        [SynthesisSettingName("Rarity Classes")]
+        [SynthesisTooltip("Custom definable rarity classes")]
+        public List<RarityClass> RarityClasses = new List<RarityClass>() {
+                new RarityClass() { Label= "Magical", NumEnchantments=1, Rarity=80 },
+                new RarityClass() { Label= "Rare", NumEnchantments=2, Rarity=13 },
+                new RarityClass() { Label= "Epic", NumEnchantments=3, Rarity=5 },
+                new RarityClass() { Label= "Legendary", NumEnchantments=4, Rarity=2 },
                 };
-        /*
-        [SynthesisSettingName("Use RNGRarity")]
-        [SynthesisTooltip("With this set to true the number of variations\n" +
-                          "per item will be randomised.")]
-        public bool UseRNGRarities = true;
-        */
     }
 
     public class WeaponSettings
@@ -40,47 +67,25 @@ namespace HalgarisRPGLoot
         [SynthesisTooltip("This determines how many different versions\n" +
             "of the same Weapon you can find.")]
         public int VarietyCountPerItem = 8;
-        [SynthesisSettingName("Rarity Levels")]
-        [SynthesisTooltip("Custom defineable rarity levels")]
-        public List<Rarity> Rarities = new List<Rarity>() {
-                new Rarity() { Label= "Magical", NumEnchantments=1, LLEntries=80 },
-                new Rarity() { Label= "Rare", NumEnchantments=2, LLEntries=13 },
-                new Rarity() { Label= "Epic", NumEnchantments=3, LLEntries=5 },
-                new Rarity() { Label= "Legendary", NumEnchantments=4, LLEntries=2 },
+        [SynthesisSettingName("Rarity Classes")]
+        [SynthesisTooltip("Custom definable rarity classes")]
+        public List<RarityClass> RarityClasses = new List<RarityClass>() {
+                new RarityClass() { Label= "Magical", NumEnchantments=1, Rarity=80 },
+                new RarityClass() { Label= "Rare", NumEnchantments=2, Rarity=13 },
+                new RarityClass() { Label= "Epic", NumEnchantments=3, Rarity=5 },
+                new RarityClass() { Label= "Legendary", NumEnchantments=4, Rarity=2 },
                 };
-        /*
-        [SynthesisSettingName("Use RNGRarity")]
-        [SynthesisTooltip("With this set to true the number of variations\n" +
-            "per item will be randomised.")]
-        public bool UseRNGRarities = true;
-        */
     }
 
-    public class Rarity
+    public class RarityClass
     {
-        [SynthesisSettingName("Rarity Label")]
+        [SynthesisSettingName("RarityClass Label")]
         public string Label;
         [SynthesisSettingName("Number of Enchantments")]
         public int NumEnchantments;
-        [SynthesisSettingName("Number of LeveledList Entries")]
-        [SynthesisTooltip("The higher the number the more common it is.")]
-        public int LLEntries;
+        [SynthesisSettingName("Percentage chance for this rarity. (0-100)")]
+        [SynthesisTooltip("The higher the number the more common it is. All your rarities are not to add up above 100.")]
+        public int Rarity;
     }
-
-    /*
-    public enum SearchMode
-    {
-        ClosestLevel,
-        OnlyHigherLevel,
-        OnlyLowerLevel
-        
-    }
-
-    public enum PreferredLevel
-    {
-        Higher,
-        Lower
-    }
-    */
 
 }
