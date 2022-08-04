@@ -3,6 +3,7 @@ using Mutagen.Bethesda.Synthesis.Settings;
 using HalgarisRPGLoot.DataModels;
 using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Skyrim;
+using Mutagen.Bethesda.FormKeys.SkyrimSE;
 using Mutagen.Bethesda.WPF.Reflection.Attributes;
 
 namespace HalgarisRPGLoot
@@ -11,6 +12,16 @@ namespace HalgarisRPGLoot
     {
         [MaintainOrder]
         public int RandomSeed = 42;
+
+        [MaintainOrder]
+        [SynthesisSettingName("Item Uniqueness Keywords")]
+        [SynthesisDescription("Keywords that indicate an item is Unique.")]
+        [SynthesisTooltip("Keywords that indicate an item is Unique.")]
+        public HashSet<IFormLinkGetter<IKeywordGetter>> ItemUniquenessKeywords = new HashSet<IFormLinkGetter<IKeywordGetter>>()
+        {
+            Skyrim.Keyword.MagicDisallowEnchanting,
+            Skyrim.Keyword.DaedricArtifact
+        };
         
         [MaintainOrder]
         public EnchantmentManager EnchantmentManager = new EnchantmentManager();
@@ -25,23 +36,23 @@ namespace HalgarisRPGLoot
     public class EnchantmentManager
     {
         [MaintainOrder]
-        [SynthesisSettingName("List Type")]
+        [SynthesisSettingName("List Mode")]
         [SynthesisDescription(
             "Blacklist: Selected Enchantments wont be distributed.\nWhitelist: Only the selected Enchantments get Distributed.")]
         [SynthesisTooltip(
             "Blacklist: Selected Enchantments wont be distributed.\nWhitelist: Only the selected Enchantments get Distributed.")]
-        public ListType ListType = ListType.Blacklist;
+        public ListMode ListMode = ListMode.Blacklist;
 
+        [MaintainOrder]
+        [SynthesisSettingName("Enchantment List")]
+        [SynthesisDescription("List of Enchantments")]
+        public HashSet<IFormLinkGetter<IObjectEffect>> EnchantmentList;
+        
         [MaintainOrder]
         [SynthesisSettingName("Exclude Weapon Exclusive Locked Enchantments")]
         [SynthesisDescription("This makes it so unique weapon specific enchantments of lore relevant items can't appear on some random bandit equipment.")]
         [SynthesisTooltip("This makes it so unique weapon specific enchantments of lore relevant items can't appear on some random bandit equipment.")]
         public bool ExcludeLockedEnchantments = true;
-        
-        [MaintainOrder]
-        [SynthesisSettingName("Enchantment List")]
-        [SynthesisDescription("List of Enchantments")]
-        public HashSet<IFormLinkGetter<IObjectEffect>> EnchantmentList;
 
     }
 

@@ -1,6 +1,6 @@
 ﻿namespace HalgarisRPGLoot.DataModels
 {
-    public enum ListType
+    public enum ListMode
     {
         Blacklist,
         Whitelist
