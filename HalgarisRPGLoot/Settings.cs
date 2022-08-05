@@ -14,10 +14,18 @@ namespace HalgarisRPGLoot
         public int RandomSeed = 42;
 
         [MaintainOrder]
-        [SynthesisSettingName("Item Uniqueness Keywords")]
-        [SynthesisDescription("Keywords that indicate an item is Unique.")]
-        [SynthesisTooltip("Keywords that indicate an item is Unique.")]
-        public HashSet<IFormLinkGetter<IKeywordGetter>> ItemUniquenessKeywords = new HashSet<IFormLinkGetter<IKeywordGetter>>()
+        [SynthesisSettingName("Only process constructable equipment")]
+        [SynthesisDescription("This Setting makes it so only Armor that is a CNAM (Created Object) in an COBJ (Constructable Object) Record will be considered." +
+                              "\nThis is to keep unique artefacts and rewards unique in their look and enchantment.")]
+        [SynthesisTooltip("This Setting makes it so only Armor that is a CNAM (Created Object) in an COBJ (Constructable Object) Record will be considered." +
+                          "\nThis is to keep unique artefacts and rewards unique in their look and enchantment.")]
+        public bool OnlyProcessConstructableEquipment = true;
+
+        [MaintainOrder]
+        [SynthesisSettingName("Untouchable Equipment Keywords")]
+        [SynthesisDescription("Keywords that define Items you don't want processed.")]
+        [SynthesisTooltip("Keywords that define Items you don't want processed.")]
+        public HashSet<IFormLinkGetter<IKeywordGetter>> UntouchableEquipmentKeywords = new HashSet<IFormLinkGetter<IKeywordGetter>>()
         {
             Skyrim.Keyword.MagicDisallowEnchanting,
             Skyrim.Keyword.DaedricArtifact
