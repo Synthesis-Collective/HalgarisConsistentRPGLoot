@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Skyrim;
 using Mutagen.Bethesda.Plugins;
@@ -22,6 +24,15 @@ namespace HalgarisRPGLoot
             {
                 return IncompatibleLoadOrderException;
             }
+        }
+
+        public static bool CheckKeywords(IReadOnlyList<IFormLinkGetter<IKeywordGetter>> kws)
+        {
+            foreach (var untouchableEquipmentKeyword in Program.Settings.UntouchableEquipmentKeywords)
+            {
+                if (kws.Contains(untouchableEquipmentKeyword)) return true;
+            }
+            return false;
         }
     }
 }

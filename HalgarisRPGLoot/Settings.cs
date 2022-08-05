@@ -14,6 +14,11 @@ namespace HalgarisRPGLoot
         public int RandomSeed = 42;
 
         [MaintainOrder]
+        [SynthesisDescription("Some Leveled Lists don't contain enchantments at all. Set this to true to enchant them.")]
+        [SynthesisTooltip("Some Leveled Lists don't contain enchantments at all. Set this to true to enchant them.")]
+        public bool OverhaulUnenchantedLeveledLists = false;
+        
+        [MaintainOrder]
         [SynthesisSettingName("Only process constructable equipment")]
         [SynthesisDescription("This Setting makes it so only Armor that is a CNAM (Created Object) in an COBJ (Constructable Object) Record will be considered." +
                               "\nThis is to keep unique artefacts and rewards unique in their look and enchantment.")]
@@ -28,7 +33,8 @@ namespace HalgarisRPGLoot
         public HashSet<IFormLinkGetter<IKeywordGetter>> UntouchableEquipmentKeywords = new HashSet<IFormLinkGetter<IKeywordGetter>>()
         {
             Skyrim.Keyword.MagicDisallowEnchanting,
-            Skyrim.Keyword.DaedricArtifact
+            Skyrim.Keyword.DaedricArtifact,
+            Skyrim.Keyword.WeapTypeStaff
         };
         
         [MaintainOrder]
@@ -66,7 +72,7 @@ namespace HalgarisRPGLoot
 
     public class ArmorSettings
     {
-        [SynthesisSettingName("Number of variations per Item")]
+        [SynthesisSettingName("Number of variations per Armor")]
         [SynthesisTooltip("This determines how many different versions\n" +
             "of the same Armor you can find.")]
         public int VarietyCountPerItem = 8;
@@ -82,7 +88,7 @@ namespace HalgarisRPGLoot
 
     public class WeaponSettings
     {
-        [SynthesisSettingName("Number of variations per Item")]
+        [SynthesisSettingName("Number of variations per Weapon")]
         [SynthesisTooltip("This determines how many different versions\n" +
             "of the same Weapon you can find.")]
         public int VarietyCountPerItem = 8;
