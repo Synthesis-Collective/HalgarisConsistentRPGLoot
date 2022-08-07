@@ -41,12 +41,12 @@ namespace HalgarisRPGLoot.Analyzers
 
         private static readonly Random Random = new Random(Program.Settings.GeneralSettings.RandomSeed);
 
-        private Dictionary<IWeaponGetter, IConstructibleObjectGetter> _weaponDictionary;
+        private Dictionary<IFormLinkGetter<IWeaponGetter>, IConstructibleObjectGetter> _weaponDictionary;
 
         private ObjectEffectsAnalyzer _objectEffectsAnalyzer;
 
         public WeaponAnalyzer(IPatcherState<ISkyrimMod, ISkyrimModGetter> state,
-            Dictionary<IWeaponGetter, IConstructibleObjectGetter> weaponDictionary,
+            Dictionary<IFormLinkGetter<IWeaponGetter>, IConstructibleObjectGetter> weaponDictionary,
             ObjectEffectsAnalyzer objectEffectsAnalyzer)
         {
             State = state;
@@ -98,7 +98,7 @@ namespace HalgarisRPGLoot.Analyzers
                     if (Program.Settings.GeneralSettings.OnlyProcessConstructableEquipment)
                     {
                         var kws = (e.Resolved.Keywords ?? Array.Empty<IFormLink<IKeywordGetter>>());
-                        return !Extensions.CheckKeywords(kws) && _weaponDictionary.ContainsKey(e.Resolved);
+                        return !Extensions.CheckKeywords(kws) && _weaponDictionary.ContainsKey(e.Resolved.ToLink());
                     }
                     else
                     {

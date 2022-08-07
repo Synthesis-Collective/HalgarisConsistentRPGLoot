@@ -28,11 +28,7 @@ namespace HalgarisRPGLoot
 
         public static bool CheckKeywords(IReadOnlyList<IFormLinkGetter<IKeywordGetter>> kws)
         {
-            foreach (var untouchableEquipmentKeyword in Program.Settings.GeneralSettings.UntouchableEquipmentKeywords)
-            {
-                if (kws.Contains(untouchableEquipmentKeyword)) return true;
-            }
-            return false;
+            return kws.Any(itemKeyword => Program.Settings.GeneralSettings.UntouchableEquipmentKeywords.Contains(itemKeyword));
         }
     }
 }

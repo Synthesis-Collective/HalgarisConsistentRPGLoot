@@ -41,12 +41,12 @@ namespace HalgarisRPGLoot.Analyzers
 
         private static readonly Random Random = new Random(Program.Settings.GeneralSettings.RandomSeed);
 
-        private Dictionary<IArmorGetter, IConstructibleObjectGetter> _armorDictionary;
+        private Dictionary<IFormLinkGetter<IArmorGetter>, IConstructibleObjectGetter> _armorDictionary;
 
         private ObjectEffectsAnalyzer _objectEffectsAnalyzer;
 
         public ArmorAnalyzer(IPatcherState<ISkyrimMod, ISkyrimModGetter> state,
-            Dictionary<IArmorGetter, IConstructibleObjectGetter> armorDictionary,
+            Dictionary<IFormLinkGetter<IArmorGetter>, IConstructibleObjectGetter> armorDictionary,
             ObjectEffectsAnalyzer objectEffectsAnalyzer)
         {
             State = state;
@@ -59,7 +59,7 @@ namespace HalgarisRPGLoot.Analyzers
                 AllRpgEnchants[i] = new SortedList<String, ResolvedEnchantment[]>();
             }
 
-            ChosenRpgEnchants = new Dictionary<String, FormKey>[_settings.RarityClasses.Count()];
+            ChosenRpgEnchants = new Dictionary<String, FormKey>[_settings.RarityClasses.Count];
             for (int i = 0; i < ChosenRpgEnchants.Length; i++)
             {
                 ChosenRpgEnchants[i] = new Dictionary<String, FormKey>();
@@ -98,7 +98,7 @@ namespace HalgarisRPGLoot.Analyzers
                     if (Program.Settings.GeneralSettings.OnlyProcessConstructableEquipment)
                     {
                         var kws = (e.Resolved.Keywords ?? Array.Empty<IFormLink<IKeywordGetter>>());
-                        return !Extensions.CheckKeywords(kws) && _armorDictionary.ContainsKey(e.Resolved);
+                        return !Extensions.CheckKeywords(kws) && _armorDictionary.ContainsKey(e.Resolved.ToLink());
                     }
                     else
                     {
