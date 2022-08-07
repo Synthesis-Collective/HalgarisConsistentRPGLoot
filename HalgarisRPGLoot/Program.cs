@@ -30,12 +30,15 @@ namespace HalgarisRPGLoot
         {
             //var armor  = new ArmorAnalyzer(state);
             //var weapon = new WeaponAnalyzer(state);
-
+            
+            Settings.RarityAndVariationSettings.ArmorSettings.RarityClasses.Sort();
+            Settings.RarityAndVariationSettings.WeaponSettings.RarityClasses.Sort();
+            
             ObjectEffectsAnalyzer objectEffectsAnalyzer = new ObjectEffectsAnalyzer(state);
             ConstructibleObjectAnalyzer constructibleObjectAnalyzer = new ConstructibleObjectAnalyzer(state);
             
-            var armor = new NewArmorAnalyzer(state, constructibleObjectAnalyzer.ArmorDictionary,objectEffectsAnalyzer);
-            var weapon = new NewWeaponAnalyzer(state, constructibleObjectAnalyzer.WeaponDictionary,objectEffectsAnalyzer);
+            var armor = new ArmorAnalyzer(state, constructibleObjectAnalyzer.ArmorDictionary,objectEffectsAnalyzer);
+            var weapon = new WeaponAnalyzer(state, constructibleObjectAnalyzer.WeaponDictionary,objectEffectsAnalyzer);
             
             Console.WriteLine("Analyzing mod list");
             var th1 = new Thread(() => armor.Analyze());
@@ -52,6 +55,7 @@ namespace HalgarisRPGLoot
             Console.WriteLine("Generating weapon enchantments");
             weapon.Generate();
 
+            Console.WriteLine("Done.");
         }
     }
 }

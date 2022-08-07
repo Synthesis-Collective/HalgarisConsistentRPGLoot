@@ -12,10 +12,10 @@ using Mutagen.Bethesda.Synthesis;
 
 namespace HalgarisRPGLoot.Analyzers
 {
-    public class NewWeaponAnalyzer
+    public class WeaponAnalyzer
     {
-        private readonly WeaponSettings _settings = Program.Settings.WeaponSettings;
-        
+        private readonly WeaponSettings _settings = Program.Settings.RarityAndVariationSettings.WeaponSettings;
+
         private IPatcherState<ISkyrimMod, ISkyrimModGetter> State { get; set; }
         private ILeveledItemGetter[] AllLeveledLists { get; set; }
         private ResolvedListItem<IWeaponGetter>[] AllListItems { get; set; }
@@ -24,6 +24,8 @@ namespace HalgarisRPGLoot.Analyzers
 
         private Dictionary<int, ResolvedEnchantment[]> ByLevelIndexed { get; set; }
 
+        private Dictionary<FormKey, IObjectEffectGetter> AllObjectEffects { get; set; }
+
         private ResolvedEnchantment[] AllEnchantments { get; set; }
 
         // ReSharper disable once UnusedAutoPropertyAccessor.Local
@@ -31,19 +33,19 @@ namespace HalgarisRPGLoot.Analyzers
 
         private (short Key, ResolvedEnchantment[])[] ByLevel { get; set; }
 
-        private Dictionary<FormKey, IObjectEffectGetter> AllObjectEffects { get; set; }
-        
+
         private SortedList<String, ResolvedEnchantment[]>[] AllRpgEnchants { get; set; }
+
         private Dictionary<String, FormKey>[] ChosenRpgEnchants { get; set; }
         private Dictionary<FormKey, ResolvedEnchantment[]>[] ChosenRpgEnchantEffects { get; set; }
 
-        private static readonly Random Random = new Random(Program.Settings.RandomSeed);
+        private static readonly Random Random = new Random(Program.Settings.GeneralSettings.RandomSeed);
 
         private Dictionary<IWeaponGetter, IConstructibleObjectGetter> _weaponDictionary;
 
         private ObjectEffectsAnalyzer _objectEffectsAnalyzer;
-        
-        public NewWeaponAnalyzer(IPatcherState<ISkyrimMod, ISkyrimModGetter> state,
+
+        public WeaponAnalyzer(IPatcherState<ISkyrimMod, ISkyrimModGetter> state,
             Dictionary<IWeaponGetter, IConstructibleObjectGetter> weaponDictionary,
             ObjectEffectsAnalyzer objectEffectsAnalyzer)
         {
@@ -51,7 +53,7 @@ namespace HalgarisRPGLoot.Analyzers
             _weaponDictionary = weaponDictionary;
             _objectEffectsAnalyzer = objectEffectsAnalyzer;
 
-            AllRpgEnchants = new SortedList<String, ResolvedEnchantment[]>[_settings.RarityClasses.Count()];
+            AllRpgEnchants = new SortedList<String, ResolvedEnchantment[]>[_settings.RarityClasses.Count];
             for (int i = 0; i < AllRpgEnchants.Length; i++)
             {
                 AllRpgEnchants[i] = new SortedList<String, ResolvedEnchantment[]>();
@@ -89,11 +91,11 @@ namespace HalgarisRPGLoot.Analyzers
                                                                      Entry = entry,
                                                                      Resolved = resolved
                                                                  };
-                                                             }).Where(r => r != default)
+                                                             }).Where(resolvedListItem => resolvedListItem != default)
                                                              ?? Array.Empty<ResolvedListItem<IWeaponGetter>>())
                 .Where(e =>
                 {
-                    if (Program.Settings.OnlyProcessConstructableEquipment)
+                    if (Program.Settings.GeneralSettings.OnlyProcessConstructableEquipment)
                     {
                         var kws = (e.Resolved.Keywords ?? Array.Empty<IFormLink<IKeywordGetter>>());
                         return !Extensions.CheckKeywords(kws) && _weaponDictionary.ContainsKey(e.Resolved);
@@ -101,7 +103,7 @@ namespace HalgarisRPGLoot.Analyzers
                     else
                     {
                         var kws = (e.Resolved.Keywords ?? Array.Empty<IFormLink<IKeywordGetter>>());
-                        return (Extensions.CheckKeywords(kws));
+                        return !Extensions.CheckKeywords(kws);
                     }
                 })
                 .ToArray();
@@ -117,12 +119,13 @@ namespace HalgarisRPGLoot.Analyzers
                 .Distinct()
                 .Select(e =>
                 {
-                    if (!AllObjectEffects.TryGetValue(e.FormKey, out var ench))
+                    var (level, enchantmentAmount, formKey) = e;
+                    if (!AllObjectEffects.TryGetValue(formKey, out var ench))
                         return default;
                     return new ResolvedEnchantment
                     {
-                        Level = e.Level ?? 1,
-                        Amount = e.Item2,
+                        Level = level ?? 1,
+                        Amount = enchantmentAmount,
                         Enchantment = ench
                     };
                 })
@@ -159,14 +162,12 @@ namespace HalgarisRPGLoot.Analyzers
 
                     for (int t = takeMin; t < AllEnchantments.Length; ++t)
                     {
-                        int m = Random.Next(0, t + 1);
+                        var m = Random.Next(0, t + 1);
                         if (m >= takeMin) continue;
                         result[m] = t;
-                        if (t == coreEnchant)
-                        {
-                            result[m] = result[0];
-                            result[0] = t;
-                        }
+                        if (t != coreEnchant) continue;
+                        result[m] = result[0];
+                        result[0] = t;
                     }
 
                     result[0] = coreEnchant;
@@ -187,7 +188,7 @@ namespace HalgarisRPGLoot.Analyzers
                 }
             }
         }
-        
+
         public void Generate()
         {
             foreach (var ench in AllUnenchantedItems)
@@ -196,6 +197,7 @@ namespace HalgarisRPGLoot.Analyzers
                 lst.DeepCopyIn(ench.List);
                 lst.EditorID = "HAL_TOP_LList" + ench.Resolved.EditorID;
                 lst.Entries!.Clear();
+                //TODO: Make Flag Setting
                 lst.Flags &= ~LeveledItem.Flag.UseAll;
                 for (int i = 0; i < _settings.VarietyCountPerItem; i++)
                 {
@@ -218,7 +220,6 @@ namespace HalgarisRPGLoot.Analyzers
             }
         }
 
-
         private FormKey EnchantItem(ResolvedListItem<IWeaponGetter> item, int rarity)
         {
             if (!(item.Resolved?.Name?.TryLookup(Language.English, out var itemName) ?? false))
@@ -236,10 +237,12 @@ namespace HalgarisRPGLoot.Analyzers
                 nitm.EditorID = "HAL_WEAPON_" + _settings.RarityClasses[rarity].Label.ToUpper() + "_" + nitm.EditorID +
                                 "_of_" + effects?.First().Enchantment.Name;
                 nitm.ObjectEffect.SetTo(nrec);
-                nitm.EnchantmentAmount = (ushort) (effects ?? Array.Empty<ResolvedEnchantment>()).Where(e => e.Amount.HasValue).Sum(e => e.Amount.Value);
+                nitm.EnchantmentAmount = (ushort) (effects ?? Array.Empty<ResolvedEnchantment>())
+                    .Where(e => e.Amount.HasValue).Sum(e => e.Amount.Value);
                 nitm.Name = _settings.RarityClasses[rarity].Label + " " + itemName + " of " +
                             effects?.First().Enchantment.Name;
-
+                if (item.Resolved != null)
+                    nitm.Template = (IFormLinkNullable<IWeaponGetter>) item.Resolved.ToNullableLinkGetter();
 
                 Console.WriteLine("Generated " + _settings.RarityClasses[rarity].Label + " " + itemName + " of " +
                                   effects?.First().Enchantment.Name);
@@ -250,16 +253,13 @@ namespace HalgarisRPGLoot.Analyzers
                 var nitm = State.PatchMod.Weapons.AddNewLocking(State.PatchMod.GetNextFormKey());
                 if (item.Resolved != null) nitm.DeepCopyIn(item.Resolved);
                 nitm.EditorID = "HAL_WEAPON_" + nitm.EditorID;
-                if (_settings.RarityClasses[rarity].Label.Equals(""))
-                {
-                    nitm.Name = itemName;
-                    Console.WriteLine("Generated " + itemName);
-                }
-                else
-                {
-                    nitm.Name = _settings.RarityClasses[rarity].Label + " " + itemName;
-                    Console.WriteLine("Generated " + _settings.RarityClasses[rarity].Label + " " + itemName);
-                }
+
+                nitm.Name = _settings.RarityClasses[rarity].Label.Equals("")
+                    ? itemName
+                    : _settings.RarityClasses[rarity].Label + " " + itemName;
+
+                Console.WriteLine("Generated " + nitm.Name);
+
 
                 return nitm.FormKey;
             }
@@ -267,11 +267,10 @@ namespace HalgarisRPGLoot.Analyzers
 
         private FormKey GenerateEnchantment(int rarity)
         {
-            int rarityEnchCount = _settings.RarityClasses[rarity].NumEnchantments;
-            // ReSharper disable once UnusedVariable
-            var takeMin = Math.Min(rarityEnchCount, AllRpgEnchants[rarity].Count);
             var array = AllRpgEnchants[rarity].ToArray();
-            var effects = array.ElementAt(Random.Next(0, AllRpgEnchants[rarity].Count)).Value;
+            var allRpgEnchantmentsCount = AllRpgEnchants[rarity].Count;
+            var effects = array.ElementAt(Random.Next(0,
+                (0 < allRpgEnchantmentsCount - 1) ? allRpgEnchantmentsCount - 1 : array.Length - 1)).Value;
 
             var oldench = effects.First().Enchantment;
 
@@ -299,28 +298,25 @@ namespace HalgarisRPGLoot.Analyzers
             return nrec.FormKey;
         }
 
-
-
         public int RandomRarity()
         {
             int rar = 0;
             int total = 0;
             foreach (var t in _settings.RarityClasses)
             {
-                total += t.Rarity;
+                total += t.RarityWeight;
             }
 
             int roll = Random.Next(0, total);
-            while (roll >= _settings.RarityClasses[rar].Rarity && rar < _settings.RarityClasses.Count)
+            while (roll >= _settings.RarityClasses[rar].RarityWeight && rar < _settings.RarityClasses.Count)
             {
-                roll -= _settings.RarityClasses[rar].Rarity;
+                roll -= _settings.RarityClasses[rar].RarityWeight;
                 rar++;
             }
 
             return rar;
         }
 
-        
         // ReSharper disable once UnusedMember.Local
         private static char[] _unusedNumbers = "123456890".ToCharArray();
 

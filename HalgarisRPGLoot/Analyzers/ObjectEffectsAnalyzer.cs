@@ -1,25 +1,81 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using HalgarisRPGLoot.DataModels;
+using Mutagen.Bethesda;
 using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Skyrim;
 using Mutagen.Bethesda.Synthesis;
+using Noggog;
+using Exception = System.Exception;
 
 namespace HalgarisRPGLoot.Analyzers
 {
     public class ObjectEffectsAnalyzer
     {
+        private readonly EnchantmentSettings _settings = Program.Settings.EnchantmentSettings;
+
         public Dictionary<FormKey, IObjectEffectGetter> AllObjectEffects { get; set; }
-        
+
         private IPatcherState<ISkyrimMod, ISkyrimModGetter> State { get; set; }
 
         public ObjectEffectsAnalyzer(IPatcherState<ISkyrimMod, ISkyrimModGetter> state)
         {
             State = state;
-            AllObjectEffects = State.LoadOrder.PriorityOrder.ObjectEffect().WinningOverrides()
-                .Where(x => x.Name != null)
-                .Where(k => !k.Name.ToString()!
-                    .EndsWith("FX")) // Excluding Bound Weapon FX Object Effects as they don't do a thing on non bound weapons. 
-                .ToDictionary(k => k.FormKey);
+
+            var pluginObjectEffectGroups = state.LoadOrder.ListedOrder.Select(listing => listing.Mod).NotNull()
+                .Select(x => (x.ModKey, x.ObjectEffects)).AsParallel()
+                .Where(x => x.ObjectEffects.Count > 0 && _settings.PluginList.Contains(x.ModKey))
+                .Select(x => x.ObjectEffects).Distinct()
+                .ToHashSet();
+
+            var pluginObjectEffects = new HashSet<IObjectEffectGetter>();
+
+            foreach (var objectEffectGroup in pluginObjectEffectGroups)
+            {
+                foreach (var objectEffectGetter in objectEffectGroup)
+                {
+                    pluginObjectEffects.Add(objectEffectGetter);
+                }
+            }
+
+
+            AllObjectEffects =
+                State.LoadOrder.PriorityOrder.ObjectEffect().WinningOverrides().AsParallel()
+                    .Where(x => x.Name != null)
+                    .Where(x =>
+                    {
+                        switch (_settings.EnchantmentListMode)
+                        {
+                            case ListMode.Blacklist:
+                                switch (_settings.PluginListMode)
+                                {
+                                    case ListMode.Blacklist:
+                                        return !_settings.EnchantmentList.Contains(x) &&
+                                               !pluginObjectEffects.Contains(x);
+                                    case ListMode.Whitelist:
+                                        return !_settings.EnchantmentList.Contains(x) &&
+                                               pluginObjectEffects.Contains(x);
+                                    default:
+                                        throw new Exception();
+                                }
+
+                            case ListMode.Whitelist:
+                                switch (_settings.PluginListMode)
+                                {
+                                    case ListMode.Blacklist:
+                                        return _settings.EnchantmentList.Contains(x) ||
+                                               !pluginObjectEffects.Contains(x);
+                                    case ListMode.Whitelist:
+                                        return _settings.EnchantmentList.Contains(x) ||
+                                               pluginObjectEffects.Contains(x);
+                                    default:
+                                        throw new Exception();
+                                }
+                            default:
+                                throw new Exception();
+                        }
+                    })
+                    .ToDictionary(k => k.FormKey);
         }
     }
 }
