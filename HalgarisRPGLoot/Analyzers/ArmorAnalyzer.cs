@@ -12,67 +12,44 @@ using Mutagen.Bethesda.Synthesis;
 
 namespace HalgarisRPGLoot.Analyzers
 {
-    public class ArmorAnalyzer
+    public class ArmorAnalyzer:GearAnalyzer<IArmorGetter>
     {
-        private readonly ArmorSettings _settings = Program.Settings.RarityAndVariationSettings.ArmorSettings;
+        private readonly Dictionary<IFormLinkGetter<IArmorGetter>, IConstructibleObjectGetter> _armorDictionary;
 
-        private IPatcherState<ISkyrimMod, ISkyrimModGetter> State { get; set; }
-        private ILeveledItemGetter[] AllLeveledLists { get; set; }
-        private ResolvedListItem<IArmorGetter>[] AllListItems { get; set; }
-        private ResolvedListItem<IArmorGetter>[] AllEnchantedItems { get; set; }
-        private ResolvedListItem<IArmorGetter>[] AllUnenchantedItems { get; set; }
-
-        private Dictionary<int, ResolvedEnchantment[]> ByLevelIndexed { get; set; }
-
-        private Dictionary<FormKey, IObjectEffectGetter> AllObjectEffects { get; set; }
-
-        private ResolvedEnchantment[] AllEnchantments { get; set; }
-
-        // ReSharper disable once UnusedAutoPropertyAccessor.Local
-        private HashSet<short> AllLevels { get; set; }
-
-        private (short Key, ResolvedEnchantment[])[] ByLevel { get; set; }
-
-
-        private SortedList<String, ResolvedEnchantment[]>[] AllRpgEnchants { get; set; }
-
-        private Dictionary<String, FormKey>[] ChosenRpgEnchants { get; set; }
-        private Dictionary<FormKey, ResolvedEnchantment[]>[] ChosenRpgEnchantEffects { get; set; }
-
-        private static readonly Random Random = new Random(Program.Settings.GeneralSettings.RandomSeed);
-
-        private Dictionary<IFormLinkGetter<IArmorGetter>, IConstructibleObjectGetter> _armorDictionary;
-
-        private ObjectEffectsAnalyzer _objectEffectsAnalyzer;
+        private readonly ObjectEffectsAnalyzer _objectEffectsAnalyzer;
 
         public ArmorAnalyzer(IPatcherState<ISkyrimMod, ISkyrimModGetter> state,
             Dictionary<IFormLinkGetter<IArmorGetter>, IConstructibleObjectGetter> armorDictionary,
             ObjectEffectsAnalyzer objectEffectsAnalyzer)
         {
+            Settings = Program.Settings.RarityAndVariationSettings.ArmorSettings;
+            EditorIdPrefix = "HAL_ARMOR_";
+            ItemTypeDescriptor = " armor";
+            
             State = state;
             _armorDictionary = armorDictionary;
             _objectEffectsAnalyzer = objectEffectsAnalyzer;
 
-            AllRpgEnchants = new SortedList<String, ResolvedEnchantment[]>[_settings.RarityClasses.Count];
-            for (int i = 0; i < AllRpgEnchants.Length; i++)
+            AllRpgEnchants = new SortedList<String, ResolvedEnchantment[]>[Settings.RarityClasses.Count];
+            for (var i = 0; i < AllRpgEnchants.Length; i++)
             {
-                AllRpgEnchants[i] = new SortedList<String, ResolvedEnchantment[]>();
+                AllRpgEnchants[i] = new();
             }
 
-            ChosenRpgEnchants = new Dictionary<String, FormKey>[_settings.RarityClasses.Count];
-            for (int i = 0; i < ChosenRpgEnchants.Length; i++)
+            ChosenRpgEnchants = new Dictionary<String, FormKey>[Settings.RarityClasses.Count];
+            for (var i = 0; i < ChosenRpgEnchants.Length; i++)
             {
-                ChosenRpgEnchants[i] = new Dictionary<String, FormKey>();
+                ChosenRpgEnchants[i] = new();
             }
 
-            ChosenRpgEnchantEffects = new Dictionary<FormKey, ResolvedEnchantment[]>[_settings.RarityClasses.Count];
-            for (int i = 0; i < ChosenRpgEnchantEffects.Length; i++)
+            ChosenRpgEnchantEffects = new Dictionary<FormKey, ResolvedEnchantment[]>[Settings.RarityClasses.Count];
+            for (var i = 0; i < ChosenRpgEnchantEffects.Length; i++)
             {
-                ChosenRpgEnchantEffects[i] = new Dictionary<FormKey, ResolvedEnchantment[]>();
+                ChosenRpgEnchantEffects[i] = new();
             }
         }
 
-        public void Analyze()
+        protected override void AnalyzeGear()
         {
             AllLeveledLists = State.LoadOrder.PriorityOrder.WinningOverrides<ILeveledItemGetter>().ToArray();
 
@@ -151,7 +128,7 @@ namespace HalgarisRPGLoot.Analyzers
                 for (int i = 0; i < AllRpgEnchants.Length; i++)
                 {
                     var forLevel = AllEnchantments;
-                    var takeMin = Math.Min(_settings.RarityClasses[i].NumEnchantments, forLevel.Length);
+                    var takeMin = Math.Min(Settings.RarityClasses[i].NumEnchantments, forLevel.Length);
                     if (takeMin <= 0) continue;
                     var enchs = new ResolvedEnchantment[takeMin];
                     enchs[0] = AllEnchantments[coreEnchant];
@@ -179,48 +156,17 @@ namespace HalgarisRPGLoot.Analyzers
 
                     var oldench = enchs.First().Enchantment;
                     SortedList<String, ResolvedEnchantment[]> enchants = AllRpgEnchants[i];
-                    Console.WriteLine("Generated raw " + _settings.RarityClasses[i].Label + " armor enchantment of " +
+                    Console.WriteLine("Generated raw " + Settings.RarityClasses[i].Label + " armor enchantment of " +
                                       oldench.Name);
-                    if (!enchants.ContainsKey(_settings.RarityClasses[i].Label + " " + oldench.Name))
+                    if (!enchants.ContainsKey(Settings.RarityClasses[i].Label + " " + oldench.Name))
                     {
-                        enchants.Add(_settings.RarityClasses[i].Label + " " + oldench.Name, enchs);
+                        enchants.Add(Settings.RarityClasses[i].Label + " " + oldench.Name, enchs);
                     }
                 }
             }
         }
 
-        public void Generate()
-        {
-            foreach (var ench in AllUnenchantedItems)
-            {
-                var lst = State.PatchMod.LeveledItems.AddNewLocking(State.PatchMod.GetNextFormKey());
-                lst.DeepCopyIn(ench.List);
-                lst.EditorID = "HAL_TOP_LList" + ench.Resolved.EditorID;
-                lst.Entries!.Clear();
-                //TODO: Make Flag Setting
-                lst.Flags &= ~LeveledItem.Flag.UseAll;
-                for (int i = 0; i < _settings.VarietyCountPerItem; i++)
-                {
-                    var level = ench.Entry.Data?.Level;
-                    var forLevel = ByLevelIndexed[level ?? 1];
-                    if (forLevel.Length.Equals(0)) continue;
-
-                    var itm = EnchantItem(ench, RandomRarity());
-                    var entry = ench.Entry.DeepCopy();
-                    entry.Data!.Reference.SetTo(itm);
-                    lst.Entries.Add(entry);
-                }
-
-                var olst = State.PatchMod.LeveledItems.GetOrAddAsOverride(ench.List);
-                foreach (var entry in olst.Entries!.Where(entry =>
-                             entry.Data!.Reference.FormKey == ench.Resolved.FormKey))
-                {
-                    entry.Data!.Reference.SetTo(lst);
-                }
-            }
-        }
-
-        private FormKey EnchantItem(ResolvedListItem<IArmorGetter> item, int rarity)
+        protected override FormKey EnchantItem(ResolvedListItem<IArmorGetter> item, int rarity)
         {
             if (!(item.Resolved?.Name?.TryLookup(Language.English, out var itemName) ?? false))
             {
@@ -228,102 +174,50 @@ namespace HalgarisRPGLoot.Analyzers
             }
 
             Console.WriteLine("Generating Enchanted version of " + itemName);
-            if (_settings.RarityClasses[rarity].NumEnchantments != 0)
+            if (Settings.RarityClasses[rarity].NumEnchantments != 0)
             {
-                var nitm = State.PatchMod.Armors.AddNewLocking(State.PatchMod.GetNextFormKey());
-                var nrec = GenerateEnchantment(rarity);
-                var effects = ChosenRpgEnchantEffects[rarity].GetValueOrDefault(nrec);
-                if (item.Resolved != null) nitm.DeepCopyIn(item.Resolved);
-                nitm.EditorID = "HAL_ARMOR_" + _settings.RarityClasses[rarity].Label.ToUpper() + "_" + nitm.EditorID +
+                var newArmor = State.PatchMod.Armors.AddNewLocking(State.PatchMod.GetNextFormKey());
+                var generatedEnchantmentFormKey = GenerateEnchantment(rarity);
+                var effects = ChosenRpgEnchantEffects[rarity].GetValueOrDefault(generatedEnchantmentFormKey);
+                if (item.Resolved != null) newArmor.DeepCopyIn(item.Resolved);
+                newArmor.EditorID = EditorIdPrefix + Settings.RarityClasses[rarity].Label.ToUpper() + "_" + newArmor.EditorID +
                                 "_of_" + effects?.First().Enchantment.Name;
-                nitm.ObjectEffect.SetTo(nrec);
-                nitm.EnchantmentAmount = (ushort) (effects ?? Array.Empty<ResolvedEnchantment>())
+                newArmor.ObjectEffect.SetTo(generatedEnchantmentFormKey);
+                newArmor.EnchantmentAmount = (ushort) (effects ?? Array.Empty<ResolvedEnchantment>())
                     .Where(e => e.Amount.HasValue).Sum(e => e.Amount.Value);
-                nitm.Name = _settings.RarityClasses[rarity].Label + " " + itemName + " of " +
+                newArmor.Name = Settings.RarityClasses[rarity].Label + " " + itemName + " of " +
                             effects?.First().Enchantment.Name;
                 if (item.Resolved != null)
-                    nitm.TemplateArmor = (IFormLinkNullable<IArmorGetter>) item.Resolved.ToNullableLinkGetter();
+                    newArmor.TemplateArmor = (IFormLinkNullable<IArmorGetter>) item.Resolved.ToNullableLinkGetter();
 
-                Console.WriteLine("Generated " + _settings.RarityClasses[rarity].Label + " " + itemName + " of " +
+                Console.WriteLine("Generated " + Settings.RarityClasses[rarity].Label + " " + itemName + " of " +
                                   effects?.First().Enchantment.Name);
-                return nitm.FormKey;
+                return newArmor.FormKey;
             }
             else
             {
-                var nitm = State.PatchMod.Armors.AddNewLocking(State.PatchMod.GetNextFormKey());
-                if (item.Resolved != null) nitm.DeepCopyIn(item.Resolved);
-                nitm.EditorID = "HAL_ARMOR_" + nitm.EditorID;
+                var newArmor = State.PatchMod.Armors.AddNewLocking(State.PatchMod.GetNextFormKey());
+                if (item.Resolved != null) newArmor.DeepCopyIn(item.Resolved);
+                newArmor.EditorID = EditorIdPrefix + newArmor.EditorID;
 
-                nitm.Name = _settings.RarityClasses[rarity].Label.Equals("")
+                newArmor.Name = Settings.RarityClasses[rarity].Label.Equals("")
                     ? itemName
-                    : _settings.RarityClasses[rarity].Label + " " + itemName;
+                    : Settings.RarityClasses[rarity].Label + " " + itemName;
 
-                Console.WriteLine("Generated " + nitm.Name);
+                Console.WriteLine("Generated " + newArmor.Name);
 
 
-                return nitm.FormKey;
+                return newArmor.FormKey;
             }
-        }
-
-        private FormKey GenerateEnchantment(int rarity)
-        {
-            var array = AllRpgEnchants[rarity].ToArray();
-            var allRpgEnchantmentsCount = AllRpgEnchants[rarity].Count;
-            var effects = array.ElementAt(Random.Next(0,
-                (0 < allRpgEnchantmentsCount - 1) ? allRpgEnchantmentsCount - 1 : array.Length - 1)).Value;
-
-            var oldench = effects.First().Enchantment;
-
-            Console.WriteLine("Generating " + _settings.RarityClasses[rarity].Label + " armor enchantment of " +
-                              oldench.Name);
-            if (ChosenRpgEnchants[rarity].ContainsKey(_settings.RarityClasses[rarity].Label + " " + oldench.Name))
-            {
-                return ChosenRpgEnchants[rarity]
-                    .GetValueOrDefault(_settings.RarityClasses[rarity].Label + " " + oldench.Name);
-            }
-
-            var key = State.PatchMod.GetNextFormKey();
-            var nrec = State.PatchMod.ObjectEffects.AddNewLocking(key);
-            nrec.DeepCopyIn(effects.First().Enchantment);
-            nrec.EditorID = "HAL_ARMOR_ENCH_" + _settings.RarityClasses[rarity].Label.ToUpper() + "_" +
-                            oldench.EditorID;
-            nrec.Name = _settings.RarityClasses[rarity].Label + " " + oldench.Name;
-            nrec.Effects.Clear();
-            nrec.Effects.AddRange(effects.SelectMany(e => e.Enchantment.Effects).Select(e => e.DeepCopy()));
-            nrec.WornRestrictions.SetTo(effects.First().Enchantment.WornRestrictions);
-
-            ChosenRpgEnchants[rarity].Add(_settings.RarityClasses[rarity].Label + " " + oldench.Name, nrec.FormKey);
-            ChosenRpgEnchantEffects[rarity].Add(nrec.FormKey, effects);
-            Console.WriteLine("Enchantment Generated");
-            return nrec.FormKey;
-        }
-
-        public int RandomRarity()
-        {
-            int rar = 0;
-            int total = 0;
-            foreach (var t in _settings.RarityClasses)
-            {
-                total += t.RarityWeight;
-            }
-
-            int roll = Random.Next(0, total);
-            while (roll >= _settings.RarityClasses[rar].RarityWeight && rar < _settings.RarityClasses.Count)
-            {
-                roll -= _settings.RarityClasses[rar].RarityWeight;
-                rar++;
-            }
-
-            return rar;
         }
 
         // ReSharper disable once UnusedMember.Local
         private static char[] _unusedNumbers = "123456890".ToCharArray();
 
-        private static readonly Regex Splitter =
-            new Regex("(?<=[A-Z])(?=[A-Z][a-z])|(?<=[^A-Z])(?=[A-Z])|(?<=[A-Za-z])(?=[^A-Za-z])");
+        private readonly Regex _splitter =
+            new("(?<=[A-Z])(?=[A-Z][a-z])|(?<=[^A-Z])(?=[A-Z])|(?<=[A-Za-z])(?=[^A-Za-z])");
 
-        private readonly Dictionary<string, string> _knownMapping = new Dictionary<string, string>();
+        private readonly Dictionary<string, string> _knownMapping = new();
 
         private string MakeName(string resolvedEditorId)
         {
@@ -337,7 +231,7 @@ namespace HalgarisRPGLoot.Analyzers
                 if (_knownMapping.TryGetValue(resolvedEditorId, out var cached))
                     return cached;
 
-                var parts = Splitter.Split(resolvedEditorId)
+                var parts = _splitter.Split(resolvedEditorId)
                     .Where(e => e.Length > 1)
                     .Where(e => e != "DLC" && e != "Armor" && e != "Variant")
                     .Where(e => !int.TryParse(e, out var _))
@@ -354,5 +248,7 @@ namespace HalgarisRPGLoot.Analyzers
 
             return returning;
         }
+        
     }
+    
 }
