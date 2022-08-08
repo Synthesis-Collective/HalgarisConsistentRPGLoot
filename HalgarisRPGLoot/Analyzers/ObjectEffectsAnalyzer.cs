@@ -6,7 +6,6 @@ using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Skyrim;
 using Mutagen.Bethesda.Synthesis;
 using Noggog;
-using Exception = System.Exception;
 
 namespace HalgarisRPGLoot.Analyzers
 {
@@ -30,17 +29,14 @@ namespace HalgarisRPGLoot.Analyzers
 
             var pluginObjectEffects = new HashSet<IObjectEffectGetter>();
 
-            foreach (var objectEffectGroup in pluginObjectEffectGroups)
+            foreach (var objectEffectGetter in pluginObjectEffectGroups.SelectMany(objectEffectGroup => objectEffectGroup))
             {
-                foreach (var objectEffectGetter in objectEffectGroup)
-                {
-                    pluginObjectEffects.Add(objectEffectGetter);
-                }
+                pluginObjectEffects.Add(objectEffectGetter);
             }
 
 
             AllObjectEffects =
-                State.LoadOrder.PriorityOrder.ObjectEffect().WinningOverrides().AsParallel()
+                State.LoadOrder.PriorityOrder.ObjectEffect().WinningOverrides()
                     .Where(x => x.Name != null)
                     .Where(x =>
                     {
@@ -56,7 +52,7 @@ namespace HalgarisRPGLoot.Analyzers
                                         return !_settings.EnchantmentList.Contains(x) &&
                                                pluginObjectEffects.Contains(x);
                                     default:
-                                        throw new Exception();
+                                        throw new();
                                 }
 
                             case ListMode.Whitelist:
@@ -69,10 +65,10 @@ namespace HalgarisRPGLoot.Analyzers
                                         return _settings.EnchantmentList.Contains(x) ||
                                                pluginObjectEffects.Contains(x);
                                     default:
-                                        throw new Exception();
+                                        throw new();
                                 }
                             default:
-                                throw new Exception();
+                                throw new();
                         }
                     })
                     .ToDictionary(k => k.FormKey);
