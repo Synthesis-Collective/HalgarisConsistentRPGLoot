@@ -1,34 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Skyrim;
 using Mutagen.Bethesda.Plugins;
 
+
 namespace HalgarisRPGLoot
 {
     public static class Extensions
     {
-        public static TC AddNewLocking<TC>(this SkyrimGroup<TC> itms, FormKey val)
+        public static TC AddNewLocking<TC>(this SkyrimGroup<TC> items, FormKey val)
         where TC : class, ISkyrimMajorRecordInternal
         {
-            lock (itms)
+            lock (items)
             {
-                return itms.AddNew(val);
+                return items.AddNew(val);
             }
         }
-
-        public static Exception IncompatibleLoadOrderException
+        public static bool CheckKeywords( IEnumerable<IFormLinkGetter<IKeywordGetter>> kws)
         {
-            get
-            {
-                return IncompatibleLoadOrderException;
-            }
-        }
-
-        public static bool CheckKeywords(IReadOnlyList<IFormLinkGetter<IKeywordGetter>> kws)
-        {
-            return kws.Any(itemKeyword => Program.Settings.GeneralSettings.UntouchableEquipmentKeywords.Contains(itemKeyword));
+            return kws?.Any(itemKeyword => Program.Settings.GeneralSettings.UntouchableEquipmentKeywords.Contains(itemKeyword)) ?? false;
         }
     }
 }
