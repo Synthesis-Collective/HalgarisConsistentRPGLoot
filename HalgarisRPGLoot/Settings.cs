@@ -6,17 +6,19 @@ using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Skyrim;
 using Mutagen.Bethesda.FormKeys.SkyrimSE;
 using Mutagen.Bethesda.WPF.Reflection.Attributes;
+// ReSharper disable FieldCanBeMadeReadOnly.Global
+// ReSharper disable CollectionNeverUpdated.Global
 
 namespace HalgarisRPGLoot
 {
     public class Settings
     {
-        [MaintainOrder] public GeneralSettings GeneralSettings = new GeneralSettings();
+        [MaintainOrder] public GeneralSettings GeneralSettings = new();
 
-        [MaintainOrder] public EnchantmentSettings EnchantmentSettings = new EnchantmentSettings();
+        [MaintainOrder] public EnchantmentSettings EnchantmentSettings = new();
 
         [MaintainOrder]
-        public RarityAndVariationSettings RarityAndVariationSettings = new RarityAndVariationSettings();
+        public RarityAndVariationSettings RarityAndVariationSettings = new();
 
         
     }
@@ -40,7 +42,7 @@ namespace HalgarisRPGLoot
         [SynthesisDescription("Keywords that define Items you don't want processed.")]
         [SynthesisTooltip("Keywords that define Items you don't want processed.")]
         public HashSet<IFormLinkGetter<IKeywordGetter>> UntouchableEquipmentKeywords =
-            new HashSet<IFormLinkGetter<IKeywordGetter>>()
+            new()
             {
                 Skyrim.Keyword.MagicDisallowEnchanting,
                 Skyrim.Keyword.DaedricArtifact,
@@ -60,7 +62,7 @@ namespace HalgarisRPGLoot
 
         [MaintainOrder] [SynthesisSettingName("Enchantment List")] [SynthesisDescription("List of Enchantments")]
         public HashSet<IFormLinkGetter<IObjectEffectGetter>> EnchantmentList =
-            new HashSet<IFormLinkGetter<IObjectEffectGetter>>()
+            new()
             {
                 Skyrim.ObjectEffect.BoundBattleaxeEnchantment,
                 Skyrim.ObjectEffect.BoundBowEnchantment,
@@ -78,52 +80,50 @@ namespace HalgarisRPGLoot
         public ListMode PluginListMode = ListMode.Blacklist;
 
         [MaintainOrder] [SynthesisSettingName("Plugin List")] [SynthesisDescription("List of Plugins")]
-        public HashSet<ModKey> PluginList = new HashSet<ModKey>();
+        public HashSet<ModKey> PluginList = new();
     }
     
     public class RarityAndVariationSettings
     {
         [MaintainOrder] public GenerationMode GenerationMode = GenerationMode.GenerateRarities;
-        [MaintainOrder] public ArmorSettings ArmorSettings = new ArmorSettings();
-        [MaintainOrder] public WeaponSettings WeaponSettings = new WeaponSettings();
-    }
-
-    public class ArmorSettings
-    {
-        [SynthesisSettingName("Number of variations per Armor")]
-        [SynthesisTooltip("This determines how many different versions\n" +
-                          "of the same Armor you can find.")]
-        public int VarietyCountPerItem = 16;
-
-        [SynthesisSettingName("Rarity Classes")] [SynthesisTooltip("Custom definable rarity classes")]
-        public List<RarityClass> RarityClasses = new List<RarityClass>()
+        [MaintainOrder] public GearSettings ArmorSettings = new(16,new()
         {
-            new RarityClass() {Label = "", NumEnchantments = 0, RarityWeight = 100},
-            new RarityClass() {Label = "Magical", NumEnchantments = 1, RarityWeight = 50},
-            new RarityClass() {Label = "Rare", NumEnchantments = 2, RarityWeight = 13},
-            new RarityClass() {Label = "Epic", NumEnchantments = 3, RarityWeight = 5},
-            new RarityClass() {Label = "Legendary", NumEnchantments = 4, RarityWeight = 2},
-        };
-    }
-
-    public class WeaponSettings
-    {
-        [SynthesisSettingName("Number of variations per Weapon")]
-        [SynthesisTooltip("This determines how many different versions\n" +
-                          "of the same Weapon you can find.")]
-        public int VarietyCountPerItem = 16;
-
-        [SynthesisSettingName("Rarity Classes")] [SynthesisTooltip("Custom definable rarity classes")]
-        public List<RarityClass> RarityClasses = new List<RarityClass>()
+            new() {Label = "", NumEnchantments = 0, RarityWeight = 100},
+            new() {Label = "Magical", NumEnchantments = 1, RarityWeight = 50},
+            new() {Label = "Rare", NumEnchantments = 2, RarityWeight = 13},
+            new() {Label = "Epic", NumEnchantments = 3, RarityWeight = 5},
+            new() {Label = "Legendary", NumEnchantments = 4, RarityWeight = 2}
+        });
+        [MaintainOrder] public GearSettings WeaponSettings = new GearSettings(16,new()
         {
-            new RarityClass() {Label = "", NumEnchantments = 0, RarityWeight = 100},
-            new RarityClass() {Label = "Magical", NumEnchantments = 1, RarityWeight = 80},
-            new RarityClass() {Label = "Rare", NumEnchantments = 2, RarityWeight = 13},
-            new RarityClass() {Label = "Epic", NumEnchantments = 3, RarityWeight = 5},
-            new RarityClass() {Label = "Legendary", NumEnchantments = 4, RarityWeight = 2},
-        };
+            new() {Label = "", NumEnchantments = 0, RarityWeight = 100},
+            new() {Label = "Magical", NumEnchantments = 1, RarityWeight = 50},
+            new() {Label = "Rare", NumEnchantments = 2, RarityWeight = 13},
+            new() {Label = "Epic", NumEnchantments = 3, RarityWeight = 5},
+            new() {Label = "Legendary", NumEnchantments = 4, RarityWeight = 2}
+        });
     }
 
+    public class GearSettings
+    {
+        public GearSettings(int varietyCountPerItem, List<RarityClass> rarityClasses)
+        {
+            VarietyCountPerItem = varietyCountPerItem;
+            RarityClasses = rarityClasses;
+        }
+        [MaintainOrder]
+        [SynthesisSettingName("Number of variations per Item")]
+        [SynthesisTooltip("This determines how many different versions\n" +
+                          "of the same Item you can find.")]
+        [SynthesisDescription("This determines how many different versions\n" +
+                                                "of the same Item you can find.")]
+        public int VarietyCountPerItem;
+
+        [MaintainOrder]
+        [SynthesisSettingName("Rarity Classes")] [SynthesisTooltip("Custom definable rarity classes")]
+        public List<RarityClass> RarityClasses;
+    }
+    
     public class RarityClass : IComparable<RarityClass>
     {
         [SynthesisSettingName("Rarity Label")] public string Label;
@@ -141,4 +141,5 @@ namespace HalgarisRPGLoot
             return RarityWeight.CompareTo(other.RarityWeight) * -1;
         }
     }
+
 }
