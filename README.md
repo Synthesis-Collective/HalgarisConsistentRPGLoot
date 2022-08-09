@@ -69,7 +69,6 @@ You can use these to customize and adjust the patcher to your setup.
     - `JustDistributeEnchantments`
       - As the name implies only distributes enchantments, so that each weapon has each enchantment once.
       - With this selected the following settings can be ignored.
-      - Not yet implemented.
   - **Armor/WeaponSettings:** _(Separate since some people have more armors or weapon in their setups)_
     - **VarietyCountPerItem:**
       - Default: `16`
