@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using HalgarisRPGLoot.DataModels;
@@ -111,7 +112,11 @@ namespace HalgarisRPGLoot.Analyzers
 
             AllLevels = AllEnchantments.Select(e => e.Level).Distinct().ToHashSet();
 
-            var maxLvl = AllListItems.Select(i => i.Entry.Data?.Level).Distinct().ToHashSet().Max() ?? 1;
+            var maxLvl = AllListItems.Select(i =>
+            {
+                Debug.Assert(i.Entry.Data != null, "Incompatible LeveledListItem." );
+                return i.Entry.Data.Level;
+            }).Distinct().ToHashSet().Max();
 
             ByLevel = AllEnchantments.GroupBy(e => e.Level)
                 .OrderBy(e => e.Key)

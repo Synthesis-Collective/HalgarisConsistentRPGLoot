@@ -67,12 +67,11 @@ namespace HalgarisRPGLoot.Analyzers
                 leveledItem.Flags &= ~LeveledItem.Flag.UseAll;
                 for (var i = 0; i < Settings.VarietyCountPerItem; i++)
                 {
-                    var level = ench.Entry.Data?.Level;
-                    var forLevel = ByLevelIndexed[level ?? 1];
+                    var level = ench.Entry.Data!.Level;
+                    var forLevel = ByLevelIndexed[level];
                     if (forLevel.Length.Equals(0)) continue;
 
                     var itm = EnchantItem(ench, RandomRarity());
-                    Console.WriteLine(itm.ToString());
                     var entry = ench.Entry.DeepCopy();
                     entry.Data!.Reference.SetTo(itm);
                     leveledItem.Entries.Add(entry);
