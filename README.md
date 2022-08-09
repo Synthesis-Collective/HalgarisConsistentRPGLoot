@@ -17,18 +17,18 @@ Use the `Tag` Versioning in Synthesis to not accidentally break your saves (roll
 
 ## Settings
 
-You can use these to customize how strong the presence of enchanted items is in your game.
+You can use these to customize and adjust the patcher to your setup.
 
-**Settings:**
+### Settings:
 
 - **General Settings:**
-  - RandomSeed:
+  - **RandomSeed:**
     - Default: `42`
     - Basically a Key to make the randomness repeatable.
-  - Only process constructible equipment
+  - **Only process constructible equipment:**
     - Default: `On`
     - Only items that are referenced in crafting and tampering recipes get processed and enchanted.
-  - Untouchable Equipment Keywords
+  - **Untouchable Equipment Keywords:**
     - Keywords that are on unique and/or incompatible items
     - Defaults:
       - `Skyrim.Keyword.MagicDisallowEnchanting`
@@ -38,24 +38,24 @@ You can use these to customize how strong the presence of enchanted items is in 
       - `Skyrim.Keyword.WeapTypeStaff`
         - Staff magic effects would turn your swords into weird looking magic staffs and magic staffs would be weird with sword and bow enchantments.
 - **Enchantment Settings:**
-  - Enchantment List Mode:
+  - **Enchantment List Mode:**
     - Decides if the following list gets used as a blacklist or whitelist for allowed magic ObjectEffects (Enchantments)
     - `Blacklist` (Default)
     - `Whitelist`
-  - Enchantment List
+  - **Enchantment List:**
     - Default:
       - `Skyrim.ObjectEffect.BoundBattleaxeEnchantment`
       - `Skyrim.ObjectEffect.BoundBowEnchantment`
       - `Skyrim.ObjectEffect.BoundSwordEnchantment`
     - The defaults here filter the visual effect enchantments as they have no gameplay impact.
-  - Plugin List Mode:
+  - **Plugin List Mode:**
     - Decides if the following list gets used as a blacklist or whitelist for ESPs/ESMs of which the magic effects get distributed.
     - `Blacklist` (Default)
     - `Whitelist`
-  - Plugin List
+  - **Plugin List:**
     - Default: `Empty` Because you Ideally manage to get universal filters done in the Keyword and Enchantment List Settings.
 - **Rarity,Variation,Distribution Settings:**
-  - LeveledList Flags List:
+  - **LeveledList Flags List:**
     - Information about those flags can be found on [en.uesp.net](https://en.uesp.net/wiki/Skyrim:Leveled_Lists) (they are lightly different named) and [ck.uesp.net](https://ck.uesp.net/wiki/LeveledItem)
     - `CalculateFromAllLevelsLessThanOrEqualPlayer` (Default)
       - Default because it is present in enchanted Vanilla Leveled Lists
@@ -63,18 +63,18 @@ You can use these to customize how strong the presence of enchanted items is in 
       - Default because it it present in enchanted Vanilla Leveled Lists
     - `UseAll`
     - `SpecialLoot`
-  - Generation Mode:
+  - **Generation Mode:**
     - `GenerateRarities` (Default)
       - Generates and distributes the various enchantments as by the settings in the next section.
     - `JustDistributeEnchantments`
       - As the name implies only distributes enchantments, so that each weapon has each enchantment once.
       - With this selected the following settings can be ignored.
       - Not yet implemented.
-  - Armor/WeaponSettings (Separate since some people have more armors or weapon in their setups)
-    - VarietyCountPerItem:
+  - **Armor/WeaponSettings:** _(Separate since some people have more armors or weapon in their setups)_
+    - **VarietyCountPerItem:**
       - Default: `16`
       - The Number of Variations to be created for every item.
-    - Rarities:
+    - **Rarities:**
       - Label: Added to each generated item's name
       - Num Enchantments: The number of enchantments used to define a rarity...i.e. 1 enchantment is fairly balanced...4 probably not so much
       - RarityWeight: This defines the chance for each Rarity to be chosen when generating item Variants.
