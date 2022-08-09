@@ -72,6 +72,7 @@ You can use these to customize how strong the presence of enchanted items is in 
       - Not yet implemented.
   - Armor/WeaponSettings (Separate since some people have more armors or weapon in their setups)
     - VarietyCountPerItem:
+      - Default: `16`
       - The Number of Variations to be created for every item.
     - Rarities:
       - Label: Added to each generated item's name
