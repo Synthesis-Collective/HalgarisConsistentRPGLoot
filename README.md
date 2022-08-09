@@ -3,13 +3,14 @@
 ## What does this Patcher do ?
 
 It adds a lot of enchanted weapons with varying numbers of rarities and effectiveness.
-It is fully customizable. 
+It is fully customizable.
 
 ## Versioning
 
 Use the `Tag` Versioning in Synthesis to not accidentally break your saves (rolling back *should* work for fixing it).
 
 `X.Y.Z`:
+
 - X - Big rework or bigger changes (new settings etc) **NEEDS NEW SAVE**
 - Y - Internal changes that 100% will alter the consistency of the outputs between versions **NEEDS NEW SAVE**.
 - Z - Typos, Minor Bug Fixes or Changes to default settings for NEW users.
@@ -22,7 +23,7 @@ You can use these to customize how strong the presence of enchanted items is in 
 
 - **General Settings:**
   - RandomSeed:
-    - Default: `42` 
+    - Default: `42`
     - Basically a Key to make the randomness repeatable.
   - Only process constructible equipment
     - Default: `On`
@@ -53,7 +54,15 @@ You can use these to customize how strong the presence of enchanted items is in 
     - `Whitelist`
   - Plugin List
     - Default: `Empty` Because you Ideally manage to get universal filters done in the Keyword and Enchantment List Settings.
-- **Rarity and Variation Settings:**
+- **Rarity,Variation,Distribution Settings:**
+  - LeveledList Flags List:
+    - Information about those flags can be found on [en.uesp.net](https://en.uesp.net/wiki/Skyrim:Leveled_Lists) (they are lightly different named) and [ck.uesp.net](https://ck.uesp.net/wiki/LeveledItem)
+    - `CalculateFromAllLevelsLessThanOrEqualPlayer` (Default)
+      - Default because it is present in enchanted Vanilla Leveled Lists
+    - `CalculateForEachItemInCount` (Default)
+      - Default because it it present in enchanted Vanilla Leveled Lists
+    - `UseAll`
+    - `SpecialLoot`
   - Generation Mode:
     - `GenerateRarities` (Default)
       - Generates and distributes the various enchantments as by the settings in the next section.
@@ -73,3 +82,14 @@ You can use these to customize how strong the presence of enchanted items is in 
           2. Generate a random number between 0 and the sum of Rarity Weights
           3. Check starting with the largest Rarity Weight is in the range between the Sum (or the previous rarity weight, in the following checks) and the current rarity weight.
         - To get the percentage chance for a rarity to be generated (not found those are different!) you divide the Rarity Weight through the Sum of all Rarity Weights.
+      - AllowDisenchanting: If not enabled new Items get the Keyword: `Skyrim.Keyword.MagicDisallowEnchanting`
+      - Default Rarities:
+
+        | Rarity Label | Number of Enchantments | Rarity Weight | Allow Disenchanting |
+        |--------------| ---------------------- | ------------- | ------------------- |
+        | -            | 0                      | 40            | true                |
+        | Magical      | 1                      | 40            | true                |
+        | Rare         | 2                      | 13            | false               |
+        | Epic         | 3                      | 5             | false               |
+        | Legendary    | 4                      | 2             | false               |
+

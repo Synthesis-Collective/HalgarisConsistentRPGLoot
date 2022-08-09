@@ -15,8 +15,13 @@ namespace HalgarisRPGLoot.Analyzers
         where TType : class, IMajorRecordGetter
 
     {
-        protected GearSettings Settings;
+        protected GearSettings GearSettings;
 
+        protected RarityVariationDistributionSettings RarityVariationDistributionSettings;
+
+        protected List<RarityClass> RarityClasses;
+
+        protected int VarietyCountPerItem;
         protected IPatcherState<ISkyrimMod, ISkyrimModGetter> State { get; init; }
 
         protected ResolvedListItem<TType>[] AllUnenchantedItems { get; set; }
@@ -63,9 +68,17 @@ namespace HalgarisRPGLoot.Analyzers
                 leveledItem.DeepCopyIn(ench.List);
                 leveledItem.EditorID = "HAL_TOP_LList" + ench.Resolved.EditorID;
                 leveledItem.Entries!.Clear();
-                //TODO: Make Flag Setting
-                leveledItem.Flags &= ~LeveledItem.Flag.UseAll;
-                for (var i = 0; i < Settings.VarietyCountPerItem; i++)
+                VarietyCountPerItem = RarityVariationDistributionSettings.GenerationMode switch
+                {
+                    GenerationMode.JustDistributeEnchantments => AllRpgEnchants[RarityClasses.Count].Count,
+                    _ => VarietyCountPerItem
+                };
+
+                foreach (var leveledListFlag in RarityVariationDistributionSettings.LeveledListFlagSet)
+                {
+                    leveledItem.Flags &= ~leveledListFlag;
+                }
+                for (var i = 0; i < VarietyCountPerItem; i++)
                 {
                     var level = ench.Entry.Data!.Level;
                     var forLevel = ByLevelIndexed[level];
@@ -86,36 +99,41 @@ namespace HalgarisRPGLoot.Analyzers
             }
         }
 
-        protected abstract FormKey EnchantItem(ResolvedListItem<TType> item, int rarity);
+        protected abstract FormKey EnchantItem(ResolvedListItem<TType> item, int rarity, int currentVariation = 0);
 
-        protected FormKey GenerateEnchantment(int rarity)
+        protected FormKey GenerateEnchantment(int rarity, int currentVariation)
         {
             var array = AllRpgEnchants[rarity].ToArray();
             var allRpgEnchantmentsCount = AllRpgEnchants[rarity].Count;
-            var effects = array.ElementAt(Random.Next(0,
-                (0 < allRpgEnchantmentsCount - 1) ? allRpgEnchantmentsCount - 1 : array.Length - 1)).Value;
+            var effects = RarityVariationDistributionSettings.GenerationMode switch
+            {
+                GenerationMode.GenerateRarities => array.ElementAt(Random.Next(0,
+                        (0 < allRpgEnchantmentsCount - 1) ? allRpgEnchantmentsCount - 1 : array.Length - 1))
+                    .Value,
+                _ => array.ElementAt(currentVariation).Value
+            };
 
             var oldObjectEffectGetter = effects.First().Enchantment;
 
-            Console.WriteLine("Generating " + Settings.RarityClasses[rarity].Label + ItemTypeDescriptor + " enchantment of " +
+            Console.WriteLine("Generating " + RarityClasses[rarity].Label + ItemTypeDescriptor + " enchantment of " +
                               oldObjectEffectGetter.Name);
-            if (ChosenRpgEnchants[rarity].ContainsKey(Settings.RarityClasses[rarity].Label + " " + oldObjectEffectGetter.Name))
+            if (ChosenRpgEnchants[rarity].ContainsKey(RarityClasses[rarity].Label + " " + oldObjectEffectGetter.Name))
             {
                 return ChosenRpgEnchants[rarity]
-                    .GetValueOrDefault(Settings.RarityClasses[rarity].Label + " " + oldObjectEffectGetter.Name);
+                    .GetValueOrDefault(RarityClasses[rarity].Label + " " + oldObjectEffectGetter.Name);
             }
 
             var key = State.PatchMod.GetNextFormKey();
             var newObjectEffectGetter = State.PatchMod.ObjectEffects.AddNewLocking(key);
             newObjectEffectGetter.DeepCopyIn(effects.First().Enchantment);
-            newObjectEffectGetter.EditorID = EditorIdPrefix + "ENCH_" + Settings.RarityClasses[rarity].Label.ToUpper() + "_" +
+            newObjectEffectGetter.EditorID = EditorIdPrefix + "ENCH_" + RarityClasses[rarity].Label.ToUpper() + "_" +
                             oldObjectEffectGetter.EditorID;
-            newObjectEffectGetter.Name = Settings.RarityClasses[rarity].Label + " " + oldObjectEffectGetter.Name;
+            newObjectEffectGetter.Name = RarityClasses[rarity].Label + " " + oldObjectEffectGetter.Name;
             newObjectEffectGetter.Effects.Clear();
             newObjectEffectGetter.Effects.AddRange(effects.SelectMany(e => e.Enchantment.Effects).Select(e => e.DeepCopy()));
             newObjectEffectGetter.WornRestrictions.SetTo(effects.First().Enchantment.WornRestrictions);
 
-            ChosenRpgEnchants[rarity].Add(Settings.RarityClasses[rarity].Label + " " + oldObjectEffectGetter.Name, newObjectEffectGetter.FormKey);
+            ChosenRpgEnchants[rarity].Add(RarityClasses[rarity].Label + " " + oldObjectEffectGetter.Name, newObjectEffectGetter.FormKey);
             ChosenRpgEnchantEffects[rarity].Add(newObjectEffectGetter.FormKey, effects);
             Console.WriteLine("Enchantment Generated");
             return newObjectEffectGetter.FormKey;
@@ -124,12 +142,12 @@ namespace HalgarisRPGLoot.Analyzers
         private int RandomRarity()
         {
             var rar = 0;
-            var total = Settings.RarityClasses.Sum(t => t.RarityWeight);
+            var total = RarityClasses.Sum(t => t.RarityWeight);
 
             var roll = Random.Next(0, total);
-            while (roll >= Settings.RarityClasses[rar].RarityWeight && rar < Settings.RarityClasses.Count)
+            while (roll >= RarityClasses[rar].RarityWeight && rar < RarityClasses.Count)
             {
-                roll -= Settings.RarityClasses[rar].RarityWeight;
+                roll -= RarityClasses[rar].RarityWeight;
                 rar++;
             }
 

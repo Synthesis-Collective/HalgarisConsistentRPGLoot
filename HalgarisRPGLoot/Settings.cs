@@ -6,6 +6,7 @@ using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Skyrim;
 using Mutagen.Bethesda.FormKeys.SkyrimSE;
 using Mutagen.Bethesda.WPF.Reflection.Attributes;
+// ReSharper disable ConvertToConstant.Global
 // ReSharper disable FieldCanBeMadeReadOnly.Global
 // ReSharper disable CollectionNeverUpdated.Global
 
@@ -17,10 +18,7 @@ namespace HalgarisRPGLoot
 
         [MaintainOrder] public EnchantmentSettings EnchantmentSettings = new();
 
-        [MaintainOrder]
-        public RarityAndVariationSettings RarityAndVariationSettings = new();
-
-        
+        [MaintainOrder] public RarityVariationDistributionSettings RarityVariationDistributionSettings = new();
     }
 
     public class GeneralSettings
@@ -82,25 +80,38 @@ namespace HalgarisRPGLoot
         [MaintainOrder] [SynthesisSettingName("Plugin List")] [SynthesisDescription("List of Plugins")]
         public HashSet<ModKey> PluginList = new();
     }
-    
-    public class RarityAndVariationSettings
+
+    public class RarityVariationDistributionSettings
     {
+        
+        [MaintainOrder]
+        [SynthesisSettingName("LeveledList Flags List")]
+        [SynthesisDescription("Flags that will be set on generated LeveledLists")]
+        [SynthesisTooltip("Flags that will be set on generated LeveledLists")]
+        public HashSet<LeveledItem.Flag> LeveledListFlagSet = new ()
+        {
+            LeveledItem.Flag.CalculateFromAllLevelsLessThanOrEqualPlayer,
+            LeveledItem.Flag.CalculateForEachItemInCount
+        };
+        
         [MaintainOrder] public GenerationMode GenerationMode = GenerationMode.GenerateRarities;
-        [MaintainOrder] public GearSettings ArmorSettings = new(16,new()
+        
+        [MaintainOrder] public GearSettings ArmorSettings = new(16, new()
         {
-            new() {Label = "", NumEnchantments = 0, RarityWeight = 100},
-            new() {Label = "Magical", NumEnchantments = 1, RarityWeight = 50},
-            new() {Label = "Rare", NumEnchantments = 2, RarityWeight = 13},
-            new() {Label = "Epic", NumEnchantments = 3, RarityWeight = 5},
-            new() {Label = "Legendary", NumEnchantments = 4, RarityWeight = 2}
+            new() {Label = "", NumEnchantments = 0, RarityWeight = 40, AllowDisenchanting = true},
+            new() {Label = "Magical", NumEnchantments = 1, RarityWeight = 40, AllowDisenchanting = true },
+            new() {Label = "Rare", NumEnchantments = 2, RarityWeight = 13,AllowDisenchanting = false },
+            new() {Label = "Epic", NumEnchantments = 3, RarityWeight = 5, AllowDisenchanting = false },
+            new() {Label = "Legendary", NumEnchantments = 4, RarityWeight = 2,AllowDisenchanting = false }
         });
-        [MaintainOrder] public GearSettings WeaponSettings = new GearSettings(16,new()
+
+        [MaintainOrder] public GearSettings WeaponSettings = new(16, new()
         {
-            new() {Label = "", NumEnchantments = 0, RarityWeight = 100},
-            new() {Label = "Magical", NumEnchantments = 1, RarityWeight = 50},
-            new() {Label = "Rare", NumEnchantments = 2, RarityWeight = 13},
-            new() {Label = "Epic", NumEnchantments = 3, RarityWeight = 5},
-            new() {Label = "Legendary", NumEnchantments = 4, RarityWeight = 2}
+            new() {Label = "", NumEnchantments = 0, RarityWeight = 40, AllowDisenchanting = true},
+            new() {Label = "Magical", NumEnchantments = 1, RarityWeight = 40, AllowDisenchanting = true },
+            new() {Label = "Rare", NumEnchantments = 2, RarityWeight = 13,AllowDisenchanting = false },
+            new() {Label = "Epic", NumEnchantments = 3, RarityWeight = 5, AllowDisenchanting = false },
+            new() {Label = "Legendary", NumEnchantments = 4, RarityWeight = 2,AllowDisenchanting = false }
         });
     }
 
@@ -111,19 +122,19 @@ namespace HalgarisRPGLoot
             VarietyCountPerItem = varietyCountPerItem;
             RarityClasses = rarityClasses;
         }
+
         [MaintainOrder]
         [SynthesisSettingName("Number of variations per Item")]
         [SynthesisTooltip("This determines how many different versions\n" +
                           "of the same Item you can find.")]
         [SynthesisDescription("This determines how many different versions\n" +
-                                                "of the same Item you can find.")]
+                              "of the same Item you can find.")]
         public int VarietyCountPerItem;
 
-        [MaintainOrder]
-        [SynthesisSettingName("Rarity Classes")] [SynthesisTooltip("Custom definable rarity classes")]
+        [MaintainOrder] [SynthesisSettingName("Rarity Classes")] [SynthesisTooltip("Custom definable rarity classes")]
         public List<RarityClass> RarityClasses;
     }
-    
+
     public class RarityClass : IComparable<RarityClass>
     {
         [SynthesisSettingName("Rarity Label")] public string Label;
@@ -136,10 +147,13 @@ namespace HalgarisRPGLoot
                           "\nthat an item gets generated with that rarity.")]
         public int RarityWeight;
 
+        [SynthesisSettingName("Allow Disenchanting")]
+        [SynthesisTooltip("Determines if loot of this rarity can be disenchanted.")]
+        public bool AllowDisenchanting = true;
+
         public int CompareTo(RarityClass other)
         {
             return RarityWeight.CompareTo(other.RarityWeight) * -1;
         }
     }
-
 }
