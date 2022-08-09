@@ -2,8 +2,9 @@
 
 ## What does this Patcher do ?
 
-It adds a lot of enchanted weapons with varying numbers of rarities and effectiveness.
-It is fully customizable.
+This patcher will distribute the enchantments found in your setup to your leveled lists and previously unenchanted items.  
+
+For this the patcher has a Distribution Only Mode and a more fun and enhanced RPGLoot rarity level Distribution.
 
 ## Versioning
 
