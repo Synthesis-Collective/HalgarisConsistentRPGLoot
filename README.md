@@ -1,4 +1,4 @@
-# HalgarisConsistentUniqueRPGLoot
+# Synthesis RPG Loot (Enchantment Distributor)
 
 ## What does this Patcher do ?
 
