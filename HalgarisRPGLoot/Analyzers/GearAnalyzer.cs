@@ -70,7 +70,7 @@ namespace HalgarisRPGLoot.Analyzers
                 leveledItem.Entries!.Clear();
                 VarietyCountPerItem = RarityVariationDistributionSettings.GenerationMode switch
                 {
-                    GenerationMode.JustDistributeEnchantments => AllRpgEnchants[RarityClasses.Count].Count,
+                    GenerationMode.JustDistributeEnchantments => AllRpgEnchants[RarityClasses.Count-1].Count,
                     _ => VarietyCountPerItem
                 };
 
