@@ -93,7 +93,8 @@ namespace HalgarisRPGLoot.Analyzers
                     if (Program.Settings.GeneralSettings.OnlyProcessConstructableEquipment)
                     {
                         var kws = (e.Resolved.Keywords ?? Array.Empty<IFormLink<IKeywordGetter>>());
-                        return !Extensions.CheckKeywords(kws) && _weaponDictionary.ContainsKey(e.Resolved.Template);
+                        return !Extensions.CheckKeywords(kws) && (_weaponDictionary.ContainsKey(e.Resolved.Template) ||
+                                                                  _weaponDictionary.ContainsKey(e.Resolved.ToLink()));
                     }
                     else
                     {
@@ -179,7 +180,7 @@ namespace HalgarisRPGLoot.Analyzers
                     var oldEnchantment = resolvedEnchantments.First().Enchantment;
                     var enchants = AllRpgEnchants[i];
                     Console.WriteLine(
-                        $"$Generated raw {RarityClasses[i].Label} {ItemTypeDescriptor} enchantment of {oldEnchantment.Name}");
+                        $"Generated raw {RarityClasses[i].Label} {ItemTypeDescriptor} enchantment of {oldEnchantment.Name}");
                     if (!enchants.ContainsKey(RarityClasses[i].Label + " " + oldEnchantment.Name))
                     {
                         enchants.Add(RarityClasses[i].Label + " " + oldEnchantment.Name, resolvedEnchantments);
@@ -188,7 +189,8 @@ namespace HalgarisRPGLoot.Analyzers
             }
         }
 
-        protected override FormKey EnchantItem(ResolvedListItem<IWeaponGetter> item, int rarity, int currentVariation = 0)
+        protected override FormKey EnchantItem(ResolvedListItem<IWeaponGetter> item, int rarity,
+            int currentVariation)
         {
             if (!(item.Resolved?.Name?.TryLookup(Language.English, out var itemName) ?? false))
             {
@@ -203,16 +205,15 @@ namespace HalgarisRPGLoot.Analyzers
                 var effects = ChosenRpgEnchantEffects[rarity].GetValueOrDefault(generatedEnchantmentFormKey);
                 if (item.Resolved != null) newWeapon.DeepCopyIn(item.Resolved);
                 newWeapon.EditorID = EditorIdPrefix + RarityClasses[rarity].Label.ToUpper() + "_" + newWeapon.EditorID +
-                                "_of_" + effects?.First().Enchantment.Name;
+                                     "_of_" + effects?.First().Enchantment.Name;
                 newWeapon.ObjectEffect.SetTo(generatedEnchantmentFormKey);
                 newWeapon.EnchantmentAmount = (ushort) (effects ?? Array.Empty<ResolvedEnchantment>())
                     .Where(e => e.Amount.HasValue).Sum(e => e.Amount.Value);
                 newWeapon.Name = RarityClasses[rarity].Label + " " + itemName + " of " +
-                            effects?.First().Enchantment.Name;
-                if (item.Resolved != null)
+                                 effects?.First().Enchantment.Name;
                     newWeapon.Template = (IFormLinkNullable<IWeaponGetter>) item.Resolved.ToNullableLinkGetter();
-                
-                if (RarityClasses[rarity].NumEnchantments>1)
+
+                if (RarityClasses[rarity].NumEnchantments > 1)
                     newWeapon.Keywords?.Add(Skyrim.Keyword.MagicDisallowEnchanting);
 
                 Console.WriteLine("Generated " + RarityClasses[rarity].Label + " " + itemName + " of " +
@@ -235,7 +236,7 @@ namespace HalgarisRPGLoot.Analyzers
                 return newWeapon.FormKey;
             }
         }
-        
+
         // ReSharper disable once UnusedMember.Local
         private static char[] _unusedNumbers = "123456890".ToCharArray();
 
@@ -266,7 +267,8 @@ namespace HalgarisRPGLoot.Analyzers
                 _knownMapping[resolvedEditorId] = returning;
             }
 
-            Console.WriteLine($"Missing {ItemTypeDescriptor} name for {resolvedEditorId ?? "<null>"} using {returning}");
+            Console.WriteLine(
+                $"Missing {ItemTypeDescriptor} name for {resolvedEditorId ?? "<null>"} using {returning}");
 
             return returning;
         }

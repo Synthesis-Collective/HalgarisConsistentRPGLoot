@@ -84,7 +84,7 @@ namespace HalgarisRPGLoot.Analyzers
                     var forLevel = ByLevelIndexed[level];
                     if (forLevel.Length.Equals(0)) continue;
 
-                    var itm = EnchantItem(ench, RandomRarity());
+                    var itm = EnchantItem(ench, RandomRarity(),i);
                     var entry = ench.Entry.DeepCopy();
                     entry.Data!.Reference.SetTo(itm);
                     leveledItem.Entries.Add(entry);
@@ -99,7 +99,7 @@ namespace HalgarisRPGLoot.Analyzers
             }
         }
 
-        protected abstract FormKey EnchantItem(ResolvedListItem<TType> item, int rarity, int currentVariation = 0);
+        protected abstract FormKey EnchantItem(ResolvedListItem<TType> item, int rarity, int currentVariation);
 
         protected FormKey GenerateEnchantment(int rarity, int currentVariation)
         {

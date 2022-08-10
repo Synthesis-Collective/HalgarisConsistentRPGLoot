@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using HalgarisRPGLoot.DataModels;
@@ -95,7 +94,9 @@ namespace HalgarisRPGLoot.Analyzers
                     if (Program.Settings.GeneralSettings.OnlyProcessConstructableEquipment)
                     {
                         var kws = (e.Resolved.Keywords ?? Array.Empty<IFormLink<IKeywordGetter>>());
-                        return !Extensions.CheckKeywords(kws) && _armorDictionary.ContainsKey(e.Resolved.TemplateArmor);
+                        return !Extensions.CheckKeywords(kws) &&
+                               (_armorDictionary.ContainsKey(e.Resolved.TemplateArmor) ||
+                                _armorDictionary.ContainsKey(e.Resolved.ToLink()));
                     }
                     else
                     {
@@ -112,7 +113,7 @@ namespace HalgarisRPGLoot.Analyzers
             AllObjectEffects = _objectEffectsAnalyzer.AllObjectEffects;
 
             AllEnchantments = AllEnchantedItems
-                .Select(e => (e.Entry.Data?.Level, e.Resolved.EnchantmentAmount, e.Resolved.ObjectEffect.FormKey))
+                .Select(e => (e.Entry.Data!.Level, e.Resolved.EnchantmentAmount, e.Resolved.ObjectEffect.FormKey))
                 .Distinct()
                 .Select(e =>
                 {
@@ -121,7 +122,7 @@ namespace HalgarisRPGLoot.Analyzers
                         return default;
                     return new ResolvedEnchantment
                     {
-                        Level = level ?? 1,
+                        Level = level,
                         Amount = enchantmentAmount,
                         Enchantment = ench
                     };
@@ -131,11 +132,7 @@ namespace HalgarisRPGLoot.Analyzers
 
             AllLevels = AllEnchantments.Select(e => e.Level).Distinct().ToHashSet();
 
-            var maxLvl = AllListItems.Select(i =>
-            {
-                Debug.Assert(i.Entry.Data != null, "Incompatible LeveledListItem.");
-                return i.Entry.Data.Level;
-            }).Distinct().ToHashSet().Max();
+            var maxLvl = AllListItems.Select(i => i.Entry.Data!.Level).Distinct().ToHashSet().Max();
 
             ByLevel = AllEnchantments.GroupBy(e => e.Level)
                 .OrderBy(e => e.Key)
@@ -179,9 +176,8 @@ namespace HalgarisRPGLoot.Analyzers
                     }
 
                     var oldEnchantment = resolvedEnchantments.First().Enchantment;
-                    var enchants = AllRpgEnchants[i];
-                    Console.WriteLine(
-                        $"$Generated raw {RarityClasses[i].Label} {ItemTypeDescriptor} enchantment of {oldEnchantment.Name}");
+                    SortedList<String, ResolvedEnchantment[]> enchants = AllRpgEnchants[i];
+                    Console.WriteLine("Generated raw "+RarityClasses[i].Label+ItemTypeDescriptor+" enchantment of "+oldEnchantment.Name);
                     if (!enchants.ContainsKey(RarityClasses[i].Label + " " + oldEnchantment.Name))
                     {
                         enchants.Add(RarityClasses[i].Label + " " + oldEnchantment.Name, resolvedEnchantments);
@@ -190,11 +186,11 @@ namespace HalgarisRPGLoot.Analyzers
             }
         }
 
-        protected override FormKey EnchantItem(ResolvedListItem<IArmorGetter> item, int rarity, int currentVariation = 0)
+        protected override FormKey EnchantItem(ResolvedListItem<IArmorGetter> item, int rarity, int currentVariation)
         {
             if (!(item.Resolved?.Name?.TryLookup(Language.English, out var itemName) ?? false))
             {
-                itemName = MakeName(item.Resolved?.EditorID);
+                itemName = MakeName(item.Resolved!.EditorID);
             }
 
             Console.WriteLine("Generating Enchanted version of " + itemName);
@@ -203,27 +199,25 @@ namespace HalgarisRPGLoot.Analyzers
                 var newArmor = State.PatchMod.Armors.AddNewLocking(State.PatchMod.GetNextFormKey());
                 var generatedEnchantmentFormKey = GenerateEnchantment(rarity, currentVariation);
                 var effects = ChosenRpgEnchantEffects[rarity].GetValueOrDefault(generatedEnchantmentFormKey);
-                if (item.Resolved != null) newArmor.DeepCopyIn(item.Resolved);
+                newArmor.DeepCopyIn(item.Resolved);
                 newArmor.EditorID = EditorIdPrefix + RarityClasses[rarity].Label.ToUpper() + "_" + newArmor.EditorID +
-                                    "_of_" + effects?.First().Enchantment.Name;
+                                    "_of_" + effects!.First().Enchantment.Name;
                 newArmor.ObjectEffect.SetTo(generatedEnchantmentFormKey);
-                newArmor.EnchantmentAmount = (ushort) (effects ?? Array.Empty<ResolvedEnchantment>())
-                    .Where(e => e.Amount.HasValue).Sum(e => e.Amount.Value);
+                newArmor.EnchantmentAmount = (ushort) effects.Where(e => e.Amount.HasValue).Sum(e => e.Amount.Value);
                 newArmor.Name = RarityClasses[rarity].Label + " " + itemName + " of " +
-                                effects?.First().Enchantment.Name;
-                if (item.Resolved != null)
-                    newArmor.TemplateArmor = (IFormLinkNullable<IArmorGetter>) item.Resolved.ToNullableLinkGetter();
-                if (RarityClasses[rarity].NumEnchantments>1)
+                                effects.First().Enchantment.Name;
+                newArmor.TemplateArmor = (IFormLinkNullable<IArmorGetter>) item.Resolved.ToNullableLinkGetter();
+                if (RarityClasses[rarity].NumEnchantments > 1)
                     newArmor.Keywords?.Add(Skyrim.Keyword.MagicDisallowEnchanting);
 
                 Console.WriteLine("Generated " + RarityClasses[rarity].Label + " " + itemName + " of " +
-                                  effects?.First().Enchantment.Name);
+                                  effects.First().Enchantment.Name);
                 return newArmor.FormKey;
             }
             else
             {
                 var newArmor = State.PatchMod.Armors.AddNewLocking(State.PatchMod.GetNextFormKey());
-                if (item.Resolved != null) newArmor.DeepCopyIn(item.Resolved);
+                newArmor.DeepCopyIn(item.Resolved);
                 newArmor.EditorID = EditorIdPrefix + newArmor.EditorID;
 
                 newArmor.Name = RarityClasses[rarity].Label.Equals("")
