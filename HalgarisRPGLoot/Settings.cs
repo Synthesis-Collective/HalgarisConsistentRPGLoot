@@ -18,12 +18,18 @@ namespace HalgarisRPGLoot
 
         [MaintainOrder] public EnchantmentSettings EnchantmentSettings = new();
 
-        [MaintainOrder] public RarityVariationDistributionSettings RarityVariationDistributionSettings = new();
+        [MaintainOrder] public RarityAndVariationDistributionSettings RarityAndVariationDistributionSettings = new();
     }
 
     public class GeneralSettings
     {
         [MaintainOrder] public int RandomSeed = 42;
+        
+        
+        
+        [MaintainOrder] 
+        [SynthesisDescription("When set to \"JustDistributeEnchantments\" you can ignore the \"Rarity And Variation Distribution Settings\"")]
+        public GenerationMode GenerationMode = GenerationMode.GenerateRarities;
 
         [MaintainOrder]
         [SynthesisSettingName("Only process constructable equipment")]
@@ -34,6 +40,13 @@ namespace HalgarisRPGLoot
             "This Setting makes it so only Armor that is a CNAM (Created Object) in an COBJ (Constructable Object) Record will be considered." +
             "\nThis is to keep unique artefacts and rewards unique in their look and enchantment.")]
         public bool OnlyProcessConstructableEquipment = true;
+        
+        
+        [MaintainOrder]
+        [SynthesisSettingName("LeveledList Flags")]
+        [SynthesisDescription("Flags that will be set on generated LeveledLists")]
+        [SynthesisTooltip("Flags that will be set on generated LeveledLists")]
+        public LeveledListFlagSettings LeveledListFlagSettings = new();
 
         [MaintainOrder]
         [SynthesisSettingName("Untouchable Equipment Keywords")]
@@ -81,21 +94,8 @@ namespace HalgarisRPGLoot
         public HashSet<ModKey> PluginList = new();
     }
 
-    public class RarityVariationDistributionSettings
+    public class RarityAndVariationDistributionSettings
     {
-        
-        [MaintainOrder]
-        [SynthesisSettingName("LeveledList Flags List")]
-        [SynthesisDescription("Flags that will be set on generated LeveledLists")]
-        [SynthesisTooltip("Flags that will be set on generated LeveledLists")]
-        public HashSet<LeveledItem.Flag> LeveledListFlagSet = new ()
-        {
-            LeveledItem.Flag.CalculateFromAllLevelsLessThanOrEqualPlayer,
-            LeveledItem.Flag.CalculateForEachItemInCount
-        };
-        
-        [MaintainOrder] public GenerationMode GenerationMode = GenerationMode.GenerateRarities;
-        
         [MaintainOrder] public GearSettings ArmorSettings = new(16, new()
         {
             new() {Label = "", NumEnchantments = 0, RarityWeight = 40, AllowDisenchanting = true},
@@ -134,6 +134,14 @@ namespace HalgarisRPGLoot
         [MaintainOrder] [SynthesisSettingName("Rarity Classes")] [SynthesisTooltip("Custom definable rarity classes")]
         public List<RarityClass> RarityClasses;
     }
+    
+    public class LeveledListFlagSettings
+    {
+        public bool CalculateFromAllLevelsLessThanOrEqualPlayer = true;
+        public bool CalculateForEachItemInCount = true;
+        public bool UseAll = false;
+        public bool SpecialLoot = false;
+    }
 
     public class RarityClass : IComparable<RarityClass>
     {
@@ -156,4 +164,5 @@ namespace HalgarisRPGLoot
             return RarityWeight.CompareTo(other.RarityWeight) * -1;
         }
     }
+    
 }

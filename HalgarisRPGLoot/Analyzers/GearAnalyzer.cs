@@ -17,7 +17,7 @@ namespace HalgarisRPGLoot.Analyzers
     {
         protected GearSettings GearSettings;
 
-        protected RarityVariationDistributionSettings RarityVariationDistributionSettings;
+        protected RarityAndVariationDistributionSettings RarityAndVariationDistributionSettings;
 
         protected List<RarityClass> RarityClasses;
 
@@ -68,16 +68,23 @@ namespace HalgarisRPGLoot.Analyzers
                 leveledItem.DeepCopyIn(ench.List);
                 leveledItem.EditorID = "HAL_TOP_LList" + ench.Resolved.EditorID;
                 leveledItem.Entries!.Clear();
-                VarietyCountPerItem = RarityVariationDistributionSettings.GenerationMode switch
+                VarietyCountPerItem = Program.Settings.GeneralSettings.GenerationMode switch
                 {
                     GenerationMode.JustDistributeEnchantments => AllRpgEnchants[RarityClasses.Count-1].Count,
                     _ => VarietyCountPerItem
                 };
 
-                foreach (var leveledListFlag in RarityVariationDistributionSettings.LeveledListFlagSet)
-                {
-                    leveledItem.Flags &= ~leveledListFlag;
-                }
+                var leveledListFlagSettings =
+                    Program.Settings.GeneralSettings.LeveledListFlagSettings;
+                if (leveledListFlagSettings.CalculateFromAllLevelsLessThanOrEqualPlayer)
+                    leveledItem.Flags &= ~LeveledItem.Flag.CalculateFromAllLevelsLessThanOrEqualPlayer;
+                if (leveledListFlagSettings.CalculateForEachItemInCount)
+                    leveledItem.Flags &= ~LeveledItem.Flag.CalculateForEachItemInCount;
+                if (leveledListFlagSettings.UseAll)
+                    leveledItem.Flags &= ~LeveledItem.Flag.UseAll;
+                if (leveledListFlagSettings.SpecialLoot)
+                    leveledItem.Flags &= ~LeveledItem.Flag.SpecialLoot;
+                
                 for (var i = 0; i < VarietyCountPerItem; i++)
                 {
                     var level = ench.Entry.Data!.Level;
@@ -105,7 +112,7 @@ namespace HalgarisRPGLoot.Analyzers
         {
             var array = AllRpgEnchants[rarity].ToArray();
             var allRpgEnchantmentsCount = AllRpgEnchants[rarity].Count;
-            var effects = RarityVariationDistributionSettings.GenerationMode switch
+            var effects = Program.Settings.GeneralSettings.GenerationMode switch
             {
                 GenerationMode.GenerateRarities => array.ElementAt(Random.Next(0,
                         (0 < allRpgEnchantmentsCount - 1) ? allRpgEnchantmentsCount - 1 : array.Length - 1))

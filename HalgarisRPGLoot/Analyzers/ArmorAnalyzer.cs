@@ -23,8 +23,8 @@ namespace HalgarisRPGLoot.Analyzers
             Dictionary<IFormLinkGetter<IArmorGetter>, IConstructibleObjectGetter> armorDictionary,
             ObjectEffectsAnalyzer objectEffectsAnalyzer)
         {
-            RarityVariationDistributionSettings = Program.Settings.RarityVariationDistributionSettings;
-            GearSettings = RarityVariationDistributionSettings.ArmorSettings;
+            RarityAndVariationDistributionSettings = Program.Settings.RarityAndVariationDistributionSettings;
+            GearSettings = RarityAndVariationDistributionSettings.ArmorSettings;
 
             EditorIdPrefix = "HAL_ARMOR_";
             ItemTypeDescriptor = " armor";
@@ -33,7 +33,7 @@ namespace HalgarisRPGLoot.Analyzers
             _armorDictionary = armorDictionary;
             _objectEffectsAnalyzer = objectEffectsAnalyzer;
 
-            switch (RarityVariationDistributionSettings.GenerationMode)
+            switch (Program.Settings.GeneralSettings.GenerationMode)
             {
                 case GenerationMode.GenerateRarities:
                     VarietyCountPerItem = GearSettings.VarietyCountPerItem;

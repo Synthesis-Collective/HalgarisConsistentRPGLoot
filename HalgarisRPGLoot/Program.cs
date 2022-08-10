@@ -31,8 +31,8 @@ namespace HalgarisRPGLoot
             //var armor  = new ArmorAnalyzer(state);
             //var weapon = new WeaponAnalyzer(state);
             
-            Settings.RarityVariationDistributionSettings.ArmorSettings.RarityClasses.Sort();
-            Settings.RarityVariationDistributionSettings.WeaponSettings.RarityClasses.Sort();
+            Settings.RarityAndVariationDistributionSettings.ArmorSettings.RarityClasses.Sort();
+            Settings.RarityAndVariationDistributionSettings.WeaponSettings.RarityClasses.Sort();
             
             ObjectEffectsAnalyzer objectEffectsAnalyzer = new(state);
             ConstructibleObjectAnalyzer constructibleObjectAnalyzer = new(state);

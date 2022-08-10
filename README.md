@@ -2,7 +2,7 @@
 
 ## What does this Patcher do ?
 
-This patcher will distribute the enchantments found in your setup to your leveled lists and previously unenchanted items.  
+This patcher will distribute the enchantments found in your setup to your leveled lists and previously unenchanted items.
 
 For this the patcher has a Distribution Only Mode and a more fun and enhanced RPGLoot rarity level Distribution.
 
@@ -26,9 +26,27 @@ You can use these to customize and adjust the patcher to your setup.
   - **RandomSeed:**
     - Default: `42`
     - Basically a Key to make the randomness repeatable.
+  - **Generation Mode:**
+    - `GenerateRarities` **(Default)**
+      - Generates and distributes the various enchantments as by the settings in the next section.
+    - `JustDistributeEnchantments`
+      - As the name implies only distributes enchantments, so that each weapon has each enchantment once.
+      - With this selected the following settings can be ignored.
   - **Only process constructible equipment:**
     - Default: `On`
     - Only items that are referenced in crafting and tampering recipes get processed and enchanted.
+  - **LeveledList Flags List:**
+    - Information about those flags can be found on [en.uesp.net](https://en.uesp.net/wiki/Skyrim:Leveled_Lists) (they are lightly different named) and [ck.uesp.net](https://ck.uesp.net/wiki/LeveledItem)
+    - `CalculateFromAllLevelsLessThanOrEqualPlayer`
+      - Default: `On`
+      - Default because it is present in Vanilla enchanted Leveled Lists
+    - `CalculateForEachItemInCount`
+      - Default: `On`
+      - Default because it it present in Vanilla enchanted Leveled Lists
+    - `UseAll`
+      - Default: `Off`
+    - `SpecialLoot`
+      - Default: `Off`
   - **Untouchable Equipment Keywords:**
     - Keywords that are on unique and/or incompatible items
     - Defaults:
@@ -41,7 +59,7 @@ You can use these to customize and adjust the patcher to your setup.
 - **Enchantment Settings:**
   - **Enchantment List Mode:**
     - Decides if the following list gets used as a blacklist or whitelist for allowed magic ObjectEffects (Enchantments)
-    - `Blacklist` (Default)
+    - `Blacklist` **(Default)**
     - `Whitelist`
   - **Enchantment List:**
     - Default:
@@ -51,25 +69,11 @@ You can use these to customize and adjust the patcher to your setup.
     - The defaults here filter the visual effect enchantments as they have no gameplay impact.
   - **Plugin List Mode:**
     - Decides if the following list gets used as a blacklist or whitelist for ESPs/ESMs of which the magic effects get distributed.
-    - `Blacklist` (Default)
+    - `Blacklist` **(Default)**
     - `Whitelist`
   - **Plugin List:**
     - Default: `Empty` Because you Ideally manage to get universal filters done in the Keyword and Enchantment List Settings.
-- **Rarity,Variation,Distribution Settings:**
-  - **LeveledList Flags List:**
-    - Information about those flags can be found on [en.uesp.net](https://en.uesp.net/wiki/Skyrim:Leveled_Lists) (they are lightly different named) and [ck.uesp.net](https://ck.uesp.net/wiki/LeveledItem)
-    - `CalculateFromAllLevelsLessThanOrEqualPlayer` (Default)
-      - Default because it is present in enchanted Vanilla Leveled Lists
-    - `CalculateForEachItemInCount` (Default)
-      - Default because it it present in enchanted Vanilla Leveled Lists
-    - `UseAll`
-    - `SpecialLoot`
-  - **Generation Mode:**
-    - `GenerateRarities` (Default)
-      - Generates and distributes the various enchantments as by the settings in the next section.
-    - `JustDistributeEnchantments`
-      - As the name implies only distributes enchantments, so that each weapon has each enchantment once.
-      - With this selected the following settings can be ignored.
+- **Rarity And Variation Distribution Settings:**
   - **Armor/WeaponSettings:** _(Separate since some people have more armors or weapon in their setups)_
     - **VarietyCountPerItem:**
       - Default: `16`
@@ -78,19 +82,22 @@ You can use these to customize and adjust the patcher to your setup.
       - Label: Added to each generated item's name
       - Num Enchantments: The number of enchantments used to define a rarity...i.e. 1 enchantment is fairly balanced...4 probably not so much
       - RarityWeight: This defines the chance for each Rarity to be chosen when generating item Variants.
+        
         - Calculation Process:
           1. Generate sum of all Rarity Weights
           2. Generate a random number between 0 and the sum of Rarity Weights
           3. Check starting with the largest Rarity Weight is in the range between the Sum (or the previous rarity weight, in the following checks) and the current rarity weight.
         - To get the percentage chance for a rarity to be generated (not found those are different!) you divide the Rarity Weight through the Sum of all Rarity Weights.
       - AllowDisenchanting: If not enabled new Items get the Keyword: `Skyrim.Keyword.MagicDisallowEnchanting`
-      - Default Rarities:
-
+      - **Default Rarities:**
+        
         | Rarity Label | Number of Enchantments | Rarity Weight | Allow Disenchanting |
-        |--------------| ---------------------- | ------------- | ------------------- |
-        | -            | 0                      | 40            | true                |
-        | Magical      | 1                      | 40            | true                |
-        | Rare         | 2                      | 13            | false               |
-        | Epic         | 3                      | 5             | false               |
-        | Legendary    | 4                      | 2             | false               |
+| ------------ | ---------------------- | ------------- | ------------------- |
+| -            | 0                      | 40            | true                |
+| Magical      | 1                      | 40            | true                |
+| Rare         | 2                      | 13            | false               |
+| Epic         | 3                      | 5             | false               |
+| Legendary    | 4                      | 2             | false               |
+        
+        
 
