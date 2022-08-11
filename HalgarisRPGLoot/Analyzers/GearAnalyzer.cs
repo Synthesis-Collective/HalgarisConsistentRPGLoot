@@ -46,7 +46,7 @@ namespace HalgarisRPGLoot.Analyzers
         protected (short Key, ResolvedEnchantment[])[] ByLevel { get; set; }
 
 
-        protected readonly Random Random = new(Program.Settings.GeneralSettings.RandomSeed);
+        protected readonly Random Random = new(Program.Settings.RarityAndVariationDistributionSettings.RandomSeed);
 
         protected string EditorIdPrefix;
 

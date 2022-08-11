@@ -22,11 +22,7 @@ namespace HalgarisRPGLoot
     }
 
     public class GeneralSettings
-    {
-        [MaintainOrder] public int RandomSeed = 42;
-        
-        
-        
+    {        
         [MaintainOrder] 
         [SynthesisDescription("When set to \"JustDistributeEnchantments\" you can ignore the \"Rarity And Variation Distribution Settings\"")]
         public GenerationMode GenerationMode = GenerationMode.GenerateRarities;
@@ -96,6 +92,8 @@ namespace HalgarisRPGLoot
 
     public class RarityAndVariationDistributionSettings
     {
+        [MaintainOrder] public int RandomSeed = 42;
+        
         [MaintainOrder] public GearSettings ArmorSettings = new(16, new()
         {
             new() {Label = "", NumEnchantments = 0, RarityWeight = 40, AllowDisenchanting = true},
