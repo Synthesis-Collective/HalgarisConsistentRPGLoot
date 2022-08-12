@@ -23,9 +23,7 @@ You can use these to customize and adjust the patcher to your setup.
 ### Settings:
 
 - **General Settings:**
-  - **RandomSeed:**
-    - Default: `42`
-    - Basically a Key to make the randomness repeatable.
+
   - **Generation Mode:**
     - `GenerateRarities` **(Default)**
       - Generates and distributes the various enchantments as by the settings in the next section.
@@ -74,6 +72,9 @@ You can use these to customize and adjust the patcher to your setup.
   - **Plugin List:**
     - Default: `Empty` Because you Ideally manage to get universal filters done in the Keyword and Enchantment List Settings.
 - **Rarity And Variation Distribution Settings:**
+  - **RandomSeed:**
+    - Default: `42`
+    - Basically a Key to make the randomness repeatable.
   - **Armor/WeaponSettings:** _(Separate since some people have more armors or weapon in their setups)_
     - **VarietyCountPerItem:**
       - Default: `16`
@@ -82,7 +83,6 @@ You can use these to customize and adjust the patcher to your setup.
       - Label: Added to each generated item's name
       - Num Enchantments: The number of enchantments used to define a rarity...i.e. 1 enchantment is fairly balanced...4 probably not so much
       - RarityWeight: This defines the chance for each Rarity to be chosen when generating item Variants.
-        
         - Calculation Process:
           1. Generate sum of all Rarity Weights
           2. Generate a random number between 0 and the sum of Rarity Weights
@@ -90,14 +90,11 @@ You can use these to customize and adjust the patcher to your setup.
         - To get the percentage chance for a rarity to be generated (not found those are different!) you divide the Rarity Weight through the Sum of all Rarity Weights.
       - AllowDisenchanting: If not enabled new Items get the Keyword: `Skyrim.Keyword.MagicDisallowEnchanting`
       - **Default Rarities:**
-        
-        | Rarity Label | Number of Enchantments | Rarity Weight | Allow Disenchanting |
-| ------------ | ---------------------- | ------------- | ------------------- |
-| -            | 0                      | 40            | true                |
-| Magical      | 1                      | 40            | true                |
-| Rare         | 2                      | 13            | false               |
-| Epic         | 3                      | 5             | false               |
-| Legendary    | 4                      | 2             | false               |
-        
-        
 
+        | Rarity Label | Number of Enchantments | Rarity Weight | Allow Disenchanting |
+        | ------------ | ---------------------- | ------------- | ------------------- |
+        | -            | 0                      | 40            | true                |
+        | Magical      | 1                      | 40            | true                |
+        | Rare         | 2                      | 13            | false               |
+        | Epic         | 3                      | 5             | false               |
+        | Legendary    | 4                      | 2             | false               |
