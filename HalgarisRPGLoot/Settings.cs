@@ -94,9 +94,13 @@ namespace HalgarisRPGLoot
     {
         [MaintainOrder] public int RandomSeed = 42;
 
+        [MaintainOrder] 
+        [SynthesisDescription("The items that will be replaced by ")]
+        public LeveledListBase LeveledListBase = LeveledListBase.AllValidEnchantedItems;
+
         [MaintainOrder] public GearSettings ArmorSettings = new(16,40, new()
         {
-            new() {Label = "Magical", NumEnchantments = 1, RarityWeight = 40, AllowDisenchanting = true },
+            new() {Label = "", NumEnchantments = 1, RarityWeight = 40, AllowDisenchanting = true },
             new() {Label = "Rare", NumEnchantments = 2, RarityWeight = 13,AllowDisenchanting = false },
             new() {Label = "Epic", NumEnchantments = 3, RarityWeight = 5, AllowDisenchanting = false },
             new() {Label = "Legendary", NumEnchantments = 4, RarityWeight = 2,AllowDisenchanting = false }
@@ -104,7 +108,7 @@ namespace HalgarisRPGLoot
 
         [MaintainOrder] public GearSettings WeaponSettings = new(16,40, new()
         {
-            new() {Label = "Magical", NumEnchantments = 1, RarityWeight = 40, AllowDisenchanting = true },
+            new() {Label = "", NumEnchantments = 1, RarityWeight = 40, AllowDisenchanting = true },
             new() {Label = "Rare", NumEnchantments = 2, RarityWeight = 13,AllowDisenchanting = false },
             new() {Label = "Epic", NumEnchantments = 3, RarityWeight = 5, AllowDisenchanting = false },
             new() {Label = "Legendary", NumEnchantments = 4, RarityWeight = 2,AllowDisenchanting = false }
@@ -121,7 +125,7 @@ namespace HalgarisRPGLoot
         }
 
         [MaintainOrder]
-        [SynthesisSettingName("Number of variations per Item")]
+        [SynthesisSettingName("Number of variations per Rarity")]
         [SynthesisTooltip("This determines how many different versions\n" +
                           "of the same Item you can find.")]
         [SynthesisDescription("This determines how many different versions\n" +

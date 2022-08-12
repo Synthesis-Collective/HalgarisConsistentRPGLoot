@@ -31,20 +31,20 @@ You can use these to customize and adjust the patcher to your setup.
       - As the name implies only distributes enchantments, so that each weapon has each enchantment once.
       - With this selected the following settings can be ignored.
   - **Only process constructible equipment:**
-    - Default: `On`
+    - **Default:** `On`
     - Only items that are referenced in crafting and tampering recipes get processed and enchanted.
   - **LeveledList Flags List:**
     - Information about those flags can be found on [en.uesp.net](https://en.uesp.net/wiki/Skyrim:Leveled_Lists) (they are lightly different named) and [ck.uesp.net](https://ck.uesp.net/wiki/LeveledItem)
     - `CalculateFromAllLevelsLessThanOrEqualPlayer`
-      - Default: `On`
+      - **Default:** `On`
       - Default because it is present in Vanilla enchanted Leveled Lists
     - `CalculateForEachItemInCount`
-      - Default: `On`
+      - **Default:** `On`
       - Default because it it present in Vanilla enchanted Leveled Lists
     - `UseAll`
-      - Default: `Off`
+      - **Default:** `Off`
     - `SpecialLoot`
-      - Default: `Off`
+      - **Default:** `Off`
   - **Untouchable Equipment Keywords:**
     - Keywords that are on unique and/or incompatible items
     - Defaults:
@@ -60,7 +60,7 @@ You can use these to customize and adjust the patcher to your setup.
     - `Blacklist` **(Default)**
     - `Whitelist`
   - **Enchantment List:**
-    - Default:
+    - **Default:**
       - `Skyrim.ObjectEffect.BoundBattleaxeEnchantment`
       - `Skyrim.ObjectEffect.BoundBowEnchantment`
       - `Skyrim.ObjectEffect.BoundSwordEnchantment`
@@ -70,15 +70,22 @@ You can use these to customize and adjust the patcher to your setup.
     - `Blacklist` **(Default)**
     - `Whitelist`
   - **Plugin List:**
-    - Default: `Empty` Because you Ideally manage to get universal filters done in the Keyword and Enchantment List Settings.
+    - **Default:** `Empty` Because you Ideally manage to get universal filters done in the Keyword and Enchantment List Settings.
 - **Rarity And Variation Distribution Settings:**
   - **RandomSeed:**
-    - Default: `42`
+    - **Default:** `42`
     - Basically a Key to make the randomness repeatable.
+  - **Leveled List Base**
+    - Changes where the RPGLoot leveled lists are inserted.
+    - `AllValidEnchantedItem` The chance of encountering enchanted gear is similar to vanilla, but when you find some it .
+    - `AllValidUnenchantedItems` This essentially reworks the whole system, allowing you a greater control if you want more chances for enchanted loot.
   - **Armor/WeaponSettings:** _(Separate since some people have more armors or weapon in their setups)_
     - **VarietyCountPerItem:**
-      - Default: `16`
+      - **Default:** `16`
       - The Number of Variations to be created for every item.
+    - **BaseItemChanceWeight**
+      - **Default:** `40`
+      - Same as the Rarity Weight for the different 
     - **Rarities:**
       - Label: Added to each generated item's name
       - Num Enchantments: The number of enchantments used to define a rarity...i.e. 1 enchantment is fairly balanced...4 probably not so much
@@ -93,8 +100,7 @@ You can use these to customize and adjust the patcher to your setup.
 
         | Rarity Label | Number of Enchantments | Rarity Weight | Allow Disenchanting |
         | ------------ | ---------------------- | ------------- | ------------------- |
-        | -            | 0                      | 40            | true                |
-        | Magical      | 1                      | 40            | true                |
+        | -            | 1                      | 40            | true                |
         | Rare         | 2                      | 13            | false               |
         | Epic         | 3                      | 5             | false               |
         | Legendary    | 4                      | 2             | false               |
