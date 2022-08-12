@@ -93,19 +93,17 @@ namespace HalgarisRPGLoot
     public class RarityAndVariationDistributionSettings
     {
         [MaintainOrder] public int RandomSeed = 42;
-        
-        [MaintainOrder] public GearSettings ArmorSettings = new(16, new()
+
+        [MaintainOrder] public GearSettings ArmorSettings = new(16,40, new()
         {
-            new() {Label = "", NumEnchantments = 0, RarityWeight = 40, AllowDisenchanting = true},
             new() {Label = "Magical", NumEnchantments = 1, RarityWeight = 40, AllowDisenchanting = true },
             new() {Label = "Rare", NumEnchantments = 2, RarityWeight = 13,AllowDisenchanting = false },
             new() {Label = "Epic", NumEnchantments = 3, RarityWeight = 5, AllowDisenchanting = false },
             new() {Label = "Legendary", NumEnchantments = 4, RarityWeight = 2,AllowDisenchanting = false }
         });
 
-        [MaintainOrder] public GearSettings WeaponSettings = new(16, new()
+        [MaintainOrder] public GearSettings WeaponSettings = new(16,40, new()
         {
-            new() {Label = "", NumEnchantments = 0, RarityWeight = 40, AllowDisenchanting = true},
             new() {Label = "Magical", NumEnchantments = 1, RarityWeight = 40, AllowDisenchanting = true },
             new() {Label = "Rare", NumEnchantments = 2, RarityWeight = 13,AllowDisenchanting = false },
             new() {Label = "Epic", NumEnchantments = 3, RarityWeight = 5, AllowDisenchanting = false },
@@ -115,9 +113,10 @@ namespace HalgarisRPGLoot
 
     public class GearSettings
     {
-        public GearSettings(int varietyCountPerItem, List<RarityClass> rarityClasses)
+        public GearSettings(int varietyCountPerItem,short baseItemChanceWeight, List<RarityClass> rarityClasses)
         {
             VarietyCountPerItem = varietyCountPerItem;
+            BaseItemChanceWeight = baseItemChanceWeight;
             RarityClasses = rarityClasses;
         }
 
@@ -128,6 +127,11 @@ namespace HalgarisRPGLoot
         [SynthesisDescription("This determines how many different versions\n" +
                               "of the same Item you can find.")]
         public int VarietyCountPerItem;
+
+        [MaintainOrder]
+        [SynthesisDescription("Weight for the unenchanted items to appear.")]
+        [SynthesisTooltip("Weight for the unenchanted items to appear.")]
+        public short BaseItemChanceWeight; 
 
         [MaintainOrder] [SynthesisSettingName("Rarity Classes")] [SynthesisTooltip("Custom definable rarity classes")]
         public List<RarityClass> RarityClasses;
@@ -151,7 +155,7 @@ namespace HalgarisRPGLoot
         [SynthesisSettingName("Rarity Weight")]
         [SynthesisTooltip("The higher the number the more likely it is" +
                           "\nthat an item gets generated with that rarity.")]
-        public int RarityWeight;
+        public short RarityWeight;
 
         [SynthesisSettingName("Allow Disenchanting")]
         [SynthesisTooltip("Determines if loot of this rarity can be disenchanted.")]

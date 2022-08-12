@@ -36,13 +36,13 @@ namespace HalgarisRPGLoot.Analyzers
             switch (Program.Settings.GeneralSettings.GenerationMode)
             {
                 case GenerationMode.GenerateRarities:
-                    VarietyCountPerItem = GearSettings.VarietyCountPerItem;
+                    VarietyCountPerRarity = GearSettings.VarietyCountPerItem;
                     RarityClasses = GearSettings.RarityClasses;
                     break;
                 case GenerationMode.JustDistributeEnchantments:
                     RarityClasses = new()
                     {
-                        new() {Label = "", NumEnchantments = 1, RarityWeight = 100, AllowDisenchanting = true},
+                        new() {Label = "", NumEnchantments = 1, RarityWeight = 1, AllowDisenchanting = true},
                     };
                     break;
                 default:
@@ -207,8 +207,18 @@ namespace HalgarisRPGLoot.Analyzers
                 newArmor.Name = RarityClasses[rarity].Label + " " + itemName + " of " +
                                 effects.First().Enchantment.Name;
                 newArmor.TemplateArmor = (IFormLinkNullable<IArmorGetter>) item.Resolved.ToNullableLinkGetter();
-                if (RarityClasses[rarity].NumEnchantments > 1)
-                    newArmor.Keywords?.Add(Skyrim.Keyword.MagicDisallowEnchanting);
+
+                switch (Program.Settings.GeneralSettings.GenerationMode)
+                {
+                    case GenerationMode.GenerateRarities:
+                        if (!RarityClasses[rarity].AllowDisenchanting)
+                        {
+                            newArmor.Keywords?.Add(Skyrim.Keyword.MagicDisallowEnchanting);
+                        }
+                        break;
+                    case GenerationMode.JustDistributeEnchantments:
+                        break;
+                }
 
                 Console.WriteLine("Generated " + RarityClasses[rarity].Label + " " + itemName + " of " +
                                   effects.First().Enchantment.Name);

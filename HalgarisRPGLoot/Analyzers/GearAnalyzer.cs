@@ -7,6 +7,7 @@ using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Plugins.Records;
 using Mutagen.Bethesda.Skyrim;
 using Mutagen.Bethesda.Synthesis;
+
 // ReSharper disable UnusedAutoPropertyAccessor.Local
 
 namespace HalgarisRPGLoot.Analyzers
@@ -21,7 +22,7 @@ namespace HalgarisRPGLoot.Analyzers
 
         protected List<RarityClass> RarityClasses;
 
-        protected int VarietyCountPerItem;
+        protected int VarietyCountPerRarity;
         protected IPatcherState<ISkyrimMod, ISkyrimModGetter> State { get; init; }
 
         protected ResolvedListItem<TType>[] AllUnenchantedItems { get; set; }
@@ -32,7 +33,7 @@ namespace HalgarisRPGLoot.Analyzers
 
         protected Dictionary<String, FormKey>[] ChosenRpgEnchants { get; init; }
         protected Dictionary<FormKey, ResolvedEnchantment[]>[] ChosenRpgEnchantEffects { get; init; }
-        
+
         protected ILeveledItemGetter[] AllLeveledLists { get; set; }
         protected ResolvedListItem<TType>[] AllListItems { get; set; }
         protected ResolvedListItem<TType>[] AllEnchantedItems { get; set; }
@@ -64,44 +65,60 @@ namespace HalgarisRPGLoot.Analyzers
         {
             foreach (var ench in AllUnenchantedItems)
             {
-                var leveledItem = State.PatchMod.LeveledItems.AddNewLocking(State.PatchMod.GetNextFormKey());
-                leveledItem.DeepCopyIn(ench.List);
-                leveledItem.EditorID = "HAL_TOP_LList" + ench.Resolved.EditorID;
-                leveledItem.Entries!.Clear();
-                VarietyCountPerItem = Program.Settings.GeneralSettings.GenerationMode switch
+                var rarityClassNumber = 0;
+                foreach (var rarityClass in RarityClasses)
                 {
-                    GenerationMode.JustDistributeEnchantments => AllRpgEnchants[RarityClasses.Count-1].Count,
-                    _ => VarietyCountPerItem
-                };
+                    var leveledItem = State.PatchMod.LeveledItems.AddNewLocking(State.PatchMod.GetNextFormKey());
+                    leveledItem.DeepCopyIn(ench.List);
+                    leveledItem.EditorID = "HAL_TOP_LList_"+ rarityClass.Label + ench.Resolved.EditorID;
+                    leveledItem.Entries!.Clear();
 
-                var leveledListFlagSettings =
-                    Program.Settings.GeneralSettings.LeveledListFlagSettings;
-                if (leveledListFlagSettings.CalculateFromAllLevelsLessThanOrEqualPlayer)
-                    leveledItem.Flags &= ~LeveledItem.Flag.CalculateFromAllLevelsLessThanOrEqualPlayer;
-                if (leveledListFlagSettings.CalculateForEachItemInCount)
-                    leveledItem.Flags &= ~LeveledItem.Flag.CalculateForEachItemInCount;
-                if (leveledListFlagSettings.UseAll)
-                    leveledItem.Flags &= ~LeveledItem.Flag.UseAll;
-                if (leveledListFlagSettings.SpecialLoot)
-                    leveledItem.Flags &= ~LeveledItem.Flag.SpecialLoot;
-                
-                for (var i = 0; i < VarietyCountPerItem; i++)
-                {
-                    var level = ench.Entry.Data!.Level;
-                    var forLevel = ByLevelIndexed[level];
-                    if (forLevel.Length.Equals(0)) continue;
+                    var oldEntry = ench.Entry.DeepCopy();
+                    
+                    switch (Program.Settings.GeneralSettings.GenerationMode)
+                    {
+                        case GenerationMode.JustDistributeEnchantments:
+                            VarietyCountPerRarity = AllRpgEnchants[RarityClasses.Count - 1].Count;
+                            
+                            oldEntry.Data!.Count = (short)AllRpgEnchants[RarityClasses.Count - 1].Count;
+                            break;
+                        case GenerationMode.GenerateRarities:
+                            oldEntry.Data!.Count = GearSettings.BaseItemChanceWeight;
+                            break;
+                    }
 
-                    var itm = EnchantItem(ench, RandomRarity(),i);
-                    var entry = ench.Entry.DeepCopy();
-                    entry.Data!.Reference.SetTo(itm);
-                    leveledItem.Entries.Add(entry);
-                }
+                    var leveledListFlagSettings =
+                        Program.Settings.GeneralSettings.LeveledListFlagSettings;
+                    if (leveledListFlagSettings.CalculateFromAllLevelsLessThanOrEqualPlayer)
+                        leveledItem.Flags &= ~LeveledItem.Flag.CalculateFromAllLevelsLessThanOrEqualPlayer;
+                    if (leveledListFlagSettings.CalculateForEachItemInCount)
+                        leveledItem.Flags &= ~LeveledItem.Flag.CalculateForEachItemInCount;
+                    if (leveledListFlagSettings.UseAll)
+                        leveledItem.Flags &= ~LeveledItem.Flag.UseAll;
+                    if (leveledListFlagSettings.SpecialLoot)
+                        leveledItem.Flags &= ~LeveledItem.Flag.SpecialLoot;
 
-                var oldLeveledItem = State.PatchMod.LeveledItems.GetOrAddAsOverride(ench.List);
-                foreach (var entry in oldLeveledItem.Entries!.Where(entry =>
-                             entry.Data!.Reference.FormKey == ench.Resolved.FormKey))
-                {
-                    entry.Data!.Reference.SetTo(leveledItem);
+                    for (var i = 0; i < VarietyCountPerRarity; i++)
+                    {
+                        var level = ench.Entry!.Data!.Level;
+                        var forLevel = ByLevelIndexed[level];
+                        if (forLevel.Length.Equals(0)) continue;
+
+                        var itm = EnchantItem(ench,rarityClassNumber , i);
+                        var entry = ench.Entry.DeepCopy();
+                        entry.Data!.Reference.SetTo(itm);
+                        leveledItem.Entries.Add(entry);
+                    }
+
+                    var oldLeveledItem = State.PatchMod.LeveledItems.GetOrAddAsOverride(ench.List);
+                    foreach (var entry in oldLeveledItem.Entries!.Where(entry =>
+                                 entry.Data!.Reference.FormKey == ench.Resolved.FormKey))
+                    {
+                        entry.Data!.Reference.SetTo(leveledItem);
+                        entry.Data!.Count = rarityClass.RarityWeight;
+                    }
+
+                    rarityClassNumber++;
                 }
             }
         }
@@ -134,13 +151,15 @@ namespace HalgarisRPGLoot.Analyzers
             var newObjectEffectGetter = State.PatchMod.ObjectEffects.AddNewLocking(key);
             newObjectEffectGetter.DeepCopyIn(effects.First().Enchantment);
             newObjectEffectGetter.EditorID = EditorIdPrefix + "ENCH_" + RarityClasses[rarity].Label.ToUpper() + "_" +
-                            oldObjectEffectGetter.EditorID;
+                                             oldObjectEffectGetter.EditorID;
             newObjectEffectGetter.Name = RarityClasses[rarity].Label + " " + oldObjectEffectGetter.Name;
             newObjectEffectGetter.Effects.Clear();
-            newObjectEffectGetter.Effects.AddRange(effects.SelectMany(e => e.Enchantment.Effects).Select(e => e.DeepCopy()));
+            newObjectEffectGetter.Effects.AddRange(effects.SelectMany(e => e.Enchantment.Effects)
+                .Select(e => e.DeepCopy()));
             newObjectEffectGetter.WornRestrictions.SetTo(effects.First().Enchantment.WornRestrictions);
 
-            ChosenRpgEnchants[rarity].Add(RarityClasses[rarity].Label + " " + oldObjectEffectGetter.Name, newObjectEffectGetter.FormKey);
+            ChosenRpgEnchants[rarity].Add(RarityClasses[rarity].Label + " " + oldObjectEffectGetter.Name,
+                newObjectEffectGetter.FormKey);
             ChosenRpgEnchantEffects[rarity].Add(newObjectEffectGetter.FormKey, effects);
             Console.WriteLine("Enchantment Generated");
             return newObjectEffectGetter.FormKey;
@@ -160,7 +179,5 @@ namespace HalgarisRPGLoot.Analyzers
 
             return rar;
         }
-
     }
-    
 }
