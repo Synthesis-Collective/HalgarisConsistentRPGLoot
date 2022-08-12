@@ -19,11 +19,11 @@ Use the `Tag` Versioning in Synthesis to not accidentally break your saves (roll
 ## Settings
 
 You can use these to customize and adjust the patcher to your setup.
+Any mention of weight is equivalent to the `count` property of leveled lists.
 
 ### Settings:
 
 - **General Settings:**
-
   - **Generation Mode:**
     - `GenerateRarities` **(Default)**
       - Generates and distributes the various enchantments as by the settings in the next section.
@@ -78,23 +78,18 @@ You can use these to customize and adjust the patcher to your setup.
   - **Leveled List Base**
     - Changes where the RPGLoot leveled lists are inserted.
     - `AllValidEnchantedItem` The chance of encountering enchanted gear is similar to vanilla, but when you find some it .
-    - `AllValidUnenchantedItems` This essentially reworks the whole system, allowing you a greater control if you want more chances for enchanted loot.
+    - `AllValidUnenchantedItems` **(Default)** This essentially reworks the whole system, allowing you a greater control if you want more chances for enchanted loot.
   - **Armor/WeaponSettings:** _(Separate since some people have more armors or weapon in their setups)_
-    - **VarietyCountPerItem:**
+    - **Variety Count Per Rarity:**
       - **Default:** `16`
       - The Number of Variations to be created for every item.
-    - **BaseItemChanceWeight**
+    - **Base Item Chance Weight**
       - **Default:** `40`
-      - Same as the Rarity Weight for the different 
+      - `count` property of the weapon entry next to the rarity leveled lists.
     - **Rarities:**
-      - Label: Added to each generated item's name
-      - Num Enchantments: The number of enchantments used to define a rarity...i.e. 1 enchantment is fairly balanced...4 probably not so much
-      - RarityWeight: This defines the chance for each Rarity to be chosen when generating item Variants.
-        - Calculation Process:
-          1. Generate sum of all Rarity Weights
-          2. Generate a random number between 0 and the sum of Rarity Weights
-          3. Check starting with the largest Rarity Weight is in the range between the Sum (or the previous rarity weight, in the following checks) and the current rarity weight.
-        - To get the percentage chance for a rarity to be generated (not found those are different!) you divide the Rarity Weight through the Sum of all Rarity Weights.
+      - Label: Added prefix to each generated item's name.
+      - Num Enchantments: The number of enchantments used to define the rarity.
+      - RarityWeight: `count` property of the Leveled List for that rarity.
       - AllowDisenchanting: If not enabled new Items get the Keyword: `Skyrim.Keyword.MagicDisallowEnchanting`
       - **Default Rarities:**
 
