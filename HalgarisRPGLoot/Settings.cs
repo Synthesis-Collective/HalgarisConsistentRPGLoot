@@ -92,7 +92,7 @@ namespace HalgarisRPGLoot
 
         [MaintainOrder] 
         [SynthesisDescription("The items that will be replaced by ")]
-        public LeveledListBase LeveledListBase = LeveledListBase.AllValidEnchantedItems;
+        public LeveledListBase LeveledListBase = LeveledListBase.AllValidUnenchantedItems;
 
         [MaintainOrder] public GearSettings ArmorSettings = new(16,40, new()
         {
