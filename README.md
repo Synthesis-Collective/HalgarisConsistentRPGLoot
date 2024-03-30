@@ -100,7 +100,7 @@ Any mention of weight is equivalent to the `count` property of leveled lists.
         - **You are multiplying the total amount of the respective item type in your setup by this value!
           So be careful as too high values can break, xEdit and then your game!**
     - **Base Item Chance Weight**
-      - **Default:** `40`
+      - **Default:** `20`
       - `count` property of the weapon entry next to the rarity leveled lists.
       - This it the item type selected as the `Leveled List Base`.
         - So in the case of using `AllValidEnchantedItem` it would be the vanilla enchanted item.
@@ -110,17 +110,20 @@ Any mention of weight is equivalent to the `count` property of leveled lists.
       - Num Enchantments: The number of enchantments used to define the rarity.
       - RarityWeight: Amount of times the rarity is put into leveled lists.
       - AllowDisenchanting: If not enabled new Items get the Keyword: `Skyrim.Keyword.MagicDisallowEnchanting`
-      - **Default Rarities:**
+      - **Default Rarities:**  
+        *The Base Item Rarity is included for visualizing the percentage chances.* 
 
-        | Rarity Label | Number of Enchantments | Rarity Weight | Allow Disenchanting |
-        | ------------ | ---------------------- | ------------- | ------------------- |
-        | -            | 1                      | 40            | true                |
-        | Rare         | 2                      | 13            | false               |
-        | Epic         | 3                      | 5             | false               |
-        | Legendary    | 4                      | 2             | false               |
+        | Rarity Label | Number of Enchantments            | Rarity Weight | Allow Disenchanting | *Percentage* |
+        |--------------|-----------------------------------|---------------|---------------------|--------------|
+        | *Base*       | *`AllValidUnenchantedItems` => 0* | 20            | *Item Default*      | ~40,8%       |
+        | -            | 1                                 | 17            | true                | ~34,7%       |
+        | Rare         | 2                                 | 8             | false               | ~16,3%       |
+        | Epic         | 3                                 | 3             | false               | ~6,1%        |
+        | Legendary    | 4                                 | 1             | false               | ~2,1%        |
           
       - The formula for translating this into percentages is:
         `Weight_of_Rarity/Sum_of_Base_And_Rarity_Weights` (The base item weight is considered a rarity in this context)
-        - *Disclaimer: The percentages won't be 100% reflected like this in gameplay since they only account for the chances introduced by this patcher
-          and need to be considered on top of the vanilla/base chances of your setup to get either normal or enchanted gear
-          depending on the `Leveled List Base` that was chosen in the previous settings* 
+        - *Disclaimer: The percentages won't be 100% reflected like this in gameplay since they only account for the
+          chances introduced by this patcher and need to be considered on top of the vanilla/base chances of your setup
+          to get either normal or enchanted gear depending on the `Leveled List Base` that was chosen in the previous
+          settings. Additionally the various filters for what are valid items will effect those percentages as well.* 
