@@ -22,11 +22,7 @@ namespace HalgarisRPGLoot
     }
 
     public class GeneralSettings
-    {        
-        [MaintainOrder] 
-        [SynthesisDescription("When set to \"JustDistributeEnchantments\" you can ignore the \"Rarity And Variation Distribution Settings\"")]
-        public GenerationMode GenerationMode = GenerationMode.GenerateRarities;
-
+    {
         [MaintainOrder]
         [SynthesisSettingName("Only process constructable equipment")]
         [SynthesisDescription(

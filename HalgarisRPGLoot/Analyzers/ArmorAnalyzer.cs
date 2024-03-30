@@ -33,21 +33,9 @@ namespace HalgarisRPGLoot.Analyzers
             _armorDictionary = armorDictionary;
             _objectEffectsAnalyzer = objectEffectsAnalyzer;
 
-            switch (Program.Settings.GeneralSettings.GenerationMode)
-            {
-                case GenerationMode.GenerateRarities:
-                    VarietyCountPerRarity = GearSettings.VarietyCountPerItem;
-                    RarityClasses = GearSettings.RarityClasses;
-                    break;
-                case GenerationMode.JustDistributeEnchantments:
-                    RarityClasses = new()
-                    {
-                        new() {Label = "", NumEnchantments = 1, RarityWeight = 1, AllowDisenchanting = true},
-                    };
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
+            VarietyCountPerRarity = GearSettings.VarietyCountPerItem;
+            RarityClasses = GearSettings.RarityClasses;
+
 
             AllRpgEnchants = new SortedList<String, ResolvedEnchantment[]>[RarityClasses.Count];
             for (var i = 0; i < AllRpgEnchants.Length; i++)
@@ -177,7 +165,8 @@ namespace HalgarisRPGLoot.Analyzers
 
                     var oldEnchantment = resolvedEnchantments.First().Enchantment;
                     SortedList<String, ResolvedEnchantment[]> enchants = AllRpgEnchants[i];
-                    Console.WriteLine("Generated raw "+RarityClasses[i].Label+ItemTypeDescriptor+" enchantment of "+oldEnchantment.Name);
+                    Console.WriteLine("Generated raw " + RarityClasses[i].Label + ItemTypeDescriptor +
+                                      " enchantment of " + oldEnchantment.Name);
                     if (!enchants.ContainsKey(RarityClasses[i].Label + " " + oldEnchantment.Name))
                     {
                         enchants.Add(RarityClasses[i].Label + " " + oldEnchantment.Name, resolvedEnchantments);
@@ -208,16 +197,9 @@ namespace HalgarisRPGLoot.Analyzers
                                 effects.First().Enchantment.Name;
                 newArmor.TemplateArmor = (IFormLinkNullable<IArmorGetter>) item.Resolved.ToNullableLinkGetter();
 
-                switch (Program.Settings.GeneralSettings.GenerationMode)
+                if (!RarityClasses[rarity].AllowDisenchanting)
                 {
-                    case GenerationMode.GenerateRarities:
-                        if (!RarityClasses[rarity].AllowDisenchanting)
-                        {
-                            newArmor.Keywords?.Add(Skyrim.Keyword.MagicDisallowEnchanting);
-                        }
-                        break;
-                    case GenerationMode.JustDistributeEnchantments:
-                        break;
+                    newArmor.Keywords?.Add(Skyrim.Keyword.MagicDisallowEnchanting);
                 }
 
                 Console.WriteLine("Generated " + RarityClasses[rarity].Label + " " + itemName + " of " +

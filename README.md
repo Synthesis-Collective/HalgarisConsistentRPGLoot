@@ -24,12 +24,6 @@ Any mention of weight is equivalent to the `count` property of leveled lists.
 ### Settings:
 
 - **General Settings:**
-  - **Generation Mode:**
-    - `GenerateRarities` **(Default)**
-      - Generates and distributes the various enchantments as by the settings in the next section.
-    - `JustDistributeEnchantments`
-      - As the name implies only distributes enchantments, so that each weapon has each enchantment once.
-      - With this selected the following settings can be ignored.
   - **Only process constructible equipment:**
     - **Default:** `On`
     - Only items that are referenced in crafting and tampering recipes get processed and enchanted.
