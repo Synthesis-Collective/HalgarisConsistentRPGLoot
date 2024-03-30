@@ -94,20 +94,20 @@ namespace HalgarisRPGLoot
         [SynthesisDescription("The items that will be replaced by ")]
         public LeveledListBase LeveledListBase = LeveledListBase.AllValidUnenchantedItems;
 
-        [MaintainOrder] public GearSettings ArmorSettings = new(16,40, new()
+        [MaintainOrder] public GearSettings ArmorSettings = new(16,20, new()
         {
-            new() {Label = "", NumEnchantments = 1, RarityWeight = 40, AllowDisenchanting = true },
-            new() {Label = "Rare", NumEnchantments = 2, RarityWeight = 13,AllowDisenchanting = false },
-            new() {Label = "Epic", NumEnchantments = 3, RarityWeight = 5, AllowDisenchanting = false },
-            new() {Label = "Legendary", NumEnchantments = 4, RarityWeight = 2,AllowDisenchanting = false }
+            new() {Label = "", NumEnchantments = 1, RarityWeight = 20, AllowDisenchanting = true },
+            new() {Label = "Rare", NumEnchantments = 2, RarityWeight = 6,AllowDisenchanting = false },
+            new() {Label = "Epic", NumEnchantments = 3, RarityWeight = 2, AllowDisenchanting = false },
+            new() {Label = "Legendary", NumEnchantments = 4, RarityWeight = 1,AllowDisenchanting = false }
         });
 
-        [MaintainOrder] public GearSettings WeaponSettings = new(16,40, new()
+        [MaintainOrder] public GearSettings WeaponSettings = new(16,20, new()
         {
-            new() {Label = "", NumEnchantments = 1, RarityWeight = 40, AllowDisenchanting = true },
-            new() {Label = "Rare", NumEnchantments = 2, RarityWeight = 13,AllowDisenchanting = false },
-            new() {Label = "Epic", NumEnchantments = 3, RarityWeight = 5, AllowDisenchanting = false },
-            new() {Label = "Legendary", NumEnchantments = 4, RarityWeight = 2,AllowDisenchanting = false }
+            new() {Label = "", NumEnchantments = 1, RarityWeight = 20, AllowDisenchanting = true },
+            new() {Label = "Rare", NumEnchantments = 2, RarityWeight = 6,AllowDisenchanting = false },
+            new() {Label = "Epic", NumEnchantments = 3, RarityWeight = 2, AllowDisenchanting = false },
+            new() {Label = "Legendary", NumEnchantments = 4, RarityWeight = 1,AllowDisenchanting = false }
         });
     }
 
