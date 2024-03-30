@@ -111,7 +111,7 @@ Any mention of weight is equivalent to the `count` property of leveled lists.
       - RarityWeight: Amount of times the rarity is put into leveled lists.
       - AllowDisenchanting: If not enabled new Items get the Keyword: `Skyrim.Keyword.MagicDisallowEnchanting`
       - **Default Rarities:**  
-        *The Base Item Rarity is included for visualizing the percentage chances.* 
+        *The Base Item Rarity is included for visualizing the percentages.* 
 
         | Rarity Label | Number of Enchantments            | Rarity Weight | Allow Disenchanting | *Percentage* |
         |--------------|-----------------------------------|---------------|---------------------|--------------|
