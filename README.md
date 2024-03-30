@@ -30,8 +30,8 @@ Any mention of weight is equivalent to the `count` property of leveled lists.
     - **Default:** `On`
     - Only items that are referenced in crafting and tampering recipes get processed and enchanted.
   - **LeveledList Flags List:**
-    - Information about those flags can be found on [en.uesp.net](https://en.uesp.net/wiki/Skyrim:Leveled_Lists) (they are named slightly different)
-      and [ck.uesp.net](https://ck.uesp.net/wiki/LeveledItem)
+    - Information about those flags can be found on [en.uesp.net](https://en.uesp.net/wiki/Skyrim:Leveled_Lists)
+      (they are named slightly different) and [ck.uesp.net](https://ck.uesp.net/wiki/LeveledItem)
     - `CalculateFromAllLevelsLessThanOrEqualPlayer`
       - **Default:** `On`
       - Default because it is present in Vanilla enchanted Leveled Lists
@@ -85,18 +85,26 @@ Any mention of weight is equivalent to the `count` property of leveled lists.
       but the gear you find will use the new rarities.
       - This means everywhere a vanilla leveled list had an enchanted variant of an item this patcher inserts
         different rarities for it.
-      - When using this option keep in mind that the enchanted item becomes the `Base Item`, meaning it is recommended to remove the un-named Rarity option.
+      - When using this option keep in mind that the enchanted item becomes the `Base Item`,
+        meaning it is recommended to remove the un-named Rarity option.
     - `AllValidUnenchantedItems` **(Default)** This essentially reworks the whole system, 
       allowing you a greater control if you want more chances for enchanted loot.
       - This can potentially even cause your crafted gear to craft as enchanted versions.
-      - This will also keep vamilla enchanted items untouched (if I remember my implementation of this code from as of writing nearly 2 years ago correctly)
+      - This will also keep vamilla enchanted items untouched
+        (if I remember my implementation of this code from as of writing nearly 2 years ago correctly)
   - **Armor/WeaponSettings:** _(Separate since some people have more armors or weapon in their setups)_
     - **Variety Count Per Rarity:**
       - **Default:** `16`
-      - The Number of Variations to be created for every item.
+      - The Number of Variations to be created for every item, per rarity level.
+        - This means each item gets `Variety_Count_Per_Rarity*Number_of_Rarities` items generated in total.
+        - **You are multiplying the total amount of the respective item type in your setup by this value!
+          So be careful as too high values can break, xEdit and then your game!**
     - **Base Item Chance Weight**
       - **Default:** `40`
       - `count` property of the weapon entry next to the rarity leveled lists.
+      - This it the item type selected as the `Leveled List Base`.
+        - So in the case of using `AllValidEnchantedItem` it would be the vanilla enchanted item.
+        - When using `AllValidUnenchantedItems` it will be the unenchanted base item.
     - **Rarities:**
       - Label: Added prefix to each generated item's name.
       - Num Enchantments: The number of enchantments used to define the rarity.
@@ -110,3 +118,9 @@ Any mention of weight is equivalent to the `count` property of leveled lists.
         | Rare         | 2                      | 13            | false               |
         | Epic         | 3                      | 5             | false               |
         | Legendary    | 4                      | 2             | false               |
+          
+      - The formula for translating this into percentages is:
+        `Weight_of_Rarity/Sum_of_Base_And_Rarity_Weights` (The base item weight is considered a rarity in this context)
+        - *Disclaimer: The percentages won't be 100% reflected like this in gameplay since they only account for the chances introduced by this patcher
+          and need to be considered on top of the vanilla/base chances of your setup to get either normal or enchanted gear
+          depending on the `Leveled List Base` that was chosen in the previous settings* 
