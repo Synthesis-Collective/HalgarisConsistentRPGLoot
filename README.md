@@ -77,7 +77,7 @@ Any mention of weight is equivalent to the `count` property of leveled lists.
 - **Rarity And Variation Distribution Settings:**
   - **RandomSeed:**
     - **Default:** `42`
-    - Basically a Key to make the randomness repeatable, as long ass your leveled lists,
+    - Basically a Key to make the randomness repeatable, as long as your leveled lists,
       enchantments and weapons in the list don't change.
   - **Leveled List Base**
     - Changes where the RPGLoot leveled lists are inserted.
