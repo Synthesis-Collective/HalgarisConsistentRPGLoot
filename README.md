@@ -85,9 +85,11 @@ Any mention of weight is equivalent to the `count` property of leveled lists.
       but the gear you find will use the new rarities.
       - This means everywhere a vanilla leveled list had an enchanted variant of an item this patcher inserts
         different rarities for it.
+      - When using this option keep in mind that the enchanted item becomes the `Base Item`, meaning it is recommended to remove the un-named Rarity option.
     - `AllValidUnenchantedItems` **(Default)** This essentially reworks the whole system, 
       allowing you a greater control if you want more chances for enchanted loot.
       - This can potentially even cause your crafted gear to craft as enchanted versions.
+      - This will also keep vamilla enchanted items untouched (if I remember my implementation of this code from as of writing nearly 2 years ago correctly)
   - **Armor/WeaponSettings:** _(Separate since some people have more armors or weapon in their setups)_
     - **Variety Count Per Rarity:**
       - **Default:** `16`
