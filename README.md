@@ -68,10 +68,10 @@ Any mention of weight is equivalent to the `count` property of leveled lists.
 - **Rarity And Variation Distribution Settings:**
   - **RandomSeed:**
     - **Default:** `42`
-    - Basically a Key to make the randomness repeatable.
+    - Basically a Key to make the randomness repeatable, as long ass your leveled lists, enchantments and weapons in the list don't change.
   - **Leveled List Base**
     - Changes where the RPGLoot leveled lists are inserted.
-    - `AllValidEnchantedItem` The chance of encountering enchanted gear is similar to vanilla, but when you find some it .
+    - `AllValidEnchantedItem` The chance of encountering enchanted gear is similar to vanilla, but the gear you find will use the new rarities.
     - `AllValidUnenchantedItems` **(Default)** This essentially reworks the whole system, allowing you a greater control if you want more chances for enchanted loot.
   - **Armor/WeaponSettings:** _(Separate since some people have more armors or weapon in their setups)_
     - **Variety Count Per Rarity:**
@@ -83,7 +83,7 @@ Any mention of weight is equivalent to the `count` property of leveled lists.
     - **Rarities:**
       - Label: Added prefix to each generated item's name.
       - Num Enchantments: The number of enchantments used to define the rarity.
-      - RarityWeight: `count` property of the Leveled List for that rarity.
+      - RarityWeight: Amount of times the rarity is put into leveled lists.
       - AllowDisenchanting: If not enabled new Items get the Keyword: `Skyrim.Keyword.MagicDisallowEnchanting`
       - **Default Rarities:**
 
