@@ -163,13 +163,13 @@ namespace HalgarisRPGLoot.Analyzers
                         resolvedEnchantments[len] = AllEnchantments[result[len]];
                     }
 
-                    var oldEnchantment = resolvedEnchantments.First().Enchantment;
+                    var newEnchantmentsForName = GetEnchantmentsForName(resolvedEnchantments,", ");
                     SortedList<String, ResolvedEnchantment[]> enchants = AllRpgEnchants[i];
                     Console.WriteLine("Generated raw " + RarityClasses[i].Label + ItemTypeDescriptor +
-                                      " enchantment of " + oldEnchantment.Name);
-                    if (!enchants.ContainsKey(RarityClasses[i].Label + " " + oldEnchantment.Name))
+                                      " enchantment of " + newEnchantmentsForName);
+                    if (!enchants.ContainsKey(RarityClasses[i].Label + " " + newEnchantmentsForName))
                     {
-                        enchants.Add(RarityClasses[i].Label + " " + oldEnchantment.Name, resolvedEnchantments);
+                        enchants.Add(RarityClasses[i].Label + " " + newEnchantmentsForName, resolvedEnchantments);
                     }
                 }
             }
@@ -190,11 +190,11 @@ namespace HalgarisRPGLoot.Analyzers
                 var effects = ChosenRpgEnchantEffects[rarity].GetValueOrDefault(generatedEnchantmentFormKey);
                 newArmor.DeepCopyIn(item.Resolved);
                 newArmor.EditorID = EditorIdPrefix + RarityClasses[rarity].Label.ToUpper() + "_" + newArmor.EditorID +
-                                    "_of_" + effects!.First().Enchantment.Name;
+                                    "_of_" + GetEnchantmentsForName(effects,"_");
                 newArmor.ObjectEffect.SetTo(generatedEnchantmentFormKey);
                 newArmor.EnchantmentAmount = (ushort) effects.Where(e => e.Amount.HasValue).Sum(e => e.Amount.Value);
                 newArmor.Name = RarityClasses[rarity].Label + " " + itemName + " of " +
-                                effects.First().Enchantment.Name;
+                                GetEnchantmentsForName(effects,", ");
                 newArmor.TemplateArmor = (IFormLinkNullable<IArmorGetter>) item.Resolved.ToNullableLinkGetter();
 
                 if (!RarityClasses[rarity].AllowDisenchanting)
@@ -202,8 +202,7 @@ namespace HalgarisRPGLoot.Analyzers
                     newArmor.Keywords?.Add(Skyrim.Keyword.MagicDisallowEnchanting);
                 }
 
-                Console.WriteLine("Generated " + RarityClasses[rarity].Label + " " + itemName + " of " +
-                                  effects.First().Enchantment.Name);
+                Console.WriteLine("Generated " + newArmor.Name);
                 return newArmor.FormKey;
             }
             else

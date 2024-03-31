@@ -176,6 +176,14 @@ namespace HalgarisRPGLoot.Analyzers
             return newObjectEffectGetter.FormKey;
         }
 
+        protected String GetEnchantmentsForName(ResolvedEnchantment[] resolvedEnchantments, String separator)
+        {
+            return String.Join(separator, resolvedEnchantments
+                .Select(resolvedEnchantment=> resolvedEnchantment.Enchantment.Name!.String).ToArray());
+        }
+        
+
+
         private int RandomRarity()
         {
             var rar = 0;

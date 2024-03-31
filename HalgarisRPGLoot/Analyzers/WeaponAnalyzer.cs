@@ -10,6 +10,9 @@ using Mutagen.Bethesda.Plugins.Records;
 using Mutagen.Bethesda.Skyrim;
 using Mutagen.Bethesda.Strings;
 using Mutagen.Bethesda.Synthesis;
+using Noggog;
+using ILeveledItemGetter = Mutagen.Bethesda.Skyrim.ILeveledItemGetter;
+using IWeaponGetter = Mutagen.Bethesda.Skyrim.IWeaponGetter;
 
 namespace HalgarisRPGLoot.Analyzers
 {
@@ -162,13 +165,13 @@ namespace HalgarisRPGLoot.Analyzers
                         resolvedEnchantments[len] = AllEnchantments[result[len]];
                     }
 
-                    var oldEnchantment = resolvedEnchantments.First().Enchantment;
+                    var newEnchantmentsForName = GetEnchantmentsForName(resolvedEnchantments,", ");
                     SortedList<String, ResolvedEnchantment[]> enchants = AllRpgEnchants[i];
                     Console.WriteLine("Generated raw " + RarityClasses[i].Label + ItemTypeDescriptor +
-                                      " enchantment of " + oldEnchantment.Name);
-                    if (!enchants.ContainsKey(RarityClasses[i].Label + " " + oldEnchantment.Name))
+                                      " enchantment of " + newEnchantmentsForName);
+                    if (!enchants.ContainsKey(RarityClasses[i].Label + " " + newEnchantmentsForName))
                     {
-                        enchants.Add(RarityClasses[i].Label + " " + oldEnchantment.Name, resolvedEnchantments);
+                        enchants.Add(RarityClasses[i].Label + " " + newEnchantmentsForName, resolvedEnchantments);
                     }
                 }
             }
@@ -189,11 +192,11 @@ namespace HalgarisRPGLoot.Analyzers
                 var effects = ChosenRpgEnchantEffects[rarity].GetValueOrDefault(generatedEnchantmentFormKey);
                 newWeapon.DeepCopyIn(item.Resolved);
                 newWeapon.EditorID = EditorIdPrefix + RarityClasses[rarity].Label.ToUpper() + "_" + newWeapon.EditorID +
-                                     "_of_" + effects!.First().Enchantment.Name;
+                                     "_of_" + GetEnchantmentsForName(effects,"_");
                 newWeapon.ObjectEffect.SetTo(generatedEnchantmentFormKey);
                 newWeapon.EnchantmentAmount = (ushort) effects.Where(e => e.Amount.HasValue).Sum(e => e.Amount.Value);
                 newWeapon.Name = RarityClasses[rarity].Label + " " + itemName + " of " +
-                                 effects.First().Enchantment.Name;
+                                 GetEnchantmentsForName(effects,", ");
                 newWeapon.Template = (IFormLinkNullable<IWeaponGetter>) item.Resolved.ToNullableLinkGetter();
 
                 if (!RarityClasses[rarity].AllowDisenchanting)
@@ -202,8 +205,7 @@ namespace HalgarisRPGLoot.Analyzers
                 }
 
 
-                Console.WriteLine("Generated " + RarityClasses[rarity].Label + " " + itemName + " of " +
-                                  effects.First().Enchantment.Name);
+                Console.WriteLine("Generated " + newWeapon.Name);
                 return newWeapon.FormKey;
             }
             else
