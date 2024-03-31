@@ -77,7 +77,7 @@ namespace HalgarisRPGLoot.Analyzers
                 _ => BaseItems
             };
 
-            foreach (var ench in AllUnenchantedItems)
+            foreach (var ench in BaseItems)
             {
                 var topLevelList = State.PatchMod.LeveledItems.AddNewLocking(State.PatchMod.GetNextFormKey());
                 topLevelList.DeepCopyIn(ench.List);
