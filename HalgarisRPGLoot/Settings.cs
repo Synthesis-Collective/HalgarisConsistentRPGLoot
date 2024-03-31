@@ -5,7 +5,6 @@ using HalgarisRPGLoot.DataModels;
 using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Skyrim;
 using Mutagen.Bethesda.FormKeys.SkyrimSE;
-using Mutagen.Bethesda.Oblivion;
 using Mutagen.Bethesda.WPF.Reflection.Attributes;
 // ReSharper disable ConvertToConstant.Global
 // ReSharper disable FieldCanBeMadeReadOnly.Global
@@ -102,9 +101,18 @@ namespace HalgarisRPGLoot
     public class RarityAndVariationDistributionSettings
     {
         [MaintainOrder] public int RandomSeed = 42;
-
+        
+        /* Currently Impossible to implement in the game unless someone creates a SKSE plugin that allows COBJs to accept
+           a LL as a crafting target.
+        [MaintainOrder]
+        [SynthesisDescription("Controls if weapons and armor from crafting are replaced by RPG Loot Leveled Lists.")]
+        [SynthesisTooltip("Controls if weapons and armor from crafting are replaced by RPG Loot Leveled Lists.")]
+        public bool DistributeForCrafting = false;
+        */
+        
         [MaintainOrder] 
-        [SynthesisDescription("The items that will be replaced by ")]
+        [SynthesisDescription("The items that will be replaced by the RPG Loot Leveled Lists")]
+        [SynthesisTooltip("The items that will be replaced by the RPG Loot Leveled Lists")]
         public LeveledListBase LeveledListBase = LeveledListBase.AllValidUnenchantedItems;
 
         [MaintainOrder] public GearSettings ArmorSettings = new(16,20, new()

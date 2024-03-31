@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using HalgarisRPGLoot.DataModels;
 using Mutagen.Bethesda;
@@ -38,8 +37,8 @@ namespace HalgarisRPGLoot.Analyzers
         protected ILeveledItemGetter[] AllLeveledLists { get; set; }
         protected ResolvedListItem<TType>[] AllListItems { get; set; }
         protected ResolvedListItem<TType>[] AllEnchantedItems { get; set; }
-        
-        protected ResolvedListItem<TType>[] BaseItems { get; set; } 
+
+        private ResolvedListItem<TType>[] BaseItems { get; set; } 
             
         protected Dictionary<FormKey, IObjectEffectGetter> AllObjectEffects { get; set; }
 
