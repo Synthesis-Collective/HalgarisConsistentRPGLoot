@@ -2,10 +2,10 @@
 
 ## What does this Patcher do ?
 
-This patcher will distribute the enchantments found in your setup to your leveled lists
-and previously unenchanted items.
-
-For this the patcher has a Distribution Only Mode and a more fun and enhanced RPGLoot rarity level Distribution.
+This patcher allows you to generate more enchantment variations defined as rarities,
+that mix existing enchantments into new ones.  
+And it then distributes those enchantments to the items in your leveled lists
+based on various configurable settings.
 
 ## Versioning
 
