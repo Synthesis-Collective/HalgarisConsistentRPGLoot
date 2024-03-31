@@ -51,6 +51,8 @@ namespace HalgarisRPGLoot.Analyzers
 
 
         protected readonly Random Random = new(Program.Settings.RarityAndVariationDistributionSettings.RandomSeed);
+        
+        private readonly LeveledListFlagSettings _leveledListFlagSettings = Program.Settings.GeneralSettings.LeveledListFlagSettings;
 
         private readonly string _enchantmentSeparatorString = Program.Settings.GeneralSettings.EnchantmentSeparator;
 
@@ -84,6 +86,7 @@ namespace HalgarisRPGLoot.Analyzers
                 topLevelList.Entries!.Clear();
                 topLevelList.EditorID = "HAL_TOP_LList_" + ench.Resolved.EditorID;
 
+                topLevelList.Flags = GetLeveledItemFlags();
 
                 var rarityClassNumber = 0;
 
@@ -95,16 +98,7 @@ namespace HalgarisRPGLoot.Analyzers
                     leveledItem.EditorID = "HAL_SUB_LList_" + rarityClass.Label + "_" + ench.Resolved.EditorID;
                     leveledItem.Entries!.Clear();
 
-                    var leveledListFlagSettings =
-                        Program.Settings.GeneralSettings.LeveledListFlagSettings;
-                    if (leveledListFlagSettings.CalculateFromAllLevelsLessThanOrEqualPlayer)
-                        leveledItem.Flags &= ~LeveledItem.Flag.CalculateFromAllLevelsLessThanOrEqualPlayer;
-                    if (leveledListFlagSettings.CalculateForEachItemInCount)
-                        leveledItem.Flags &= ~LeveledItem.Flag.CalculateForEachItemInCount;
-                    if (leveledListFlagSettings.UseAll)
-                        leveledItem.Flags &= ~LeveledItem.Flag.UseAll;
-                    if (leveledListFlagSettings.SpecialLoot)
-                        leveledItem.Flags &= ~LeveledItem.Flag.SpecialLoot;
+                    leveledItem.Flags = GetLeveledItemFlags();
 
                     for (var i = 0; i < VarietyCountPerRarity; i++)
                     {
@@ -203,6 +197,16 @@ namespace HalgarisRPGLoot.Analyzers
             if (lastSeparatorIndex == -1) return labelString;
             return labelString.Remove(lastSeparatorIndex, _enchantmentSeparatorString.Length)
                 .Insert(lastSeparatorIndex, _lastEnchantmentSeparatorString);
+        }
+
+        private LeveledItem.Flag GetLeveledItemFlags()
+        {
+            var flag = LeveledItem.Flag.CalculateForEachItemInCount;
+            if (_leveledListFlagSettings.CalculateFromAllLevelsLessThanOrEqualPlayer)
+                flag |= LeveledItem.Flag.CalculateFromAllLevelsLessThanOrEqualPlayer;
+            if (_leveledListFlagSettings.SpecialLoot)
+                flag |= LeveledItem.Flag.SpecialLoot;
+            return flag;
         }
         
         // Forgot what I wanted to use this for but will keep it just in case I ever remember

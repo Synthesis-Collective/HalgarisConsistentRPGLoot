@@ -161,8 +161,6 @@ namespace HalgarisRPGLoot
     public class LeveledListFlagSettings
     {
         public bool CalculateFromAllLevelsLessThanOrEqualPlayer = true;
-        public bool CalculateForEachItemInCount = true;
-        public bool UseAll = false;
         public bool SpecialLoot = false;
     }
 

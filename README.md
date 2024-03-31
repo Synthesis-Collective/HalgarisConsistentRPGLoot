@@ -41,13 +41,9 @@ Any mention of weight is equivalent to the `count` property of leveled lists.
     - `CalculateFromAllLevelsLessThanOrEqualPlayer`
       - **Default:** `On`
       - Default because it is present in Vanilla enchanted Leveled Lists
-    - `CalculateForEachItemInCount`
-      - **Default:** `On`
-      - Default because it it present in Vanilla enchanted Leveled Lists
-    - `UseAll`
-      - **Default:** `Off`
     - `SpecialLoot`
       - **Default:** `Off`
+      - Effects are unknown but I wanted to give people the option to try it.
   - **Untouchable Equipment Keywords:**
     - Keywords that are on unique and/or incompatible items
     - Defaults:
