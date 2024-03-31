@@ -93,6 +93,10 @@ Any mention of weight is equivalent to the `count` property of leveled lists.
         different rarities for it.
       - When using this option keep in mind that the enchanted item becomes the `Base Item`,
         meaning it is recommended to remove the un-named Rarity option.
+      - Since the game creates a lot unique lists for enchanted items it is recommended 
+        to also keep the Weights(especially the Base Item Weight very low), since the game has 
+        a lot more enchanted item entries in leveled lists due to the various enchantments that
+        will all get expanded with the new loot.
     - `AllValidUnenchantedItems` **(Default)** This essentially reworks the whole system, 
       allowing you a greater control if you want more chances for enchanted loot.
       - This can potentially even cause your crafted gear to craft as enchanted versions.

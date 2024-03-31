@@ -55,7 +55,14 @@ namespace HalgarisRPGLoot
             Console.WriteLine("Generating weapon enchantments");
             weapon.Generate();
 
-            Console.WriteLine("Done.");
+            Console.WriteLine("\n" +
+                              " _                 _     _____                _           _   \n" +
+                              "| |               | |   /  __ \\              | |         | |  \n" +
+                              "| |     ___   ___ | |_  | /  \\/_ __ ___  __ _| |_ ___  __| |  \n" +
+                              "| |    / _ \\ / _ \\| __| | |   | '__/ _ \\/ _` | __/ _ \\/ _` |  \n" +
+                              "| |___| (_) | (_) | |_  | \\__/\\ | |  __/ (_| | ||  __/ (_| |_ \n" +
+                              "\\_____/\\___/ \\___/ \\__|  \\____/_|  \\___|\\__,_|\\__\\___|\\__,_(_)\n" +
+                              "                                                              \n");
         }
     }
 }
