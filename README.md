@@ -29,6 +29,12 @@ Any mention of weight is equivalent to the `count` property of leveled lists.
   - **Only process constructible equipment:**
     - **Default:** `On`
     - Only items that are referenced in crafting and tampering recipes get processed and enchanted.
+  - **Enchantment Separator:**
+    - **Default:** `, `
+    - Separator used for listing all enchantments on labels
+  - **Last Enchantment Separator:**
+    - **Default:** ` and `
+    - Separator used for the last two enchantments listed on labels
   - **LeveledList Flags List:**
     - Information about those flags can be found on [en.uesp.net](https://en.uesp.net/wiki/Skyrim:Leveled_Lists)
       (they are named slightly different) and [ck.uesp.net](https://ck.uesp.net/wiki/LeveledItem)

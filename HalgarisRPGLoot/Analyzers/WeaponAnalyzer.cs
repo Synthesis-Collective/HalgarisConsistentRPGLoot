@@ -165,7 +165,7 @@ namespace HalgarisRPGLoot.Analyzers
                         resolvedEnchantments[len] = AllEnchantments[result[len]];
                     }
 
-                    var newEnchantmentsForName = GetEnchantmentsForName(resolvedEnchantments,", ");
+                    var newEnchantmentsForName = GetEnchantmentsForName(resolvedEnchantments);
                     SortedList<String, ResolvedEnchantment[]> enchants = AllRpgEnchants[i];
                     Console.WriteLine("Generated raw " + RarityClasses[i].Label + ItemTypeDescriptor +
                                       " enchantment of " + newEnchantmentsForName);
@@ -192,11 +192,11 @@ namespace HalgarisRPGLoot.Analyzers
                 var effects = ChosenRpgEnchantEffects[rarity].GetValueOrDefault(generatedEnchantmentFormKey);
                 newWeapon.DeepCopyIn(item.Resolved);
                 newWeapon.EditorID = EditorIdPrefix + RarityClasses[rarity].Label.ToUpper() + "_" + newWeapon.EditorID +
-                                     "_of_" + GetEnchantmentsForName(effects,"_");
+                                     "_of_" + GetEnchantmentsForName(effects,true);
                 newWeapon.ObjectEffect.SetTo(generatedEnchantmentFormKey);
                 newWeapon.EnchantmentAmount = (ushort) effects.Where(e => e.Amount.HasValue).Sum(e => e.Amount.Value);
                 newWeapon.Name = RarityClasses[rarity].Label + " " + itemName + " of " +
-                                 GetEnchantmentsForName(effects,", ");
+                                 GetEnchantmentsForName(effects);
                 newWeapon.Template = (IFormLinkNullable<IWeaponGetter>) item.Resolved.ToNullableLinkGetter();
 
                 if (!RarityClasses[rarity].AllowDisenchanting)

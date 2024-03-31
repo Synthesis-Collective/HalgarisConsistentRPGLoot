@@ -5,6 +5,7 @@ using HalgarisRPGLoot.DataModels;
 using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Skyrim;
 using Mutagen.Bethesda.FormKeys.SkyrimSE;
+using Mutagen.Bethesda.Oblivion;
 using Mutagen.Bethesda.WPF.Reflection.Attributes;
 // ReSharper disable ConvertToConstant.Global
 // ReSharper disable FieldCanBeMadeReadOnly.Global
@@ -32,6 +33,18 @@ namespace HalgarisRPGLoot
             "This Setting makes it so only Armor that is a CNAM (Created Object) in an COBJ (Constructable Object) Record will be considered." +
             "\nThis is to keep unique artefacts and rewards unique in their look and enchantment.")]
         public bool OnlyProcessConstructableEquipment = true;
+        
+        [MaintainOrder]
+        [SynthesisSettingName("Enchantment Separator")]
+        [SynthesisDescription("This is the string(text) that will be written between the enchantments listed in enchantments and item names.")]
+        [SynthesisTooltip("This is the string(text) that will be written between the enchantments listed in enchantments and item names.")]
+        public string EnchantmentSeparator = ", ";
+        
+        [MaintainOrder]
+        [SynthesisSettingName("Last Enchantment Separator")]
+        [SynthesisDescription("This is the string(text) that will be written between the two last enchantments listed in enchantments and item names.")]
+        [SynthesisTooltip("This is the string(text) that will be written between the two last enchantments listed in enchantments and item names.")]
+        public string LastEnchantmentSeparator = " and ";
         
         
         [MaintainOrder]

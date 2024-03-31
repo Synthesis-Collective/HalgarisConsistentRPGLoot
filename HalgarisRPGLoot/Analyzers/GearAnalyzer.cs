@@ -49,10 +49,14 @@ namespace HalgarisRPGLoot.Analyzers
 
         protected readonly Random Random = new(Program.Settings.RarityAndVariationDistributionSettings.RandomSeed);
 
+        private readonly string _enchantmentSeparatorString = Program.Settings.GeneralSettings.EnchantmentSeparator;
+
+        private readonly string _lastEnchantmentSeparatorString = Program.Settings.GeneralSettings.LastEnchantmentSeparator;
+
         protected string EditorIdPrefix;
 
         protected string ItemTypeDescriptor;
-
+       
 
         public void Analyze()
         {
@@ -176,13 +180,24 @@ namespace HalgarisRPGLoot.Analyzers
             return newObjectEffectGetter.FormKey;
         }
 
-        protected String GetEnchantmentsForName(ResolvedEnchantment[] resolvedEnchantments, String separator)
+        protected string GetEnchantmentsForName(ResolvedEnchantment[] resolvedEnchantments, bool isEditorId=false)
         {
-            return String.Join(separator, resolvedEnchantments
-                .Select(resolvedEnchantment=> resolvedEnchantment.Enchantment.Name!.String).ToArray());
+            if (isEditorId)
+            {
+                return string.Join("_", resolvedEnchantments
+                    .Select(resolvedEnchantment => resolvedEnchantment.Enchantment.Name!.String).ToArray());
+            }
+            return BeatifyLabel(string.Join(_enchantmentSeparatorString, resolvedEnchantments
+                .Select(resolvedEnchantment=> resolvedEnchantment.Enchantment.Name!.String).ToArray()));
         }
-        
 
+        private string BeatifyLabel(string labelString)
+        {
+            var lastSeparatorIndex = labelString.LastIndexOf(_enchantmentSeparatorString,StringComparison.Ordinal);
+            if (lastSeparatorIndex == -1) return labelString;
+            return labelString.Remove(lastSeparatorIndex, _enchantmentSeparatorString.Length)
+                .Insert(lastSeparatorIndex, _lastEnchantmentSeparatorString);
+        }
 
         private int RandomRarity()
         {
