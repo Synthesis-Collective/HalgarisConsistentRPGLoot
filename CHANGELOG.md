@@ -11,3 +11,4 @@
       in an ESP that is over double the size than the largest official DLC) and I can't guarantee how
       or if the Engine and tools like xEdit can handle that when it gets bigger!!
 * Item and Enchantment Names now list all enchantments
+  * added a config option to configure the separators for this
