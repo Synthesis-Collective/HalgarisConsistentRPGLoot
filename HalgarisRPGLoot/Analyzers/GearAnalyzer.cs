@@ -135,7 +135,7 @@ namespace HalgarisRPGLoot.Analyzers
                     entry.Data!.Reference.SetTo(topLevelList);
                 }
                 
-                for (int i = 0; i < GearSettings.BaseItemChanceWeight; i++)
+                for (var i = 0; i < GearSettings.BaseItemChanceWeight; i++)
                 {
                     var oldEntryChanceAdjustmentCopy = ench.Entry.DeepCopy();
                     topLevelList.Entries!.Add(oldEntryChanceAdjustmentCopy);
