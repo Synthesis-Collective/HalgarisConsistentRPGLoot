@@ -76,12 +76,12 @@ namespace HalgarisRPGLoot
         public ListMode EnchantmentListMode = ListMode.Blacklist;
 
         [MaintainOrder] [SynthesisSettingName("Enchantment List")] [SynthesisDescription("List of Enchantments")]
-        public HashSet<IFormLinkGetter<IObjectEffectGetter>> EnchantmentList =
-        [
+        public HashSet<IFormLinkGetter<IObjectEffectGetter>> EnchantmentList = new()
+        {
             Skyrim.ObjectEffect.BoundBattleaxeEnchantment,
             Skyrim.ObjectEffect.BoundBowEnchantment,
             Skyrim.ObjectEffect.BoundSwordEnchantment
-        ];
+        };
 
         [MaintainOrder]
         [SynthesisSettingName("Plugin List Mode")]
