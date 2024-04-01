@@ -120,7 +120,7 @@ namespace HalgarisRPGLoot.Analyzers
                         {
                             leveledItem = State.PatchMod.LeveledItems.AddNewLocking(State.PatchMod.GetNextFormKey());
                             leveledItem.DeepCopyIn(ench.List);
-                            leveledItem.Entries = [];
+                            leveledItem.Entries = new ();
                             leveledItem.EditorID = leveledItemEditorId;
                             leveledItem.Flags = GetLeveledItemFlags();
 
