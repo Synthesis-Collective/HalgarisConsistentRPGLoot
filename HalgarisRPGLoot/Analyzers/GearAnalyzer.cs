@@ -83,72 +83,82 @@ namespace HalgarisRPGLoot.Analyzers
 
             foreach (var ench in BaseItems)
             {
-                var oldLeveledItem = State.PatchMod.LeveledItems.GetOrAddAsOverride(ench.List);
-
-                var entries = oldLeveledItem.Entries?.Where(entry =>
+                var entries = State.PatchMod.LeveledItems
+                    .GetOrAddAsOverride(ench.List).Entries?.Where(entry =>
                     entry.Data?.Reference.FormKey == ench.Resolved.FormKey);
 
                 if (entries == null) continue;
                 if (ench.Entry.Data == null) continue;
                 if (ench.List?.Entries == null) continue;
                 var topLevelListEditorId = "HAL_TOP_LList_" + ench.Resolved.EditorID;
-                if (State.LinkCache.TryResolve<ILeveledItemGetter>(topLevelListEditorId, out _)) continue;
-                var topLevelList = State.PatchMod.LeveledItems.AddNewLocking(State.PatchMod.GetNextFormKey());
-                
-                topLevelList.DeepCopyIn(ench.List);
-                topLevelList.Entries?.Clear();
-                topLevelList.EditorID = topLevelListEditorId;
-                topLevelList.Flags = GetLeveledItemFlags();
-
-                var rarityClassNumber = 0;
-
-
-                foreach (var rarityClass in RarityClasses)
+                LeveledItem topLevelList;
+                if (State.LinkCache.TryResolve<ILeveledItemGetter>(topLevelListEditorId, out var topLeveledListGetter))
                 {
-                    var leveledItemEditorId = "HAL_SUB_LList_" + rarityClass.Label + "_" + ench.Resolved.EditorID;
-                    var leveledItem = State.PatchMod.LeveledItems.AddNewLocking(State.PatchMod.GetNextFormKey());
-                    leveledItem.DeepCopyIn(ench.List);
-                    leveledItem.Entries?.Clear();
-                    leveledItem.EditorID = leveledItemEditorId;
-                    leveledItem.Flags = GetLeveledItemFlags();
-
-                    for (var i = 0; i < VarietyCountPerRarity; i++)
-                    {
-                        var level = ench.Entry.Data.Level;
-                        var forLevel = ByLevelIndexed[level];
-                        if (forLevel.Length.Equals(0)) continue;
-
-                        var itm = EnchantItem(ench, rarityClassNumber);
-                        var entry = ench.Entry.DeepCopy();
-                        entry.Data?.Reference.SetTo(itm);
-                        leveledItem.Entries?.Add(entry);
-                    }
-
-                    for (var i = 0; i < rarityClass.RarityWeight; i++)
-                    {
-                        var newRarityEntry = ench.Entry.DeepCopy();
-                        newRarityEntry.Data?.Reference.SetTo(leveledItem);
-
-                        topLevelList.Entries?.Add(newRarityEntry);
-                    }
-
-                    rarityClassNumber++;
+                    topLevelList = State.PatchMod.LeveledItems.GetOrAddAsOverride(topLeveledListGetter);
                 }
+                else
+                {
+                    topLevelList = State.PatchMod.LeveledItems.AddNewLocking(State.PatchMod.GetNextFormKey());
+                    topLevelList.DeepCopyIn(ench.List);
+                    topLevelList.Entries?.Clear();
+                    topLevelList.EditorID = topLevelListEditorId;
+                    topLevelList.Flags = GetLeveledItemFlags();
 
-                var topLeveledEntry = ench.Entry.DeepCopy();
-                topLeveledEntry.Data?.Reference.SetTo(topLevelList);
+                    var rarityClassNumber = 0;
 
+
+                    foreach (var rarityClass in RarityClasses)
+                    {
+                        var leveledItemEditorId = "HAL_SUB_LList_" + rarityClass.Label + "_" + ench.Resolved.EditorID;
+                        LeveledItem leveledItem;
+                        if (State.LinkCache.TryResolve<ILeveledItemGetter>(leveledItemEditorId,
+                                out var leveledItemGetter))
+                        {
+                            leveledItem = State.PatchMod.LeveledItems.GetOrAddAsOverride(leveledItemGetter);
+                        }
+                        else
+                        {
+                            leveledItem = State.PatchMod.LeveledItems.AddNewLocking(State.PatchMod.GetNextFormKey());
+                            leveledItem.DeepCopyIn(ench.List);
+                            leveledItem.Entries = [];
+                            leveledItem.EditorID = leveledItemEditorId;
+                            leveledItem.Flags = GetLeveledItemFlags();
+
+                            for (var i = 0; i < VarietyCountPerRarity; i++)
+                            {
+                                var level = ench.Entry.Data.Level;
+                                var forLevel = ByLevelIndexed[level];
+                                if (forLevel.Length.Equals(0)) continue;
+
+                                var itm = EnchantItem(ench, rarityClassNumber);
+                                var entry = ench.Entry.DeepCopy();
+                                entry.Data.Reference.SetTo(itm);
+                                leveledItem.Entries.Add(entry);
+                            }
+                        }
+
+                        for (var i = 0; i < rarityClass.RarityWeight; i++)
+                        {
+                            var newRarityEntry = ench.Entry.DeepCopy();
+                            newRarityEntry.Data.Reference.SetTo(leveledItem);
+
+                            topLevelList.Entries.Add(newRarityEntry);
+                        }
+
+                        rarityClassNumber++;
+                    }
+                }
 
                 foreach (var entry in entries)
                 {
-                    entry.Data?.Reference.SetTo(topLevelList);
+                    entry.Data.Reference.SetTo(topLevelList);
                 }
 
 
                 for (var i = 0; i < GearSettings.BaseItemChanceWeight; i++)
                 {
                     var oldEntryChanceAdjustmentCopy = ench.Entry.DeepCopy();
-                    topLevelList.Entries?.Add(oldEntryChanceAdjustmentCopy);
+                    topLevelList.Entries.Add(oldEntryChanceAdjustmentCopy);
                 }
             }
         }
@@ -162,45 +172,50 @@ namespace HalgarisRPGLoot.Analyzers
             var effects = array.ElementAt(Random.Next(0,
                 (0 < allRpgEnchantmentsCount - 1) ? allRpgEnchantmentsCount - 1 : array.Length - 1)).Value;
 
-            var oldObjectEffectGetter = effects.First().Enchantment;
-
-            Console.WriteLine("Generating " + RarityClasses[rarity].Label + ItemTypeDescriptor + " enchantment of " +
-                              oldObjectEffectGetter.Name);
-            if (ChosenRpgEnchants[rarity].ContainsKey(RarityClasses[rarity].Label + " " + oldObjectEffectGetter.Name))
+            if (ChosenRpgEnchants[rarity]
+                .ContainsKey(RarityClasses[rarity].Label + " " + GetEnchantmentsStringForName(effects)))
             {
                 return ChosenRpgEnchants[rarity]
-                    .GetValueOrDefault(RarityClasses[rarity].Label + " " + oldObjectEffectGetter.Name);
+                    .GetValueOrDefault(RarityClasses[rarity].Label + " " + GetEnchantmentsStringForName(effects));
             }
 
-            var key = State.PatchMod.GetNextFormKey();
-            var newObjectEffectGetter = State.PatchMod.ObjectEffects.AddNewLocking(key);
+            var objectEffectEditorId = EditorIdPrefix + "ENCH_" + RarityClasses[rarity].Label.ToUpper() + "_" +
+                                       GetEnchantmentsStringForName(effects, true);
+
+            if (State.LinkCache.TryResolve<IObjectEffectGetter>(objectEffectEditorId, out var objectEffectGetter))
+            {
+                return objectEffectGetter.FormKey;
+            }
+
+            Console.WriteLine("Generating " + RarityClasses[rarity].Label + ItemTypeDescriptor + " enchantment of " +
+                              GetEnchantmentsStringForName(effects));
+            var newObjectEffectGetter = State.PatchMod.ObjectEffects.AddNewLocking(State.PatchMod.GetNextFormKey());
             newObjectEffectGetter.DeepCopyIn(effects.First().Enchantment);
-            newObjectEffectGetter.EditorID = EditorIdPrefix + "ENCH_" + RarityClasses[rarity].Label.ToUpper() + "_" +
-                                             oldObjectEffectGetter.EditorID;
-            newObjectEffectGetter.Name = RarityClasses[rarity].Label + " " + oldObjectEffectGetter.Name;
+            newObjectEffectGetter.EditorID = objectEffectEditorId;
+            newObjectEffectGetter.Name = RarityClasses[rarity].Label + " " + GetEnchantmentsStringForName(effects);
             newObjectEffectGetter.Effects.Clear();
             newObjectEffectGetter.Effects.AddRange(effects.SelectMany(e => e.Enchantment.Effects)
                 .Select(e => e.DeepCopy()));
             newObjectEffectGetter.WornRestrictions.SetTo(effects.First().Enchantment.WornRestrictions);
 
-            ChosenRpgEnchants[rarity].Add(RarityClasses[rarity].Label + " " + oldObjectEffectGetter.Name,
+            ChosenRpgEnchants[rarity].Add(RarityClasses[rarity].Label + " " + GetEnchantmentsStringForName(effects),
                 newObjectEffectGetter.FormKey);
             ChosenRpgEnchantEffects[rarity].Add(newObjectEffectGetter.FormKey, effects);
             Console.WriteLine("Enchantment Generated");
             return newObjectEffectGetter.FormKey;
         }
 
-        protected string GetEnchantmentsStringForName(ResolvedEnchantment[] resolvedEnchantments,
+        protected string GetEnchantmentsStringForName(IEnumerable<ResolvedEnchantment> resolvedEnchantments,
             bool isEditorId = false)
         {
             if (isEditorId)
             {
                 return string.Join("_", resolvedEnchantments
-                    .Select(resolvedEnchantment => resolvedEnchantment.Enchantment.Name!.String).ToArray());
+                    .Select(resolvedEnchantment => resolvedEnchantment.Enchantment.EditorID).ToArray());
             }
 
             return BeatifyLabel(string.Join(_enchantmentSeparatorString, resolvedEnchantments
-                .Select(resolvedEnchantment => resolvedEnchantment.Enchantment.Name!.String).ToArray()));
+                .Select(resolvedEnchantment => resolvedEnchantment.Enchantment.Name?.String).ToArray()));
         }
 
         private string BeatifyLabel(string labelString)

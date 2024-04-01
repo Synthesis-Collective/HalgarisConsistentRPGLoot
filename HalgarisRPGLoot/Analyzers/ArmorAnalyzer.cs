@@ -164,7 +164,7 @@ namespace HalgarisRPGLoot.Analyzers
                     }
 
                     var newEnchantmentsForName = GetEnchantmentsStringForName(resolvedEnchantments);
-                    SortedList<String, ResolvedEnchantment[]> enchants = AllRpgEnchants[i];
+                    var enchants = AllRpgEnchants[i];
                     Console.WriteLine("Generated raw " + RarityClasses[i].Label + ItemTypeDescriptor +
                                       " enchantment of " + newEnchantmentsForName);
                     if (!enchants.ContainsKey(RarityClasses[i].Label + " " + newEnchantmentsForName))
@@ -177,20 +177,26 @@ namespace HalgarisRPGLoot.Analyzers
 
         protected override FormKey EnchantItem(ResolvedListItem<IArmorGetter> item, int rarity)
         {
-            if (!(item.Resolved?.Name?.TryLookup(Language.English, out var itemName) ?? false))
+            if (!(item.Resolved.Name?.TryLookup(Language.English, out var itemName) ?? false))
             {
-                itemName = MakeName(item.Resolved!.EditorID);
+                itemName = MakeName(item.Resolved.EditorID);
             }
 
-            Console.WriteLine("Generating Enchanted version of " + itemName);
             if (RarityClasses[rarity].NumEnchantments != 0)
             {
-                var newArmor = State.PatchMod.Armors.AddNewLocking(State.PatchMod.GetNextFormKey());
                 var generatedEnchantmentFormKey = GenerateEnchantment(rarity);
                 var effects = ChosenRpgEnchantEffects[rarity].GetValueOrDefault(generatedEnchantmentFormKey);
+                var newArmorEditorId = EditorIdPrefix + RarityClasses[rarity].Label.ToUpper() + "_" +
+                                       itemName +
+                                       "_of_" + GetEnchantmentsStringForName(effects, true);
+                if (State.LinkCache.TryResolve<IArmorGetter>(newArmorEditorId, out var armorGetter))
+                {
+                    return armorGetter.FormKey;
+                }
+                Console.WriteLine("Generating Enchanted version of " + itemName);
+                var newArmor = State.PatchMod.Armors.AddNewLocking(State.PatchMod.GetNextFormKey());
                 newArmor.DeepCopyIn(item.Resolved);
-                newArmor.EditorID = EditorIdPrefix + RarityClasses[rarity].Label.ToUpper() + "_" + newArmor.EditorID +
-                                    "_of_" + GetEnchantmentsStringForName(effects,true);
+                newArmor.EditorID = newArmorEditorId;
                 newArmor.ObjectEffect.SetTo(generatedEnchantmentFormKey);
                 newArmor.EnchantmentAmount = (ushort) effects.Where(e => e.Amount.HasValue).Sum(e => e.Amount.Value);
                 newArmor.Name = RarityClasses[rarity].Label + " " + itemName + " of " +
@@ -207,9 +213,15 @@ namespace HalgarisRPGLoot.Analyzers
             }
             else
             {
+                Console.WriteLine("Generating unenchanted version of " + itemName);
+                var newArmorEditorId = EditorIdPrefix + item.Resolved.EditorID;
+                if (State.LinkCache.TryResolve<IArmorGetter>(newArmorEditorId, out var armorGetter))
+                {
+                    return State.PatchMod.Armors.GetOrAddAsOverride(armorGetter).FormKey;
+                }
                 var newArmor = State.PatchMod.Armors.AddNewLocking(State.PatchMod.GetNextFormKey());
                 newArmor.DeepCopyIn(item.Resolved);
-                newArmor.EditorID = EditorIdPrefix + newArmor.EditorID;
+                newArmor.EditorID = newArmorEditorId;
 
                 newArmor.Name = RarityClasses[rarity].Label.Equals("")
                     ? itemName

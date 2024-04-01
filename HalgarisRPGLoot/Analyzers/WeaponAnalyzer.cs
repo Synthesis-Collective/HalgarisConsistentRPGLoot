@@ -26,8 +26,8 @@ namespace HalgarisRPGLoot.Analyzers
             RarityAndVariationDistributionSettings = Program.Settings.RarityAndVariationDistributionSettings;
             GearSettings = RarityAndVariationDistributionSettings.ArmorSettings;
 
-            EditorIdPrefix = "HAL_ARMOR_";
-            ItemTypeDescriptor = " armor";
+            EditorIdPrefix = "HAL_WEAPON_";
+            ItemTypeDescriptor = " weapon";
 
             State = state;
             _weaponDictionary = weaponDictionary;
@@ -163,7 +163,7 @@ namespace HalgarisRPGLoot.Analyzers
                     }
 
                     var newEnchantmentsForName = GetEnchantmentsStringForName(resolvedEnchantments);
-                    SortedList<String, ResolvedEnchantment[]> enchants = AllRpgEnchants[i];
+                    var enchants = AllRpgEnchants[i];
                     Console.WriteLine("Generated raw " + RarityClasses[i].Label + ItemTypeDescriptor +
                                       " enchantment of " + newEnchantmentsForName);
                     if (!enchants.ContainsKey(RarityClasses[i].Label + " " + newEnchantmentsForName))
@@ -180,16 +180,23 @@ namespace HalgarisRPGLoot.Analyzers
             {
                 itemName = MakeName(item.Resolved!.EditorID);
             }
-
-            Console.WriteLine("Generating Enchanted version of " + itemName);
+            
             if (RarityClasses[rarity].NumEnchantments != 0)
             {
-                var newWeapon = State.PatchMod.Weapons.AddNewLocking(State.PatchMod.GetNextFormKey());
                 var generatedEnchantmentFormKey = GenerateEnchantment(rarity);
                 var effects = ChosenRpgEnchantEffects[rarity].GetValueOrDefault(generatedEnchantmentFormKey);
+                var newWeaponEditorId = EditorIdPrefix + RarityClasses[rarity].Label.ToUpper() + "_" +
+                                        itemName +
+                                        "_of_" + GetEnchantmentsStringForName(effects, true);
+                if (State.LinkCache.TryResolve<IWeaponGetter>(newWeaponEditorId, out var weaponGetter))
+                {
+                    return weaponGetter.FormKey;
+                }
+
+                Console.WriteLine("Generating Enchanted version of " + itemName);
+                var newWeapon = State.PatchMod.Weapons.AddNewLocking(State.PatchMod.GetNextFormKey());
                 newWeapon.DeepCopyIn(item.Resolved);
-                newWeapon.EditorID = EditorIdPrefix + RarityClasses[rarity].Label.ToUpper() + "_" + newWeapon.EditorID +
-                                     "_of_" + GetEnchantmentsStringForName(effects,true);
+                newWeapon.EditorID = newWeaponEditorId;
                 newWeapon.ObjectEffect.SetTo(generatedEnchantmentFormKey);
                 newWeapon.EnchantmentAmount = (ushort) effects.Where(e => e.Amount.HasValue).Sum(e => e.Amount.Value);
                 newWeapon.Name = RarityClasses[rarity].Label + " " + itemName + " of " +
@@ -200,16 +207,21 @@ namespace HalgarisRPGLoot.Analyzers
                 {
                     newWeapon.Keywords?.Add(Skyrim.Keyword.MagicDisallowEnchanting);
                 }
-
-
+                
                 Console.WriteLine("Generated " + newWeapon.Name);
                 return newWeapon.FormKey;
             }
             else
             {
+                Console.WriteLine("Generating unenchanted version of " + itemName);
+                var newWeaponEditorId = EditorIdPrefix + item.Resolved.EditorID;
+                if (State.LinkCache.TryResolve<IWeaponGetter>(newWeaponEditorId, out var weaponGetter))
+                {
+                    return weaponGetter.FormKey;
+                }
                 var newWeapon = State.PatchMod.Weapons.AddNewLocking(State.PatchMod.GetNextFormKey());
                 newWeapon.DeepCopyIn(item.Resolved);
-                newWeapon.EditorID = EditorIdPrefix + newWeapon.EditorID;
+                newWeapon.EditorID = newWeaponEditorId;
 
                 newWeapon.Name = RarityClasses[rarity].Label.Equals("")
                     ? itemName
