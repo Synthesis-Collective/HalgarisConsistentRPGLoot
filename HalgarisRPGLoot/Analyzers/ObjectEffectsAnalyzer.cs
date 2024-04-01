@@ -29,7 +29,7 @@ namespace HalgarisRPGLoot.Analyzers
 
             var pluginObjectEffects = new HashSet<IObjectEffectGetter>();
 
-            foreach (var objectEffectGetter in pluginObjectEffectGroups.SelectMany(objectEffectGroup => objectEffectGroup))
+            foreach (var objectEffectGetter in pluginObjectEffectGroups.SelectMany(objectEffectGroup => objectEffectGroup).ToHashSet())
             {
                 pluginObjectEffects.Add(objectEffectGetter);
             }
