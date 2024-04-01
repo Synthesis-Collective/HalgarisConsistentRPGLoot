@@ -37,13 +37,13 @@ namespace HalgarisRPGLoot.Analyzers
             RarityClasses = GearSettings.RarityClasses;
 
 
-            AllRpgEnchants = new SortedList<String, ResolvedEnchantment[]>[RarityClasses.Count];
+            AllRpgEnchants = new SortedList<string, ResolvedEnchantment[]>[RarityClasses.Count];
             for (var i = 0; i < AllRpgEnchants.Length; i++)
             {
                 AllRpgEnchants[i] = new();
             }
 
-            ChosenRpgEnchants = new Dictionary<String, FormKey>[RarityClasses.Count];
+            ChosenRpgEnchants = new Dictionary<string, FormKey>[RarityClasses.Count];
             for (var i = 0; i < ChosenRpgEnchants.Length; i++)
             {
                 ChosenRpgEnchants[i] = new();
@@ -58,7 +58,7 @@ namespace HalgarisRPGLoot.Analyzers
 
         protected override void AnalyzeGear()
         {
-            AllLeveledLists = State.LoadOrder.PriorityOrder.WinningOverrides<ILeveledItemGetter>().ToArray();
+            AllLeveledLists = State.LoadOrder.PriorityOrder.WinningOverrides<ILeveledItemGetter>().ToHashSet();
 
             AllListItems = AllLeveledLists.SelectMany(lst => lst.Entries?.Select(entry =>
                                                              {
@@ -92,11 +92,11 @@ namespace HalgarisRPGLoot.Analyzers
                         return !Extensions.CheckKeywords(kws);
                     }
                 })
-                .ToArray();
+                .ToHashSet();
 
-            AllUnenchantedItems = AllListItems.Where(e => e.Resolved.ObjectEffect.IsNull).ToArray();
+            AllUnenchantedItems = AllListItems.Where(e => e.Resolved.ObjectEffect.IsNull).ToHashSet();
 
-            AllEnchantedItems = AllListItems.Where(e => !e.Resolved.ObjectEffect.IsNull).ToArray();
+            AllEnchantedItems = AllListItems.Where(e => !e.Resolved.ObjectEffect.IsNull).ToHashSet();
 
             AllObjectEffects = _objectEffectsAnalyzer.AllObjectEffects;
 
@@ -124,7 +124,7 @@ namespace HalgarisRPGLoot.Analyzers
 
             ByLevel = AllEnchantments.GroupBy(e => e.Level)
                 .OrderBy(e => e.Key)
-                .Select(e => (e.Key, e.ToArray()))
+                .Select(e => (e.Key, e.ToHashSet()))
                 .ToArray();
 
             ByLevelIndexed = Enumerable.Range(0, maxLvl + 1)

@@ -7,6 +7,7 @@ using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Plugins.Records;
 using Mutagen.Bethesda.Skyrim;
 using Mutagen.Bethesda.Synthesis;
+using Noggog;
 
 // ReSharper disable UnusedAutoPropertyAccessor.Local
 
@@ -25,20 +26,19 @@ namespace HalgarisRPGLoot.Analyzers
         protected int VarietyCountPerRarity;
         protected IPatcherState<ISkyrimMod, ISkyrimModGetter> State { get; init; }
 
-        protected ResolvedListItem<TType>[] AllUnenchantedItems { get; set; }
-
         protected Dictionary<int, ResolvedEnchantment[]> ByLevelIndexed;
 
-        protected SortedList<String, ResolvedEnchantment[]>[] AllRpgEnchants { get; init; }
+        protected SortedList<string, ResolvedEnchantment[]>[] AllRpgEnchants { get; init; }
 
-        protected Dictionary<String, FormKey>[] ChosenRpgEnchants { get; init; }
+        protected Dictionary<string, FormKey>[] ChosenRpgEnchants { get; init; }
         protected Dictionary<FormKey, ResolvedEnchantment[]>[] ChosenRpgEnchantEffects { get; init; }
 
-        protected ILeveledItemGetter[] AllLeveledLists { get; set; }
-        protected ResolvedListItem<TType>[] AllListItems { get; set; }
-        protected ResolvedListItem<TType>[] AllEnchantedItems { get; set; }
+        protected HashSet<ILeveledItemGetter> AllLeveledLists { get; set; }
+        protected HashSet<ResolvedListItem<TType>> AllListItems { get; set; }
+        protected HashSet<ResolvedListItem<TType>> AllEnchantedItems { get; set; }
+        protected HashSet<ResolvedListItem<TType>> AllUnenchantedItems { get; set; }
 
-        private ResolvedListItem<TType>[] BaseItems { get; set; } 
+        private HashSet<ResolvedListItem<TType>> BaseItems { get; set; } 
             
         protected Dictionary<FormKey, IObjectEffectGetter> AllObjectEffects { get; set; }
 
@@ -47,7 +47,7 @@ namespace HalgarisRPGLoot.Analyzers
         // ReSharper disable once UnusedAutoPropertyAccessor.Global
         protected HashSet<short> AllLevels { get; set; }
 
-        protected (short Key, ResolvedEnchantment[])[] ByLevel { get; set; }
+        protected (short Key, HashSet<ResolvedEnchantment>)[] ByLevel { get; set; }
 
 
         protected readonly Random Random = new(Program.Settings.RarityAndVariationDistributionSettings.RandomSeed);
@@ -83,7 +83,7 @@ namespace HalgarisRPGLoot.Analyzers
             {
                 var topLevelList = State.PatchMod.LeveledItems.AddNewLocking(State.PatchMod.GetNextFormKey());
                 topLevelList.DeepCopyIn(ench.List);
-                topLevelList.Entries!.Clear();
+                topLevelList.Entries?.Clear();
                 topLevelList.EditorID = "HAL_TOP_LList_" + ench.Resolved.EditorID;
 
                 topLevelList.Flags = GetLeveledItemFlags();
@@ -96,7 +96,7 @@ namespace HalgarisRPGLoot.Analyzers
                     var leveledItem = State.PatchMod.LeveledItems.AddNewLocking(State.PatchMod.GetNextFormKey());
                     leveledItem.DeepCopyIn(ench.List);
                     leveledItem.EditorID = "HAL_SUB_LList_" + rarityClass.Label + "_" + ench.Resolved.EditorID;
-                    leveledItem.Entries!.Clear();
+                    leveledItem.Entries?.Clear();
 
                     leveledItem.Flags = GetLeveledItemFlags();
 
@@ -108,37 +108,43 @@ namespace HalgarisRPGLoot.Analyzers
 
                         var itm = EnchantItem(ench, rarityClassNumber);
                         var entry = ench.Entry.DeepCopy();
-                        entry.Data!.Reference.SetTo(itm);
-                        leveledItem.Entries.Add(entry);
+                        entry.Data?.Reference.SetTo(itm);
+                        leveledItem.Entries?.Add(entry);
                     }
 
                     for (int i = 0; i < rarityClass.RarityWeight; i++)
                     {
                         var newRarityEntry = ench.Entry.DeepCopy();
-                        newRarityEntry.Data!.Reference.SetTo(leveledItem);
+                        newRarityEntry.Data?.Reference.SetTo(leveledItem);
 
-                        topLevelList.Entries.Add(newRarityEntry);
+                        topLevelList.Entries?.Add(newRarityEntry);
                     }
                     
                     rarityClassNumber++;
                 }
 
                 var topLeveledEntry = ench.Entry.DeepCopy();
-                topLeveledEntry.Data!.Reference.SetTo(topLevelList);
+                topLeveledEntry.Data?.Reference.SetTo(topLevelList);
 
 
                 var oldLeveledItem = State.PatchMod.LeveledItems.GetOrAddAsOverride(ench.List);
 
-                foreach (var entry in oldLeveledItem.Entries!.Where(entry =>
-                             entry.Data!.Reference.FormKey == ench.Resolved.FormKey))
+                var entries = oldLeveledItem.Entries?.Where(entry =>
+                    entry.Data?.Reference.FormKey == ench.Resolved.FormKey);
+
+                if (entries != null)
                 {
-                    entry.Data!.Reference.SetTo(topLevelList);
+                    foreach (var entry in entries)
+                    {
+                        entry.Data?.Reference.SetTo(topLevelList);
+                    }
                 }
+                
                 
                 for (var i = 0; i < GearSettings.BaseItemChanceWeight; i++)
                 {
                     var oldEntryChanceAdjustmentCopy = ench.Entry.DeepCopy();
-                    topLevelList.Entries!.Add(oldEntryChanceAdjustmentCopy);
+                    topLevelList.Entries?.Add(oldEntryChanceAdjustmentCopy);
                 }
             }
         }
