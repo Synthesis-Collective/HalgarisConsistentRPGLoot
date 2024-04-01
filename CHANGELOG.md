@@ -12,3 +12,5 @@
       or if the Engine and tools like xEdit can handle that when it gets bigger!!
 * Item and Enchantment Names now list all enchantments
   * added a config option to configure the separators for this
+* lowered the total output size of the patch
+*increased patching performance
