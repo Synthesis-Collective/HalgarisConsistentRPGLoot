@@ -15,12 +15,10 @@ namespace HalgarisRPGLoot.Analyzers
 {
     public class ArmorAnalyzer : GearAnalyzer<IArmorGetter>
     {
-        private readonly Dictionary<IFormLinkGetter<IArmorGetter>, IConstructibleObjectGetter> _armorDictionary;
 
         private readonly ObjectEffectsAnalyzer _objectEffectsAnalyzer;
 
         public ArmorAnalyzer(IPatcherState<ISkyrimMod, ISkyrimModGetter> state,
-            Dictionary<IFormLinkGetter<IArmorGetter>, IConstructibleObjectGetter> armorDictionary,
             ObjectEffectsAnalyzer objectEffectsAnalyzer)
         {
             RarityAndVariationDistributionSettings = Program.Settings.RarityAndVariationDistributionSettings;
@@ -30,7 +28,6 @@ namespace HalgarisRPGLoot.Analyzers
             ItemTypeDescriptor = " armor";
 
             State = state;
-            _armorDictionary = armorDictionary;
             _objectEffectsAnalyzer = objectEffectsAnalyzer;
 
             VarietyCountPerRarity = GearSettings.VarietyCountPerItem;
@@ -79,18 +76,8 @@ namespace HalgarisRPGLoot.Analyzers
                                                              ?? Array.Empty<ResolvedListItem<IArmorGetter>>())
                 .Where(e =>
                 {
-                    if (Program.Settings.GeneralSettings.OnlyProcessConstructableEquipment)
-                    {
-                        var kws = (e.Resolved.Keywords ?? Array.Empty<IFormLink<IKeywordGetter>>());
-                        return !Extensions.CheckKeywords(kws) &&
-                               (_armorDictionary.ContainsKey(e.Resolved.TemplateArmor) ||
-                                _armorDictionary.ContainsKey(e.Resolved.ToLink()));
-                    }
-                    else
-                    {
-                        var kws = (e.Resolved.Keywords ?? Array.Empty<IFormLink<IKeywordGetter>>());
-                        return !Extensions.CheckKeywords(kws);
-                    }
+                    var kws = (e.Resolved.Keywords ?? Array.Empty<IFormLink<IKeywordGetter>>());
+                    return !Extensions.CheckKeywords(kws);
                 })
                 .ToHashSet();
 
@@ -193,6 +180,7 @@ namespace HalgarisRPGLoot.Analyzers
                 {
                     return armorGetter.FormKey;
                 }
+
                 Console.WriteLine("Generating Enchanted version of " + itemName);
                 var newArmor = State.PatchMod.Armors.AddNewLocking(State.PatchMod.GetNextFormKey());
                 newArmor.DeepCopyIn(item.Resolved);
@@ -219,6 +207,7 @@ namespace HalgarisRPGLoot.Analyzers
                 {
                     return State.PatchMod.Armors.GetOrAddAsOverride(armorGetter).FormKey;
                 }
+
                 var newArmor = State.PatchMod.Armors.AddNewLocking(State.PatchMod.GetNextFormKey());
                 newArmor.DeepCopyIn(item.Resolved);
                 newArmor.EditorID = newArmorEditorId;

@@ -24,16 +24,6 @@ namespace HalgarisRPGLoot
     public class GeneralSettings
     {
         [MaintainOrder]
-        [SynthesisSettingName("Only process constructable equipment")]
-        [SynthesisDescription(
-            "This Setting makes it so only Armor that is a CNAM (Created Object) in an COBJ (Constructable Object) Record will be considered." +
-            "\nThis is to keep unique artefacts and rewards unique in their look and enchantment.")]
-        [SynthesisTooltip(
-            "This Setting makes it so only Armor that is a CNAM (Created Object) in an COBJ (Constructable Object) Record will be considered." +
-            "\nThis is to keep unique artefacts and rewards unique in their look and enchantment.")]
-        public bool OnlyProcessConstructableEquipment = true;
-        
-        [MaintainOrder]
         [SynthesisSettingName("Enchantment Separator")]
         [SynthesisDescription("This is the string(text) that will be written between the enchantments listed in enchantments and item names.")]
         [SynthesisTooltip("This is the string(text) that will be written between the enchantments listed in enchantments and item names.")]
@@ -80,7 +70,8 @@ namespace HalgarisRPGLoot
         {
             Skyrim.ObjectEffect.BoundBattleaxeEnchantment,
             Skyrim.ObjectEffect.BoundBowEnchantment,
-            Skyrim.ObjectEffect.BoundSwordEnchantment
+            Skyrim.ObjectEffect.BoundSwordEnchantment,
+            Dragonborn.ObjectEffect.BoundDaggerEnchantment
         };
 
         [MaintainOrder]
