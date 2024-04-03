@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Mutagen.Bethesda.Synthesis.Settings;
 using HalgarisRPGLoot.DataModels;
+using Mutagen.Bethesda;
 using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Skyrim;
 using Mutagen.Bethesda.FormKeys.SkyrimSE;
@@ -14,6 +15,8 @@ namespace HalgarisRPGLoot
 {
     public class Settings
     {
+        [MaintainOrder] public SupportedGames Game = SupportedGames.SkyrimSE;
+        
         [MaintainOrder] public GeneralSettings GeneralSettings = new();
 
         [MaintainOrder] public EnchantmentSettings EnchantmentSettings = new();
