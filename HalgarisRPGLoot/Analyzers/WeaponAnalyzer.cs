@@ -15,12 +15,10 @@ namespace HalgarisRPGLoot.Analyzers
 {
     public class WeaponAnalyzer : GearAnalyzer<IWeaponGetter>
     {
-        private readonly Dictionary<IFormLinkGetter<IWeaponGetter>, IConstructibleObjectGetter> _weaponDictionary;
 
         private readonly ObjectEffectsAnalyzer _objectEffectsAnalyzer;
 
         public WeaponAnalyzer(IPatcherState<ISkyrimMod, ISkyrimModGetter> state,
-            Dictionary<IFormLinkGetter<IWeaponGetter>, IConstructibleObjectGetter> weaponDictionary,
             ObjectEffectsAnalyzer objectEffectsAnalyzer)
         {
             RarityAndVariationDistributionSettings = Program.Settings.RarityAndVariationDistributionSettings;
@@ -30,7 +28,6 @@ namespace HalgarisRPGLoot.Analyzers
             ItemTypeDescriptor = " weapon";
 
             State = state;
-            _weaponDictionary = weaponDictionary;
             _objectEffectsAnalyzer = objectEffectsAnalyzer;
 
             VarietyCountPerRarity = GearSettings.VarietyCountPerItem;
@@ -79,17 +76,8 @@ namespace HalgarisRPGLoot.Analyzers
                                                              ?? Array.Empty<ResolvedListItem<IWeaponGetter>>())
                 .Where(e =>
                 {
-                    if (Program.Settings.GeneralSettings.OnlyProcessConstructableEquipment)
-                    {
-                        var kws = (e.Resolved.Keywords ?? Array.Empty<IFormLink<IKeywordGetter>>());
-                        return !Extensions.CheckKeywords(kws) && (_weaponDictionary.ContainsKey(e.Resolved.Template) ||
-                                                                  _weaponDictionary.ContainsKey(e.Resolved.ToLink()));
-                    }
-                    else
-                    {
-                        var kws = (e.Resolved.Keywords ?? Array.Empty<IFormLink<IKeywordGetter>>());
+                    var kws = (e.Resolved.Keywords ?? Array.Empty<IFormLink<IKeywordGetter>>());
                         return !Extensions.CheckKeywords(kws);
-                    }
                 })
                 .ToHashSet();
 

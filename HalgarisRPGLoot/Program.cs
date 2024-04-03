@@ -28,17 +28,19 @@ namespace HalgarisRPGLoot
 
         private static void RunPatch(IPatcherState<ISkyrimMod, ISkyrimModGetter> state)
         {
-            //var armor  = new ArmorAnalyzer(state);
-            //var weapon = new WeaponAnalyzer(state);
+            // Workaround for VR Support until Mutagen adds support for the 1.71 header in VR
+            if (state.PatchMod.ModHeader.Stats.NextFormID <= 0x800)
+            {
+                state.PatchMod.ModHeader.Stats.NextFormID = 0x800;
+            }
             
             Settings.RarityAndVariationDistributionSettings.ArmorSettings.RarityClasses.Sort();
             Settings.RarityAndVariationDistributionSettings.WeaponSettings.RarityClasses.Sort();
             
             ObjectEffectsAnalyzer objectEffectsAnalyzer = new(state);
-            ConstructibleObjectAnalyzer constructibleObjectAnalyzer = new(state);
             
-            var armor = new ArmorAnalyzer(state, constructibleObjectAnalyzer.ArmorDictionary,objectEffectsAnalyzer);
-            var weapon = new WeaponAnalyzer(state, constructibleObjectAnalyzer.WeaponDictionary,objectEffectsAnalyzer);
+            var armor = new ArmorAnalyzer(state, objectEffectsAnalyzer);
+            var weapon = new WeaponAnalyzer(state, objectEffectsAnalyzer);
             
             Console.WriteLine("Analyzing mod list");
             var th1 = new Thread(() => armor.Analyze());
