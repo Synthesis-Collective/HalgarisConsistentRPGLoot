@@ -66,6 +66,8 @@ namespace HalgarisRPGLoot.Analyzers
                                                                          entry.Data.Reference.FormKey,
                                                                          out var resolved))
                                                                      return default;
+                                                                 if (resolved.MajorFlags.HasFlag(Armor.MajorFlag
+                                                                         .NonPlayable)) return default;
                                                                  return new ResolvedListItem<IArmorGetter>
                                                                  {
                                                                      List = lst,
