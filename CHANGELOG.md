@@ -1,5 +1,8 @@
 ﻿# Changelog
 
+## Version 3.2.0 - 06.04.2024
+* Fixed unplayable armor and weapon records being used in the patcher
+
 ## Version 3.1.1 - 04.04.2024
 * Updated Synthesis dependency
 
