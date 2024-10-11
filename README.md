@@ -26,9 +26,6 @@ Any mention of weight is equivalent to the `count` property of leveled lists.
 ### Settings:
 
 - **General Settings:**
-  - **Only process constructible equipment:**
-    - **Default:** `On`
-    - Only items that are referenced in crafting and tampering recipes get processed and enchanted.
   - **Enchantment Separator:**
     - **Default:** `, `
     - Separator used for listing all enchantments on labels
