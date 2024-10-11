@@ -11,8 +11,8 @@ namespace HalgarisRPGLoot
 {
     class Program
     {
-        private static Lazy<Settings> _lazySettings = null!;
-        public static Settings Settings => _lazySettings.Value;
+        private static Lazy<Settings.Settings> _lazySettings = null!;
+        public static Settings.Settings Settings => _lazySettings.Value;
 
         private static async Task<int> Main(string[] args)
         {

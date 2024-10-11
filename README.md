@@ -26,6 +26,10 @@ Any mention of weight is equivalent to the `count` property of leveled lists.
 ### Settings:
 
 - **General Settings:**
+  - **RandomSeed:**
+    - **Default:** `42`
+    - Basically a Key to make the randomness repeatable, as long as your leveled lists,
+      enchantments and weapons in the list don't change.
   - **Only process constructible equipment:**
     - **Default:** `On`
     - Only items that are referenced in crafting and tampering recipes get processed and enchanted.
@@ -77,10 +81,6 @@ Any mention of weight is equivalent to the `count` property of leveled lists.
     - **Default:** `Empty` Because you Ideally manage to get universal filters done in the Keyword
       and Enchantment List Settings.
 - **Rarity And Variation Distribution Settings:**
-  - **RandomSeed:**
-    - **Default:** `42`
-    - Basically a Key to make the randomness repeatable, as long as your leveled lists,
-      enchantments and weapons in the list don't change.
   - **Leveled List Base**
     - Changes where the RPGLoot leveled lists are inserted.
     - `AllValidEnchantedItem` The chance of encountering enchanted gear is similar to vanilla,

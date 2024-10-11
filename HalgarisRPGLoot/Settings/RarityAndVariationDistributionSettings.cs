@@ -2,96 +2,16 @@
 using System.Collections.Generic;
 using Mutagen.Bethesda.Synthesis.Settings;
 using HalgarisRPGLoot.DataModels;
-using Mutagen.Bethesda.Plugins;
-using Mutagen.Bethesda.Skyrim;
-using Mutagen.Bethesda.FormKeys.SkyrimSE;
+
 using Mutagen.Bethesda.WPF.Reflection.Attributes;
 // ReSharper disable ConvertToConstant.Global
 // ReSharper disable FieldCanBeMadeReadOnly.Global
 // ReSharper disable CollectionNeverUpdated.Global
 
-namespace HalgarisRPGLoot
-{
-    public class Settings
+namespace HalgarisRPGLoot.Settings;
+
+public class RarityAndVariationDistributionSettings
     {
-        [MaintainOrder] public GeneralSettings GeneralSettings = new();
-
-        [MaintainOrder] public EnchantmentSettings EnchantmentSettings = new();
-
-        [MaintainOrder] public RarityAndVariationDistributionSettings RarityAndVariationDistributionSettings = new();
-    }
-
-    public class GeneralSettings
-    {
-        [MaintainOrder]
-        [SynthesisSettingName("Enchantment Separator")]
-        [SynthesisDescription("This is the string(text) that will be written between the enchantments listed in enchantments and item names.")]
-        [SynthesisTooltip("This is the string(text) that will be written between the enchantments listed in enchantments and item names.")]
-        public string EnchantmentSeparator = ", ";
-        
-        [MaintainOrder]
-        [SynthesisSettingName("Last Enchantment Separator")]
-        [SynthesisDescription("This is the string(text) that will be written between the two last enchantments listed in enchantments and item names.")]
-        [SynthesisTooltip("This is the string(text) that will be written between the two last enchantments listed in enchantments and item names.")]
-        public string LastEnchantmentSeparator = " and ";
-        
-        
-        [MaintainOrder]
-        [SynthesisSettingName("LeveledList Flags")]
-        [SynthesisDescription("Flags that will be set on generated LeveledLists")]
-        [SynthesisTooltip("Flags that will be set on generated LeveledLists")]
-        public LeveledListFlagSettings LeveledListFlagSettings = new();
-
-        [MaintainOrder]
-        [SynthesisSettingName("Untouchable Equipment Keywords")]
-        [SynthesisDescription("Keywords that define Items you don't want processed.")]
-        [SynthesisTooltip("Keywords that define Items you don't want processed.")]
-        public HashSet<IFormLinkGetter<IKeywordGetter>> UntouchableEquipmentKeywords =
-            new()
-            {
-                Skyrim.Keyword.MagicDisallowEnchanting,
-                Skyrim.Keyword.DaedricArtifact,
-                Skyrim.Keyword.WeapTypeStaff
-            };
-    }
-
-    public class EnchantmentSettings
-    {
-        [MaintainOrder]
-        [SynthesisSettingName("Enchantment List Mode")]
-        [SynthesisDescription(
-            "Blacklist: Selected Enchantments wont be distributed.\nWhitelist: Only the selected Enchantments get Distributed.")]
-        [SynthesisTooltip(
-            "Blacklist: Selected Enchantments wont be distributed.\nWhitelist: Only the selected Enchantments get Distributed.")]
-        public ListMode EnchantmentListMode = ListMode.Blacklist;
-
-        [MaintainOrder] [SynthesisSettingName("Enchantment List")] [SynthesisDescription("List of Enchantments")]
-        public HashSet<IFormLinkGetter<IObjectEffectGetter>> EnchantmentList = new()
-        {
-            Skyrim.ObjectEffect.BoundBattleaxeEnchantment,
-            Skyrim.ObjectEffect.BoundBowEnchantment,
-            Skyrim.ObjectEffect.BoundSwordEnchantment,
-            Dragonborn.ObjectEffect.BoundDaggerEnchantment
-        };
-
-        [MaintainOrder]
-        [SynthesisSettingName("Plugin List Mode")]
-        [SynthesisDescription(
-            "Blacklist: Enchantments of selected Plugins wont be distributed." +
-            "\nWhitelist: Only the Enchantments of selected Plugins  get Distributed.")]
-        [SynthesisTooltip(
-            "Blacklist: Enchantments of selected Plugins wont be distributed." +
-            "\nWhitelist: Only the Enchantments of selected Plugins  get Distributed.")]
-        public ListMode PluginListMode = ListMode.Blacklist;
-
-        [MaintainOrder] [SynthesisSettingName("Plugin List")] [SynthesisDescription("List of Plugins")]
-        public HashSet<ModKey> PluginList = new();
-    }
-
-    public class RarityAndVariationDistributionSettings
-    {
-        [MaintainOrder] public int RandomSeed = 42;
-        
         /* Currently Impossible to implement in the game unless someone creates a SKSE plugin that allows COBJs to accept
            a LL as a crafting target.
         [MaintainOrder]
@@ -175,5 +95,3 @@ namespace HalgarisRPGLoot
             return RarityWeight.CompareTo(other.RarityWeight) * -1;
         }
     }
-    
-}

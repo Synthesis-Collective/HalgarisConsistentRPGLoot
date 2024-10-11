@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using HalgarisRPGLoot.DataModels;
+using HalgarisRPGLoot.Settings;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Plugins.Records;
 using Mutagen.Bethesda.Skyrim;
 using Mutagen.Bethesda.Synthesis;
-using Noggog;
 
 // ReSharper disable UnusedAutoPropertyAccessor.Local
 
@@ -50,15 +50,16 @@ namespace HalgarisRPGLoot.Analyzers
         protected (short Key, HashSet<ResolvedEnchantment>)[] ByLevel { get; set; }
 
 
-        protected readonly Random Random = new(Program.Settings.RarityAndVariationDistributionSettings.RandomSeed);
+        protected readonly Random Random = new(Program.Settings.GeneralSettings.RandomGenerationSeed);
 
         private readonly LeveledListFlagSettings _leveledListFlagSettings =
             Program.Settings.GeneralSettings.LeveledListFlagSettings;
 
-        private readonly string _enchantmentSeparatorString = Program.Settings.GeneralSettings.EnchantmentSeparator;
+        private readonly string _enchantmentSeparatorString = 
+            Program.Settings.NamingGeneratorSettings.EnchantmentSeparator;
 
         private readonly string _lastEnchantmentSeparatorString =
-            Program.Settings.GeneralSettings.LastEnchantmentSeparator;
+            Program.Settings.NamingGeneratorSettings.LastEnchantmentSeparator;
 
         protected string EditorIdPrefix;
 
