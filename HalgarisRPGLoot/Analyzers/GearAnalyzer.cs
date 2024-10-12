@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using HalgarisRPGLoot.DataModels;
 using HalgarisRPGLoot.Settings;
+using HalgarisRPGLoot.Settings.Enums;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Plugins.Records;

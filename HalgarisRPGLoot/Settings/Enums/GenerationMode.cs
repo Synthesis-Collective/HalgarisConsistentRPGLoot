@@ -1,4 +1,4 @@
-﻿namespace HalgarisRPGLoot.DataModels
+﻿namespace HalgarisRPGLoot.Settings.Enums
 {
     public enum GenerationMode
     {

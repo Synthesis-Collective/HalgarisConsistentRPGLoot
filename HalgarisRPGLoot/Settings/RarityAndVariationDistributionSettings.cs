@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Mutagen.Bethesda.Synthesis.Settings;
-using HalgarisRPGLoot.DataModels;
-
+using HalgarisRPGLoot.Settings.Enums;
 using Mutagen.Bethesda.WPF.Reflection.Attributes;
 // ReSharper disable ConvertToConstant.Global
 // ReSharper disable FieldCanBeMadeReadOnly.Global
