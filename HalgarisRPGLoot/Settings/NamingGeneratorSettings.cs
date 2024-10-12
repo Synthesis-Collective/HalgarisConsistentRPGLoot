@@ -1,6 +1,5 @@
 ﻿using Mutagen.Bethesda.Synthesis.Settings;
 using Mutagen.Bethesda.WPF.Reflection.Attributes;
-using Syllabore;
 
 // ReSharper disable ConvertToConstant.Global
 // ReSharper disable FieldCanBeMadeReadOnly.Global
@@ -24,5 +23,8 @@ public class NamingGeneratorSettings
     public string LastEnchantmentSeparator = " and ";
     
     [MaintainOrder]
-    public NameGenerator NameGenerator = new NameGenerator();
+    [SynthesisSettingName("Syllabore Settings")]
+    [SynthesisDescription("The Settings used for Random Name Generation.")]
+    [SynthesisTooltip("The Settings used for Random Name Generation.")]
+    public SyllaboreSettings SyllaboreSettings = new SyllaboreSettings();
 }
