@@ -23,8 +23,8 @@ public class NamingGeneratorSettings
     public string LastEnchantmentSeparator = " and ";
     
     [MaintainOrder]
-    [SynthesisSettingName("Syllabore Settings")]
+    [SynthesisSettingName("Random Name Generation (powered by Syllabore) Settings")]
     [SynthesisDescription("The Settings used for Random Name Generation.")]
     [SynthesisTooltip("The Settings used for Random Name Generation.")]
-    public SyllaboreSettings SyllaboreSettings = new SyllaboreSettings();
+    public SyllaboreSettings.SyllaboreSettings SyllaboreSettings = new SyllaboreSettings.SyllaboreSettings();
 }

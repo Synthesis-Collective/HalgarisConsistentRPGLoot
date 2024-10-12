@@ -2,7 +2,7 @@
 
 public enum NamingScheme
 {
-    PrefixedPreviousOwnerName,
+    PrefixPreviousOwnerName,
     AppendPreviousOwnerName,
     ItemName
 }
