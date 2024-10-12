@@ -24,13 +24,13 @@ public class SyllaboreSettings
     [SynthesisSettingName("Usable Vowels")]
     [SynthesisDescription("Vowels used for the Syllable generation.")]
     [SynthesisTooltip("Vowels used for the Syllable generation.")]
-    public List<WeightedObject<string>> WithVowels = new()
+    public List<WeightedElements<string>> WithVowels = new()
     {
-        new(){Object = "a", Weight = 1},
-        new(){Object = "e", Weight = 1},
-        new(){Object = "i", Weight = 1},
-        new(){Object = "o", Weight = 1},
-        new(){Object = "u", Weight = 1},
+        new(){Element = "a", Weight = 1},
+        new(){Element = "e", Weight = 1},
+        new(){Element = "i", Weight = 1},
+        new(){Element = "o", Weight = 1},
+        new(){Element = "u", Weight = 1},
     };
 
     [MaintainOrder]
