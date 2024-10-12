@@ -1,16 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <LangVersion>default</LangVersion>
     <TargetPlatformIdentifier>Windows</TargetPlatformIdentifier>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Mutagen.Bethesda" Version="0.43.3" />
-    <PackageReference Include="Mutagen.Bethesda.Core" Version="0.43.3" />
-    <PackageReference Include="Mutagen.Bethesda.Synthesis" Version="0.27.2" />
-    <PackageReference Include="Mutagen.Bethesda.FormKeys.SkyrimSE" Version="3.2.0" />
+    <PackageReference Include="Mutagen.Bethesda" Version="0.47.2" />
+    <PackageReference Include="Mutagen.Bethesda.Core" Version="0.47.2" />
+    <PackageReference Include="Mutagen.Bethesda.Synthesis" Version="0.30.5" />
+    <PackageReference Include="Mutagen.Bethesda.FormKeys.SkyrimSE" Version="3.4.0" />
     <PackageReference Include="Syllabore" Version="2.3.3" />
   </ItemGroup>
 
