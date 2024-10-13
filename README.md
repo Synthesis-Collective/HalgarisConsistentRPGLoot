@@ -1,4 +1,6 @@
-# Synthesis RPG Loot (Enchantment Distributor) (prev. known as Halgari's RPG Loot)
+# Synthesis RPG Loot (Enchantment Distributor)
+
+*prev. known as Halgari's RPG Loot*
 
 ## What does this Patcher do ?
 
