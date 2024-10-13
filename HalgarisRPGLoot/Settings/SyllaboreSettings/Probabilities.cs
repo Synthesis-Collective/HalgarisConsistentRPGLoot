@@ -1,4 +1,5 @@
 ﻿using Mutagen.Bethesda.WPF.Reflection.Attributes;
+// ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
 
 namespace HalgarisRPGLoot.Settings.SyllaboreSettings;
 
@@ -8,20 +9,14 @@ public class Probabilities
     [MaintainOrder]
     public double OfLeadingConsonants { get; set; } = 0.95;
     [MaintainOrder]
-    public double OfLeadingConsonantIsSequence { get; set; } = 0.25;
-    [MaintainOrder]
     public double OfVowelsExits { get; set; } = 1.00;
-    [MaintainOrder]
-    public double OfVowelsExitIsSequence { get; set; } = 0.25;
     [MaintainOrder]
     public double OfTrailingConsonants { get; set; } = 0.10;
     [MaintainOrder]
-    public double OfTrailingConsonantIsSequence { get; set; } = 0.25;
+    public double OfFinalConsonants { get; set; } = 0.50;
     
     //For Each Starting Syllable
     [MaintainOrder]
-    public double OfLeadingVowelIsInStartingSyllable { get; set; } = 0.0;
-    [MaintainOrder]
-    public double OfLeadingVowelIsSequenceInStartingSyllable { get; set; } = 0.0;
+    public double OfLeadingVowelsInStartingSyllable { get; set; } = 0.0;
     
 }
