@@ -1,7 +1,7 @@
 ﻿using Mutagen.Bethesda.Plugins.Records;
 using Mutagen.Bethesda.Skyrim;
 
-namespace HalgarisRPGLoot.DataModels
+namespace SynthesisRPGLoot.DataModels
 {
     public class ResolvedListItem<TEnchantedItemTypeGetter>
         where TEnchantedItemTypeGetter : class, IMajorRecordGetter

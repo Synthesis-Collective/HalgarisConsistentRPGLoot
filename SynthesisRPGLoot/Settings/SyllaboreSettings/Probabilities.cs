@@ -1,7 +1,7 @@
 ﻿using Mutagen.Bethesda.WPF.Reflection.Attributes;
 // ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
 
-namespace HalgarisRPGLoot.Settings.SyllaboreSettings;
+namespace SynthesisRPGLoot.Settings.SyllaboreSettings;
 
 public class Probabilities
 {

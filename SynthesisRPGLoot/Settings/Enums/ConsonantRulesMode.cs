@@ -1,4 +1,4 @@
-﻿namespace HalgarisRPGLoot.Settings.Enums;
+﻿namespace SynthesisRPGLoot.Settings.Enums;
 
 public enum ConsonantRulesMode
 {

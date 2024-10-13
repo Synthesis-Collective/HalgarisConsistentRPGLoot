@@ -4,7 +4,7 @@
 // ReSharper disable FieldCanBeMadeReadOnly.Global
 // ReSharper disable CollectionNeverUpdated.Global
 
-namespace HalgarisRPGLoot.Settings
+namespace SynthesisRPGLoot.Settings
 {
     public class Settings
     {

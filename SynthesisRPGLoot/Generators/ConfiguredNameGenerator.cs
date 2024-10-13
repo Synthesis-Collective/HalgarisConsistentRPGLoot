@@ -1,8 +1,8 @@
 ﻿using System;
-using HalgarisRPGLoot.Settings.Enums;
+using SynthesisRPGLoot.Settings.Enums;
 using Syllabore;
 
-namespace HalgarisRPGLoot.Generators;
+namespace SynthesisRPGLoot.Generators;
 
 public class ConfiguredNameGenerator : NameGenerator
 {

@@ -1,15 +1,15 @@
 ﻿using System.Collections.Generic;
 using Mutagen.Bethesda.Synthesis.Settings;
-using HalgarisRPGLoot.Settings.CustomTypes;
-using HalgarisRPGLoot.Settings.Enums;
 using Mutagen.Bethesda.WPF.Reflection.Attributes;
+using SynthesisRPGLoot.Settings.CustomTypes;
+using SynthesisRPGLoot.Settings.Enums;
 
 
 // ReSharper disable ConvertToConstant.Global
 // ReSharper disable FieldCanBeMadeReadOnly.Global
 // ReSharper disable CollectionNeverUpdated.Global
 
-namespace HalgarisRPGLoot.Settings.SyllaboreSettings;
+namespace SynthesisRPGLoot.Settings.SyllaboreSettings;
 
 public class SyllableSettings
 {

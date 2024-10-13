@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using HalgarisRPGLoot.Analyzers;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Skyrim;
 using Mutagen.Bethesda.Synthesis;
+using SynthesisRPGLoot.Analyzers;
 
 
-namespace HalgarisRPGLoot
+namespace SynthesisRPGLoot
 {
     class Program
     {

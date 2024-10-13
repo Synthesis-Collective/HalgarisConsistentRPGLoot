@@ -2,7 +2,7 @@
 using Mutagen.Bethesda.Synthesis.Settings;
 using Mutagen.Bethesda.WPF.Reflection.Attributes;
 
-namespace HalgarisRPGLoot.Settings.SyllaboreSettings;
+namespace SynthesisRPGLoot.Settings.SyllaboreSettings;
 
 public class Filters
 {

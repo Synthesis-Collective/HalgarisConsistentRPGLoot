@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using HalgarisRPGLoot.DataModels;
+using SynthesisRPGLoot.DataModels;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.FormKeys.SkyrimSE;
 using Mutagen.Bethesda.Plugins;
@@ -11,7 +11,7 @@ using Mutagen.Bethesda.Skyrim;
 using Mutagen.Bethesda.Strings;
 using Mutagen.Bethesda.Synthesis;
 
-namespace HalgarisRPGLoot.Analyzers
+namespace SynthesisRPGLoot.Analyzers
 {
     public class WeaponAnalyzer : GearAnalyzer<IWeaponGetter>
     {
@@ -190,8 +190,11 @@ namespace HalgarisRPGLoot.Analyzers
                 newWeapon.EditorID = newWeaponEditorId;
                 newWeapon.ObjectEffect.SetTo(generatedEnchantmentFormKey);
                 newWeapon.EnchantmentAmount = (ushort) effects.Where(e => e.Amount.HasValue).Sum(e => e.Amount.Value);
+                
+                //NameGenerator code goes here:
                 newWeapon.Name = RarityClasses[rarity].Label + " " + itemName + " of " +
                                  GetEnchantmentsStringForName(effects);
+                
                 newWeapon.Template = (IFormLinkNullable<IWeaponGetter>) item.Resolved.ToNullableLinkGetter();
 
                 if (!RarityClasses[rarity].AllowDisenchanting)

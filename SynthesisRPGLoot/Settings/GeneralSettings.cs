@@ -9,7 +9,7 @@ using Mutagen.Bethesda.WPF.Reflection.Attributes;
 // ReSharper disable CollectionNeverUpdated.Global
 
 
-namespace HalgarisRPGLoot.Settings;
+namespace SynthesisRPGLoot.Settings;
 
 public class GeneralSettings
 {

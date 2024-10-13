@@ -1,6 +1,6 @@
 ﻿using Mutagen.Bethesda.Skyrim;
 
-namespace HalgarisRPGLoot.DataModels
+namespace SynthesisRPGLoot.DataModels
 {
     public class ResolvedEnchantment
     {

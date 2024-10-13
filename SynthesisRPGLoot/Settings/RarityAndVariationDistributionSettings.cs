@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using Mutagen.Bethesda.Synthesis.Settings;
-using HalgarisRPGLoot.Settings.Enums;
+using SynthesisRPGLoot.Settings.Enums;
 using Mutagen.Bethesda.WPF.Reflection.Attributes;
 // ReSharper disable ConvertToConstant.Global
 // ReSharper disable FieldCanBeMadeReadOnly.Global
 // ReSharper disable CollectionNeverUpdated.Global
 
-namespace HalgarisRPGLoot.Settings;
+namespace SynthesisRPGLoot.Settings;
 
 public class RarityAndVariationDistributionSettings
     {

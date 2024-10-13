@@ -5,7 +5,7 @@ using Mutagen.Bethesda.Skyrim;
 using Mutagen.Bethesda.Plugins;
 
 
-namespace HalgarisRPGLoot
+namespace SynthesisRPGLoot
 {
     public static class Extensions
     {

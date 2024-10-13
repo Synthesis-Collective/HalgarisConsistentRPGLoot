@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using HalgarisRPGLoot.Settings.Enums;
+using SynthesisRPGLoot.Settings.Enums;
 using Mutagen.Bethesda.Skyrim;
 using Mutagen.Bethesda.FormKeys.SkyrimSE;
 using Mutagen.Bethesda.Plugins;
@@ -10,7 +10,7 @@ using Mutagen.Bethesda.WPF.Reflection.Attributes;
 // ReSharper disable CollectionNeverUpdated.Global
 
 
-namespace HalgarisRPGLoot.Settings;
+namespace SynthesisRPGLoot.Settings;
 
 public class EnchantmentSettings
 {

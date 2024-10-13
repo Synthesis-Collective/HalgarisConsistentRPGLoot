@@ -6,7 +6,7 @@
 // ReSharper disable CollectionNeverUpdated.Global
 
 
-namespace HalgarisRPGLoot.Settings.CustomTypes;
+namespace SynthesisRPGLoot.Settings.CustomTypes;
 
 public class WeightedElements<TType> where TType : class
 {

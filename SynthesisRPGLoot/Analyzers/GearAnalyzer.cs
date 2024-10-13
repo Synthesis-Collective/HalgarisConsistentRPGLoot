@@ -1,19 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using HalgarisRPGLoot.DataModels;
-using HalgarisRPGLoot.Generators;
-using HalgarisRPGLoot.Settings;
-using HalgarisRPGLoot.Settings.Enums;
+using SynthesisRPGLoot.DataModels;
+using SynthesisRPGLoot.Settings.Enums;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Plugins.Records;
 using Mutagen.Bethesda.Skyrim;
 using Mutagen.Bethesda.Synthesis;
+using SynthesisRPGLoot.Generators;
+using SynthesisRPGLoot.Settings;
 
 // ReSharper disable UnusedAutoPropertyAccessor.Local
 
-namespace HalgarisRPGLoot.Analyzers
+namespace SynthesisRPGLoot.Analyzers
 {
     public abstract class GearAnalyzer<TType>
         where TType : class, IMajorRecordGetter
