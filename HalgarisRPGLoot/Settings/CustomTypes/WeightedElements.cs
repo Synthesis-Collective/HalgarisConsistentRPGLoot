@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using Mutagen.Bethesda.Synthesis.Settings;
+﻿using Mutagen.Bethesda.Synthesis.Settings;
 
 
 // ReSharper disable ConvertToConstant.Global

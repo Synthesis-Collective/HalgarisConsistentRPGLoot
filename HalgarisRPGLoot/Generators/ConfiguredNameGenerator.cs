@@ -1,6 +1,5 @@
 ﻿using System;
 using HalgarisRPGLoot.Settings.Enums;
-using HalgarisRPGLoot.Settings.SyllaboreSettings;
 using Syllabore;
 
 namespace HalgarisRPGLoot.Generators;
@@ -8,14 +7,14 @@ namespace HalgarisRPGLoot.Generators;
 public class ConfiguredNameGenerator : NameGenerator
 {
     //TODO: Implement the Name Generator in the Code
-
+    
     public ConfiguredNameGenerator(int seedSalt)
     {
         Random random = new(Program.Settings.GeneralSettings.RandomGenerationSeed+seedSalt);
         var syllaboreSettings = Program.Settings.NamingGeneratorSettings.SyllaboreSettings;
         
-        //Build Syllable Generator
-        var syllableGenerator = new SyllableGenerator();
+        //Add Syllable Settings
+        var syllableGenerator = new DefaultSyllableGenerator();
         syllableGenerator.WithRandom(random);
         
         foreach (var weightedVowels in syllaboreSettings.SyllableSettings.WithVowels)
@@ -71,6 +70,7 @@ public class ConfiguredNameGenerator : NameGenerator
         
         UsingSyllables(syllableGenerator);
 
+        //Add Probability Settings
         UsingProbability(p => p
             .OfLeadingConsonants(syllaboreSettings.Probabilities.OfLeadingConsonants)
             .OfTrailingConsonants(syllaboreSettings.Probabilities.OfTrailingConsonants)
@@ -78,9 +78,34 @@ public class ConfiguredNameGenerator : NameGenerator
             .OfVowels(syllaboreSettings.Probabilities.OfVowelsExits)
             .OfLeadingVowelsInStartingSyllable(syllaboreSettings.Probabilities.OfLeadingVowelsInStartingSyllable)
         );
-
+        //Add the Seeded Random
         UsingRandom(random);
 
+        //Add Filter Settings
+        var filter = new NameFilter();
+
+        foreach (var notAllowed in syllaboreSettings.Filters.DoNotAllow)
+        {
+            filter.DoNotAllow(notAllowed);
+        }
+
+        foreach (var notAllowed in syllaboreSettings.Filters.DoNotAllowSubstring)
+        {
+            filter.DoNotAllowSubstring(notAllowed);
+        }
+
+        foreach (var notAllowed in syllaboreSettings.Filters.DoNotAllowEnd)
+        {
+            filter.DoNotAllowEnding(notAllowed);
+        }
+        
+        foreach (var notAllowed in syllaboreSettings.Filters.DoNotAllowStart)
+        {
+            filter.DoNotAllowStart(notAllowed);
+        }
+
+        UsingFilter(filter);
+        
     }
     
 }
