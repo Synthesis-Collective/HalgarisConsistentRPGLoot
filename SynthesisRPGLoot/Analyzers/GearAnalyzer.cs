@@ -281,17 +281,17 @@ namespace SynthesisRPGLoot.Analyzers
                 case GeneratedNameScheme.AsPrefixedPreviousOwnerName:
                 {
                     return rarityClass.HideRarityLabelInName
-                        ? $"{GetNameWithPossessiveS(ConfiguredNameGenerator.Next())}" +
-                          $" {itemName} of {GetEnchantmentsStringForName(effects)}"
-                        : $"{GetNameWithPossessiveS(ConfiguredNameGenerator.Next())}" +
+                        ? $"{GetNameWithPossessiveS(ConfiguredNameGenerator.Next())} " +
+                          $"{itemName} of {GetEnchantmentsStringForName(effects)}"
+                        : $"{GetNameWithPossessiveS(ConfiguredNameGenerator.Next())} " +
                           $"{rarityClass.Label} of {GetEnchantmentsStringForName(effects)}";
                 }
                 case GeneratedNameScheme.AsPrefixedPreviousOwnerNameReplacingEnchantments:
                 {
                     return rarityClass.HideRarityLabelInName
-                        ? $"{GetNameWithPossessiveS(ConfiguredNameGenerator.Next())}" +
+                        ? $"{GetNameWithPossessiveS(ConfiguredNameGenerator.Next())} " +
                           $"{itemName}"
-                        : $"{GetNameWithPossessiveS(ConfiguredNameGenerator.Next())}" +
+                        : $"{GetNameWithPossessiveS(ConfiguredNameGenerator.Next())} " +
                           $"{rarityClass.Label} {itemName}";
                 }
                 default:
