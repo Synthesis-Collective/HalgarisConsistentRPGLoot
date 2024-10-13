@@ -23,6 +23,7 @@ namespace HalgarisRPGLoot.Analyzers
         {
             RarityAndVariationDistributionSettings = Program.Settings.RarityAndVariationDistributionSettings;
             GearSettings = RarityAndVariationDistributionSettings.ArmorSettings;
+            ConfiguredNameGenerator = new(3);
 
             EditorIdPrefix = "HAL_WEAPON_";
             ItemTypeDescriptor = " weapon";

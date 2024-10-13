@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using HalgarisRPGLoot.DataModels;
+using HalgarisRPGLoot.Generators;
 using HalgarisRPGLoot.Settings;
 using HalgarisRPGLoot.Settings.Enums;
 using Mutagen.Bethesda;
@@ -19,6 +20,7 @@ namespace HalgarisRPGLoot.Analyzers
 
     {
         protected GearSettings GearSettings;
+        protected ConfiguredNameGenerator ConfiguredNameGenerator;
 
         protected RarityAndVariationDistributionSettings RarityAndVariationDistributionSettings;
 
