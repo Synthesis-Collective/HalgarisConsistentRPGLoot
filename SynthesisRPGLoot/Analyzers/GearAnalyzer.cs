@@ -240,6 +240,70 @@ namespace SynthesisRPGLoot.Analyzers
             return flag;
         }
 
+        protected string LabelMaker(int rarity, string itemName,
+            ResolvedEnchantment[] effects)
+        {
+            var rarityClass = RarityClasses[rarity];
+
+            switch (rarityClass.GeneratedNameScheme)
+            {
+                case GeneratedNameScheme.DontUse:
+                {
+                    return rarityClass.HideRarityLabelInName 
+                        ? $"{itemName} of {GetEnchantmentsStringForName(effects)}" 
+                        : $"{rarityClass.Label} {itemName} of {GetEnchantmentsStringForName(effects)}";
+                }
+                case GeneratedNameScheme.AsItemName:
+                {
+                    return rarityClass.HideRarityLabelInName 
+                        ? $"{ConfiguredNameGenerator.Next()} of {GetEnchantmentsStringForName(effects)}" 
+                        : $"{rarityClass.Label} of {GetEnchantmentsStringForName(effects)}";
+                }
+                case GeneratedNameScheme.AsItemNameReplacingEnchantments:
+                {
+                    return rarityClass.HideRarityLabelInName
+                        ? $"{ConfiguredNameGenerator.Next()}"
+                        : $"{rarityClass.Label} {ConfiguredNameGenerator.Next()}";
+                }
+                case GeneratedNameScheme.AsAppendedPreviousOwnerName:
+                {
+                    return rarityClass.HideRarityLabelInName
+                        ? $"{itemName} of {GetEnchantmentsStringForName(effects)} of {ConfiguredNameGenerator.Next()}"
+                        : $"{rarityClass.Label} {itemName} of {GetEnchantmentsStringForName(effects)} " +
+                          $"of {ConfiguredNameGenerator.Next()}";
+                }
+                case GeneratedNameScheme.AsAppendedPreviousOwnerNameReplacingEnchantments:
+                {
+                    return rarityClass.HideRarityLabelInName
+                        ? $"{itemName} of {ConfiguredNameGenerator.Next()}"
+                        : $"{rarityClass.Label} {itemName} of {ConfiguredNameGenerator.Next()}";
+                }
+                case GeneratedNameScheme.AsPrefixedPreviousOwnerName:
+                {
+                    return rarityClass.HideRarityLabelInName
+                        ? $"{GetNameWithPossessiveS(ConfiguredNameGenerator.Next())}" +
+                          $" {itemName} of {GetEnchantmentsStringForName(effects)}"
+                        : $"{GetNameWithPossessiveS(ConfiguredNameGenerator.Next())}" +
+                          $"{rarityClass.Label} of {GetEnchantmentsStringForName(effects)}";
+                }
+                case GeneratedNameScheme.AsPrefixedPreviousOwnerNameReplacingEnchantments:
+                {
+                    return rarityClass.HideRarityLabelInName
+                        ? $"{GetNameWithPossessiveS(ConfiguredNameGenerator.Next())}" +
+                          $"{itemName}"
+                        : $"{GetNameWithPossessiveS(ConfiguredNameGenerator.Next())}" +
+                          $"{rarityClass.Label} {itemName}";
+                }
+                default:
+                    goto case GeneratedNameScheme.DontUse;
+            }
+        }
+
+        protected string GetNameWithPossessiveS(string name)
+        {
+            return name.EndsWith('s') ? $"{name}'" : $"{name}'s";
+        }
+
         // Forgot what I wanted to use this for but will keep it just in case I ever remember
         // It might have been planned for a random distribution of rarities mode
         private int RandomRarity()

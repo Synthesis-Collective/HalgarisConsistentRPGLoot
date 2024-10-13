@@ -191,10 +191,7 @@ namespace SynthesisRPGLoot.Analyzers
                 newArmor.ObjectEffect.SetTo(generatedEnchantmentFormKey);
                 newArmor.EnchantmentAmount = (ushort) effects.Where(e => e.Amount.HasValue).Sum(e => e.Amount.Value);
                 
-                // NameGenerator code goes here:
-                newArmor.Name = RarityClasses[rarity].Label + " " + itemName + " of " +
-                                GetEnchantmentsStringForName(effects);
-                
+                newArmor.Name = LabelMaker(rarity,itemName,effects);
                 
                 newArmor.TemplateArmor = (IFormLinkNullable<IArmorGetter>) item.Resolved.ToNullableLinkGetter();
 

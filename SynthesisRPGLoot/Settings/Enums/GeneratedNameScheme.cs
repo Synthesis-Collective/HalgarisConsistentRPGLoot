@@ -1,6 +1,6 @@
 ﻿namespace SynthesisRPGLoot.Settings.Enums;
 
-public enum CustomNamingScheme
+public enum GeneratedNameScheme
 {
     DontUse,
     AsPrefixedPreviousOwnerName,

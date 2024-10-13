@@ -26,18 +26,24 @@ public class RarityAndVariationDistributionSettings
 
         [MaintainOrder] public GearSettings ArmorSettings = new(16,20, new()
         {
-            new() {Label = "", NumEnchantments = 1, RarityWeight = 17, AllowDisenchanting = true },
+            new() {Label = "Base", HideRarityLabelInName = true, 
+                NumEnchantments = 1, RarityWeight = 17, AllowDisenchanting = true},
             new() {Label = "Rare", NumEnchantments = 2, RarityWeight = 8,AllowDisenchanting = false },
             new() {Label = "Epic", NumEnchantments = 3, RarityWeight = 3, AllowDisenchanting = false },
-            new() {Label = "Legendary", NumEnchantments = 4, RarityWeight = 1,AllowDisenchanting = false }
+            new() {Label = "Legendary", 
+                GeneratedNameScheme = GeneratedNameScheme.AsPrefixedPreviousOwnerNameReplacingEnchantments,
+                NumEnchantments = 4, RarityWeight = 1,AllowDisenchanting = false }
         });
 
         [MaintainOrder] public GearSettings WeaponSettings = new(16,20, new()
         {
-            new() {Label = "", NumEnchantments = 1, RarityWeight = 17, AllowDisenchanting = true },
+            new() {Label = "Base", HideRarityLabelInName = true,
+                NumEnchantments = 1, RarityWeight = 17, AllowDisenchanting = true },
             new() {Label = "Rare", NumEnchantments = 2, RarityWeight = 8,AllowDisenchanting = false },
             new() {Label = "Epic", NumEnchantments = 3, RarityWeight = 3, AllowDisenchanting = false },
-            new() {Label = "Legendary", NumEnchantments = 4, RarityWeight = 1,AllowDisenchanting = false }
+            new() {Label = "Legendary", 
+                GeneratedNameScheme = GeneratedNameScheme.AsPrefixedPreviousOwnerNameReplacingEnchantments,
+                NumEnchantments = 4, RarityWeight = 1,AllowDisenchanting = false }
         });
     }
 
@@ -75,16 +81,26 @@ public class RarityAndVariationDistributionSettings
 
     public class RarityClass : IComparable<RarityClass>
     {
+        [MaintainOrder]
         [SynthesisSettingName("Rarity Label")] public string Label;
+        
+        [MaintainOrder]
+        public GeneratedNameScheme GeneratedNameScheme = GeneratedNameScheme.DontUse;
+        
+        [MaintainOrder]
+        public bool HideRarityLabelInName = false;
 
+        [MaintainOrder]
         [SynthesisSettingName("Number of Enchantments")]
         public int NumEnchantments;
 
+        [MaintainOrder]
         [SynthesisSettingName("Rarity Weight")]
         [SynthesisTooltip("The higher the number the more likely it is" +
                           "\nthat an item gets generated with that rarity.")]
         public short RarityWeight;
 
+        [MaintainOrder]
         [SynthesisSettingName("Allow Disenchanting")]
         [SynthesisTooltip("Determines if loot of this rarity can be disenchanted.")]
         public bool AllowDisenchanting = true;
